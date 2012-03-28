@@ -65,11 +65,11 @@ public class IOSBuildMojo extends AbstractMojo {
 	private String configuration;
 	
 	/**
-	 * build number
+	 * build id
 	 * @parameter
-	 * 		expression="${ios.buildNumber}"
+	 * 		expression="${ios.buildId}"
 	 */
-	private String buildNumber;	
+	private String buildId;	
 		
 	/**
 	* The maven project.
@@ -93,7 +93,7 @@ public class IOSBuildMojo extends AbstractMojo {
 			properties.put("sourceDir", sourceDir);
 			properties.put("targetDir", targetDir);
 			properties.put("configuration", configuration);
-			properties.put("buildNumber", buildNumber);
+			properties.put("buildId", buildId);
 			properties.put("version", project.getVersion());
 			
 			ProjectBuilder.build(properties);

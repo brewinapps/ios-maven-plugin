@@ -48,7 +48,7 @@ public class ProjectBuilder {
 					"agvtool",
 					"new-version",
 					"-all",
-					properties.get("buildNumber"));
+					properties.get("buildId"));
 			pb.directory(workDir);
 			CommandHelper.performCommand(pb);			
 		}
