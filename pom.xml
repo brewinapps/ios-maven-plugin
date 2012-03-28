@@ -14,9 +14,9 @@
 	
 	<!-- SCM -->
 	<scm>
-		<connection>scm:git:git@github.com:brewinapps/MAVEN.git</connection>
-		<developerConnection>scm:git:git@github.com:brewinapps/MAVEN.git</developerConnection>
-		<url>scm:git:git@github.com:brewinapps/MAVEN.git</url>
+		<connection>scm:git:git@github.com:brewinapps/ios-maven-plugin.git</connection>
+		<developerConnection>scm:git:git@github.com:brewinapps/ios-maven-plugin.git</developerConnection>
+		<url>scm:git:git@github.com:brewinapps/ios-maven-plugin.git</url>
 	</scm>
 	
 	<dependencies>

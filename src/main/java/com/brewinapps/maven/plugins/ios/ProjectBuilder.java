@@ -1,9 +1,7 @@
 package com.brewinapps.maven.plugins.ios;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.Map;
 
 /**
  * 
@@ -13,90 +11,70 @@ public class ProjectBuilder {
 	
 	/**
 	 * 
-	 * @throws AutopilotException
+	 * @throws IOSException
 	 */
-	public static void clean(final File baseDir) throws AutopilotException {
+	public static void clean(final File baseDir) throws IOSException {
 		ProcessBuilder pb = new ProcessBuilder(
 				"xcodebuild",
 				"clean");
-		
-		// Set the project working directory
 		pb.directory(baseDir);
-		
-		performCommand(pb);
+		CommandHelper.performCommand(pb);
 	}
 	
 	/**
 	 * 
-	 * @throws AutopilotException
+	 * @throws IOSException
 	 */
-	public static void build(final File baseDir, final String sourceDir, final String targetDir, final String codeSignIdentity) throws AutopilotException {
+	public static void build(final Map<String, String> properties) throws IOSException {
 		// Make sure the source directory exists
-		File workDir = new File(baseDir.getAbsoluteFile() + "/" + sourceDir);
+		File workDir = new File(properties.get("baseDir") + "/" + properties.get("sourceDir"));
 		if (!workDir.exists()) {
-			throw new AutopilotException("Invalid sourceDir specified: " + workDir.getAbsolutePath());
+			throw new IOSException("Invalid sourceDir specified: " + workDir.getAbsolutePath());
 		}
 		
-		File buildDir = new File(baseDir.getAbsoluteFile() + "/" + targetDir);
+		File targetPath = new File(properties.get("baseDir") + "/" + properties.get("targetDir"));
 		
+		// Run AVGTool to stamp marketing version
 		ProcessBuilder pb = new ProcessBuilder(
-				"xcodebuild",
-				"SYMROOT=" + buildDir.getAbsolutePath(),
-				(codeSignIdentity != null) ? "CODE_SIGN_IDENTITY=" + codeSignIdentity : "",
-				"build");
-		
-		// Set the process' working directory
+				"agvtool",
+				"new-marketing-version",
+				properties.get("version"));
 		pb.directory(workDir);
+		CommandHelper.performCommand(pb);					
 		
-		performCommand(pb);
+		// Run AVGTool to stamp build if a build number is specified
+		if (properties.get("buildNumber") != null) {
+			pb = new ProcessBuilder(
+					"agvtool",
+					"new-version",
+					"-all",
+					properties.get("buildNumber"));
+			pb.directory(workDir);
+			CommandHelper.performCommand(pb);			
+		}
+		
+		// Build the application
+		pb = new ProcessBuilder(
+				"xcodebuild",
+				"-sdk", properties.get("sdk"),
+				"-configuration", properties.get("configuration"),
+				"SYMROOT=" + targetPath.getAbsolutePath(),
+				"CODE_SIGN_IDENTITY=" + properties.get("codeSignIdentity"), 
+				"build");
+		pb.directory(workDir);
+		CommandHelper.performCommand(pb);
+		
+		// Generate IPA
+		pb = new ProcessBuilder(
+				"xcrun",
+				"-sdk", "iphoneos",
+				"PackageApplication",
+				"-v", targetPath + "/" + properties.get("configuration") + "-iphoneos/" + properties.get("appName") + ".app",
+				"-o", targetPath + "/" + properties.get("configuration") + "-iphoneos/" + properties.get("appName") + ".ipa",
+				"--sign", properties.get("codeSignIdentity"));
+		pb.directory(workDir);
+		CommandHelper.performCommand(pb);
 	}
 	
-	/**
-	 * 
-	 * @param cmd
-	 * @throws AutopilotException
-	 */
-	private static void performCommand(final ProcessBuilder pb) throws AutopilotException {
-		pb.redirectErrorStream(true);
-		
-		// Start the build
-		Process p;
-		
-		try {
-			p = pb.start();
-		} catch (IOException e) {
-			throw new AutopilotException(e);
-		}
-		
-		BufferedReader input = new BufferedReader(
-				new InputStreamReader(p.getInputStream()));
-
-		// Retrieve the return code of the build
-		int rc;
-		
-		try {
-			// Display output
-			String outLine = null;
-			while((outLine = input.readLine()) != null) {
-				System.out.println(outLine);
-			}
-			input.close();
-		} catch (IOException e) {
-			throw new AutopilotException("An error occured while reading the " +
-					"input stream");
-		}
-		
-		try {
-			rc = p.waitFor();
-		} catch (InterruptedException e) {
-			throw new AutopilotException(e);
-		}
-		
-		// Check if the return code indicates an error
-		if (rc == 0) {
-			throw new AutopilotException("The XCode build command was " +
-					"unsuccessful");
-		}
-	}
 	
 }

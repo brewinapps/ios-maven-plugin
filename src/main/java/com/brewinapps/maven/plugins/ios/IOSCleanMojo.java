@@ -11,7 +11,7 @@ import org.apache.maven.project.MavenProject;
  * @author Brewin' Apps AS
  * @goal clean
  */
-public class AutopilotCleanMojo extends AbstractMojo {
+public class IOSCleanMojo extends AbstractMojo {
 	
 	/**
 	* The maven project.
@@ -28,7 +28,7 @@ public class AutopilotCleanMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
 			ProjectBuilder.clean(project.getBasedir());
-		} catch (AutopilotException e) {
+		} catch (IOSException e) {
 			throw new MojoExecutionException(e.getMessage());
 		}
 	}
