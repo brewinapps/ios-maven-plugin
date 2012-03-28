@@ -43,7 +43,7 @@ public class ProjectBuilder {
 		CommandHelper.performCommand(pb);					
 		
 		// Run AVGTool to stamp build if a build number is specified
-		if (properties.get("buildNumber") != null) {
+		if (properties.get("buildId") != null) {
 			pb = new ProcessBuilder(
 					"agvtool",
 					"new-version",
