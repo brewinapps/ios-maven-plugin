@@ -34,15 +34,15 @@ public class ProjectBuilder {
 		
 		File targetPath = new File(properties.get("baseDir") + "/" + properties.get("targetDir"));
 		
-		// Run AVGTool to stamp marketing version
+		// Run agvtool to stamp marketing version
 		ProcessBuilder pb = new ProcessBuilder(
 				"agvtool",
 				"new-marketing-version",
 				properties.get("version"));
 		pb.directory(workDir);
-		CommandHelper.performCommand(pb);					
+		CommandHelper.performCommand(pb);			
 		
-		// Run AVGTool to stamp build if a build number is specified
+		// Run agvtool to stamp build if a build id is specified
 		if (properties.get("buildId") != null) {
 			pb = new ProcessBuilder(
 					"agvtool",

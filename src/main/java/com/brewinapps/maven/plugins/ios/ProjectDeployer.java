@@ -60,7 +60,7 @@ public class ProjectDeployer {
 			entity.addPart("ipa", new FileBody(
 					new File(appPath + "/" + properties.get("appName") + ".ipa"), 
 							"application/zip"));
-			entity.addPart("ipa", new FileBody(
+			entity.addPart("dsym", new FileBody(
 					new File(appPath + "/" + properties.get("appName") + ".dSYM.zip"), 
 					"application/zip"));			
 			entity.addPart("notes", 
