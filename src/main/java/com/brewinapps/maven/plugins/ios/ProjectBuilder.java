@@ -1,6 +1,8 @@
 package com.brewinapps.maven.plugins.ios;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,14 +56,20 @@ public class ProjectBuilder {
 		}
 		
 		// Build the application
-		pb = new ProcessBuilder(
-				"xcodebuild",
-				"-sdk", properties.get("sdk"),
-				"-configuration", properties.get("configuration"),
-				"-scheme", (properties.get("scheme") != null ? properties.get("scheme") : properties.get("appName")),
-				"SYMROOT=" + targetPath.getAbsolutePath(),
-				"CODE_SIGN_IDENTITY=" + properties.get("codeSignIdentity"), 
-				"build");
+		List<String> buildParameters = new ArrayList<String>();
+		buildParameters.add("xcodebuild");
+		buildParameters.add("-sdk");
+		buildParameters.add(properties.get("sdk"));
+		buildParameters.add("-configuration");
+		buildParameters.add(properties.get("configuration"));
+		buildParameters.add("SYMROOT=" + targetPath.getAbsolutePath());
+		buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get("codeSignIdentity"));
+		
+		if (properties.get("scheme") != null) {
+			buildParameters.add("-scheme");
+			buildParameters.add(properties.get("scheme"));
+		}
+		pb = new ProcessBuilder(buildParameters);
 		pb.directory(workDir);
 		CommandHelper.performCommand(pb);
 		
