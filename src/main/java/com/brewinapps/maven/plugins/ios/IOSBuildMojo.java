@@ -13,6 +13,7 @@ import org.apache.maven.project.MavenProject;
  * 
  * @author Brewin' Apps AS
  * @goal build
+ * @phase compile
  */
 public class IOSBuildMojo extends AbstractMojo {
 	
@@ -23,14 +24,6 @@ public class IOSBuildMojo extends AbstractMojo {
 	 * 		default-value=""
 	 */
 	private String sourceDir;
-	
-	/**
-	 * iOS Target Directory
-	 * @parameter
-	 * 		expression="${ios.targetDir}"
-	 * 		default-value="target"
-	 */
-	private String targetDir;
 	
 	/**
 	 * iOS app name
@@ -92,6 +85,8 @@ public class IOSBuildMojo extends AbstractMojo {
 	 */
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
+			final String targetDir = project.getBuild().getDirectory();
+			
 			Map<String, String> properties = new HashMap<String, String>();
 			properties.put("appName", appName);
 			properties.put("codeSignIdentity", codeSignIdentity);

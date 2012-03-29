@@ -4,10 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/**
+ * 
+ * @author Brewin' Apps AS
+ */
 public class CommandHelper {
+
 	/**
-	 * 
-	 * @param cmd
+	 * @param pb
 	 * @throws IOSException
 	 */
 	public static void performCommand(final ProcessBuilder pb) throws IOSException {
@@ -19,9 +23,7 @@ public class CommandHelper {
 		}
 		System.out.printf("Executing '%s'\n", joinedCommand.toString());
 		
-		// Start the build
-		Process p;
-		
+		Process p = null;
 		try {
 			p = pb.start();
 		} catch (IOException e) {
@@ -31,9 +33,7 @@ public class CommandHelper {
 		BufferedReader input = new BufferedReader(
 				new InputStreamReader(p.getInputStream()));
 
-		// Retrieve the return code of the build
 		int rc;
-		
 		try {
 			// Display output
 			String outLine = null;
@@ -52,7 +52,6 @@ public class CommandHelper {
 			throw new IOSException(e);
 		}
 		
-		// Check if the return code indicates an error 
 		if (rc != 0) {
 			throw new IOSException("The XC command was " +
 					"unsuccessful");

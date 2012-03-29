@@ -12,19 +12,7 @@ import java.util.Map;
 public class ProjectBuilder {
 	
 	/**
-	 * 
-	 * @throws IOSException
-	 */
-	public static void clean(final File baseDir) throws IOSException {
-		ProcessBuilder pb = new ProcessBuilder(
-				"xcodebuild",
-				"clean");
-		pb.directory(baseDir);
-		CommandHelper.performCommand(pb);
-	}
-	
-	/**
-	 * 
+	 * @param properties
 	 * @throws IOSException
 	 */
 	public static void build(final Map<String, String> properties) throws IOSException {
@@ -34,7 +22,7 @@ public class ProjectBuilder {
 			throw new IOSException("Invalid sourceDir specified: " + workDir.getAbsolutePath());
 		}
 		
-		File targetPath = new File(properties.get("baseDir") + "/" + properties.get("targetDir"));
+		File targetDir = new File(properties.get("targetDir"));
 		
 		// Run agvtool to stamp marketing version
 		ProcessBuilder pb = new ProcessBuilder(
@@ -62,7 +50,7 @@ public class ProjectBuilder {
 		buildParameters.add(properties.get("sdk"));
 		buildParameters.add("-configuration");
 		buildParameters.add(properties.get("configuration"));
-		buildParameters.add("SYMROOT=" + targetPath.getAbsolutePath());
+		buildParameters.add("SYMROOT=" + targetDir.getAbsolutePath());
 		buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get("codeSignIdentity"));
 		
 		if (properties.get("scheme") != null) {
@@ -78,8 +66,8 @@ public class ProjectBuilder {
 				"xcrun",
 				"-sdk", "iphoneos",
 				"PackageApplication",
-				"-v", targetPath + "/" + properties.get("configuration") + "-iphoneos/" + properties.get("appName") + ".app",
-				"-o", targetPath + "/" + properties.get("configuration") + "-iphoneos/" + properties.get("appName") + ".ipa",
+				"-v", targetDir + "/" + properties.get("configuration") + "-iphoneos/" + properties.get("appName") + ".app",
+				"-o", targetDir + "/" + properties.get("configuration") + "-iphoneos/" + properties.get("appName") + ".ipa",
 				"--sign", properties.get("codeSignIdentity"));
 		pb.directory(workDir);
 		CommandHelper.performCommand(pb);

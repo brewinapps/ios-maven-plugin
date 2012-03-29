@@ -25,9 +25,7 @@ import org.apache.http.util.EntityUtils;
 public class ProjectDeployer {
 	
 	/**
-	 * 
-	 * @param apiToken
-	 * @param teamToken
+	 * @param properties
 	 * @throws IOSException
 	 */
 	public static void deploy(final Map<String, String> properties) 
@@ -35,17 +33,16 @@ public class ProjectDeployer {
 		
 		System.out.println("Deploying to HockeyApp...");		
 		try {
-			File workDir = new File(properties.get("baseDir") + "/" + properties.get("sourceDir"));
-			File appPath = new File(properties.get("baseDir") + "/" 
-					+ properties.get("targetDir")
+			File appPath = new File(properties.get("targetDir")
 					+ "/" + properties.get("configuration") + "-iphoneos/");
 
 			// Prepare dSYM
 			ProcessBuilder pb = new ProcessBuilder(
 					"zip",
-					"-r", appPath + "/" + properties.get("appName") + ".dSYM.zip",
-					appPath + "/" + properties.get("appName") + ".app.dSYM");
-			pb.directory(workDir);
+					"-r", 
+					properties.get("appName") + ".dSYM.zip", 
+					properties.get("appName") + ".app.dSYM");
+			pb.directory(appPath);
 			CommandHelper.performCommand(pb);					
 			
 			// Prepare HTTP request
