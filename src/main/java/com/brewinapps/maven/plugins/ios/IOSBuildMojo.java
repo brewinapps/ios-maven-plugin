@@ -41,6 +41,13 @@ public class IOSBuildMojo extends AbstractMojo {
 	private String appName;
 	
 	/**
+	 * iOS scheme
+	 * @parameter
+	 * 		expression="${ios.scheme}"
+	 */
+	private String scheme;		
+	
+	/**
 	 * iOS SDK
 	 * @parameter
 	 * 		expression="${ios.sdk}"
@@ -95,6 +102,7 @@ public class IOSBuildMojo extends AbstractMojo {
 			properties.put("configuration", configuration);
 			properties.put("buildId", buildId);
 			properties.put("version", project.getVersion());
+			properties.put("scheme", scheme);
 			
 			ProjectBuilder.build(properties);
 		} catch (IOSException e) {

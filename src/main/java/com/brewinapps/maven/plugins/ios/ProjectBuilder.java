@@ -58,6 +58,7 @@ public class ProjectBuilder {
 				"xcodebuild",
 				"-sdk", properties.get("sdk"),
 				"-configuration", properties.get("configuration"),
+				"-scheme", (properties.get("scheme") != null ? properties.get("scheme") : properties.get("appName")),
 				"SYMROOT=" + targetPath.getAbsolutePath(),
 				"CODE_SIGN_IDENTITY=" + properties.get("codeSignIdentity"), 
 				"build");
