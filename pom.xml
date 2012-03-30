@@ -1,35 +1,53 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<groupId>com.brewinapps.maven.poms</groupId>
-		<artifactId>java-parent-pom</artifactId>
-		<version>1.5</version>
-	</parent>
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.brewinapps.maven.plugins</groupId>
 	<artifactId>ios-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
 	<version>1.0-SNAPSHOT</version>
+
 	<name>iOS Maven Plugin</name>
-	
-	<!-- SCM -->
+	<url>https://github.com/brewinapps/ios-maven-plugin</url>
+
+	<organization>
+		<name>Brewin' Apps AS</name>
+		<url>http://www.brewinapps.no</url>
+	</organization>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
+		<httpcomponents.version>4.1</httpcomponents.version>
+		<maven.version>2.0</maven.version>
+	</properties>
+
 	<scm>
 		<connection>scm:git:git@github.com:brewinapps/ios-maven-plugin.git</connection>
 		<developerConnection>scm:git:git@github.com:brewinapps/ios-maven-plugin.git</developerConnection>
 		<url>scm:git:git@github.com:brewinapps/ios-maven-plugin.git</url>
 	</scm>
-	
+
+	<distributionManagement>
+		<repository>
+			<id>brewinapps.releaseRepository</id>
+			<url>${brewinapps.releaseRepository}</url>
+		</repository>
+		<snapshotRepository>
+			<id>brewinapps.snapshotRepository</id>
+			<url>${brewinapps.snapshotRepository}</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-plugin-api</artifactId>
-			<version>2.0</version>
+			<version>${maven.version}</version>
 		</dependency>
-	    <dependency>
-	      <groupId>org.apache.maven</groupId>
-	      <artifactId>maven-project</artifactId>
-	      <version>2.0</version>
-	    </dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-project</artifactId>
+			<version>${maven.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -39,21 +57,14 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.1</version>
+			<version>${httpcomponents.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpmime</artifactId>
-			<version>4.1</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>20030203.000129</version>
+			<version>${httpcomponents.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
