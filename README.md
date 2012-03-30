@@ -1,6 +1,6 @@
 # ios-maven-plugin
 
-The ios-maven-plugin plugs in to the Maven build lifecycle to automate compilation, archiving and deployment of iOS applications. This enables continuous integration for the iOS platform with ease.
+The ios-maven-plugin plugs in to the Maven build lifecycle to automate compilation and deployment of iOS applications. This enables continuous integration for the iOS platform with ease.
 
 ## Features
 1. Compilation of iOS applications
