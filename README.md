@@ -1,6 +1,6 @@
 # ios-maven-plugin
 
-Brewin' Apps love to optimize quality and efficiency, and this project is a result of that. The ios-maven-plugin plugs in to the Maven build lifecycle to automate compilation, archiving and deployment of iOS applications. This enables continuous integration for the iOS platform with ease.
+The ios-maven-plugin plugs in to the Maven build lifecycle to automate compilation, archiving and deployment of iOS applications. This enables continuous integration for the iOS platform with ease.
 
 ## Features
 1. Compilation of iOS applications
@@ -32,10 +32,15 @@ Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
 
 **Parameters**
 
-1. ios.hockeyAppToken
-2. ios.releaseNotes
-3. ios.appName
-4. ios.configuration
+1. ios.sourceDir
+2. ios.appName
+3. ios.scheme
+4. ios.sdk
+5. ios.codeSignIdentity
+6. ios.configuration
+8. ios.buildId
+9. ios.hockeyAppToken
+10. ios.releaseNotes
 
 ## Getting started with ios-maven-plugin and Jenkins
 
@@ -79,6 +84,6 @@ To deploy to HockeyApp add `-Dios.hockeyAppToken=YOUR_TOKEN` as an argument and 
 2. To set CFBundleVersion to the svn revision or git commit add `-Dios.buildId=$SVN_REVISION` or `-Dios.buildId=$GIT_COMMIT` respectively.
 
 ## Plans
-1. Set up proper packaging for deploymen to Nexus/Artifactory
+1. Set up proper packaging for deployment to Nexus/Artifactory
 
 *WARNING: This is a work in progress, use with care.*
