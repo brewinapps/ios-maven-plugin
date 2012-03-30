@@ -15,27 +15,23 @@ Brewin' Apps love to optimize quality and efficiency, and this project is a resu
 ## Getting started with ios-maven-plugin and Jenkins
 1. Configure a basic POM for your iOS project or module and add
 
-    <pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>com.brewinapps.maven.plugins</groupId>
-                <artifactId>ios-maven-plugin</artifactId>
-                <version>1.0</version>
-    	        <configuration>
-    							<sourceDir>AppName</sourceDir>
-    	            <appName>AppName</appName>
-    	            <codeSignIdentity>iPhone Developer: Acme Inc</codeSignIdentity>
-    	        </configuration>				
-    			<executions>
-    			    <execution>
-    			        <goals>
-    			            <goal>build</goal>
-    			        </goals>
-    			    </execution>
-    			</executions>
-            </plugin>
-        </plugins>
-    </pluginManagement>
+    <plugin>
+        <groupId>com.brewinapps.maven.plugins</groupId>
+        <artifactId>ios-maven-plugin</artifactId>
+        <version>1.0</version>
+        <configuration>
+            <sourceDir>AppName</sourceDir>
+            <appName>AppName</appName>
+            <codeSignIdentity>iPhone Developer: Acme Inc</codeSignIdentity>
+        </configuration>				
+        <executions>
+            <execution>
+                <goals>
+                    <goal>build</goal>
+                </goals>
+            </execution>
+        </executions>
+
 
 2. Compile to verify by issuing `mvn clean compile`
 
@@ -43,8 +39,9 @@ Brewin' Apps love to optimize quality and efficiency, and this project is a resu
 
 4. To sign the compiled package, jenkins will need access to the keychain on your jenkins node. You can allow this by setting up the following pre-build shell script:
 
-	security list-keychains -s ~/Library/Keychains/jenkins.keychain 
-	security unlock-keychain -p CHANGEME ~/Library/Keychains/jenkins.keychain
+    security list-keychains -s ~/Library/Keychains/jenkins.keychain 
+    security unlock-keychain -p CHANGEME ~/Library/Keychains/jenkins.keychain
+
 
 5. To deploy to HockeyApp add `-Dios.hockeyAppToken=YOUR_TOKEN` as an argument and invoke `mvn ios:deploy`.
 
