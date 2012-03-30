@@ -13,6 +13,7 @@ Brewin' Apps love to optimize quality and efficiency, and this project is a resu
 2. To let ios-maven-plugin take care of versioning, be sure to set 'Versioning System' in the project settings to `apple-generic`
 
 ## Getting started with ios-maven-plugin and Jenkins
+
 **Configure a basic POM for your iOS project or module and add:**
 
     <plugin>
@@ -37,14 +38,12 @@ Brewin' Apps love to optimize quality and efficiency, and this project is a resu
 
     mvn clean compile
 
-**Set up a Maven2/3 build in your Jenkins instance**
-
 **Allow jenkins to access your keychain**
+
 To sign the package, unlock the keychain on the jenkins node. The two commands below can be set up as a pre-build shell script.
 
     security list-keychains -s ~/Library/Keychains/jenkins.keychain
     security unlock-keychain -p CHANGEME ~/Library/Keychains/jenkins.keychain
-
 
 **Deploy to HockeyApp**
 
