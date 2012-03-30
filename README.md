@@ -13,7 +13,7 @@ Brewin' Apps love to optimize quality and efficiency, and this project is a resu
 2. To let ios-maven-plugin take care of versioning, be sure to set 'Versioning System' in the project settings to `apple-generic`
 
 ## Getting started with ios-maven-plugin and Jenkins
-1. Configure a basic POM for your iOS project or module and add
+**Configure a basic POM for your iOS project or module and add:**
 
     <plugin>
         <groupId>com.brewinapps.maven.plugins</groupId>
@@ -23,7 +23,7 @@ Brewin' Apps love to optimize quality and efficiency, and this project is a resu
             <sourceDir>AppName</sourceDir>
             <appName>AppName</appName>
             <codeSignIdentity>iPhone Developer: Acme Inc</codeSignIdentity>
-        </configuration>				
+        </configuration>
         <executions>
             <execution>
                 <goals>
@@ -31,19 +31,24 @@ Brewin' Apps love to optimize quality and efficiency, and this project is a resu
                 </goals>
             </execution>
         </executions>
+    </plugin>
 
+**Compile to verify**
 
-2. Compile to verify by issuing `mvn clean compile`
+    mvn clean compile
 
-3. Set up a Maven2/3 build in your Jenkins instance
+**Set up a Maven2/3 build in your Jenkins instance**
 
-4. To sign the compiled package, jenkins will need access to the keychain on your jenkins node. You can allow this by setting up the following pre-build shell script:
+**Allow jenkins to access your keychain**
+To sign the package, unlock the keychain on the jenkins node. The two commands below can be set up as a pre-build shell script.
 
-    security list-keychains -s ~/Library/Keychains/jenkins.keychain 
+    security list-keychains -s ~/Library/Keychains/jenkins.keychain
     security unlock-keychain -p CHANGEME ~/Library/Keychains/jenkins.keychain
 
 
-5. To deploy to HockeyApp add `-Dios.hockeyAppToken=YOUR_TOKEN` as an argument and invoke `mvn ios:deploy`.
+**Deploy to HockeyApp**
+
+To deploy to HockeyApp add `-Dios.hockeyAppToken=YOUR_TOKEN` as an argument and invoke `mvn ios:deploy`.
 
 ### Tips
 1. ios-maven-plugin sets the CFBundleShortVersionString to the Maven project version by default. You can override this behaviour by adding the `-Dios.version` argument.
@@ -52,5 +57,4 @@ Brewin' Apps love to optimize quality and efficiency, and this project is a resu
 ## Plans
 1. Set up proper packaging for deploymen to Nexus/Artifactory
 
-WARNING: This is a work in progress, use with care.
- 
+*WARNING: This is a work in progress, use with care.*
