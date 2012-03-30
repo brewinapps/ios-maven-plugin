@@ -12,6 +12,31 @@ Brewin' Apps love to optimize quality and efficiency, and this project is a resu
 1. The plugin relies on several tools that are only available on Mac OS X: xcodebuild, xcrun and agvtool.
 2. To let ios-maven-plugin take care of versioning, be sure to set 'Versioning System' in the project settings to `apple-generic`
 
+## Maven Goals
+
+### ios:build
+Compiles the application and generates an IPA package
+
+**Parameters**
+
+1. ios.sourceDir
+2. ios.appName
+3. ios.scheme
+4. ios.sdk
+5. ios.codeSignIdentity
+6. ios.configuration
+7. ios.buildId
+
+### ios:deploy
+Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
+
+**Parameters**
+
+1. ios.hockeyAppToken
+2. ios.releaseNotes
+3. ios.appName
+4. ios.configuration
+
 ## Getting started with ios-maven-plugin and Jenkins
 
 **Configure a basic POM for your iOS project or module and add:**
