@@ -21,7 +21,7 @@ public class CommandHelper {
 		for (String segment : pb.command()) {
 			joinedCommand.append(segment + " ");
 		}
-		System.out.printf("Executing '%s'\n", joinedCommand.toString());
+		System.out.printf("Executing '%s'\n", joinedCommand.toString().trim());
 		
 		Process p = null;
 		try {
