@@ -51,7 +51,6 @@ Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
         <artifactId>ios-maven-plugin</artifactId>
         <version>1.1-SNAPSHOT</version>
         <configuration>
-            <sourceDir>AppName</sourceDir>
             <appName>AppName</appName>
             <codeSignIdentity>iPhone Developer: Acme Inc</codeSignIdentity>
         </configuration>
