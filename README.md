@@ -49,7 +49,7 @@ Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
     <plugin>
         <groupId>com.brewinapps.maven.plugins</groupId>
         <artifactId>ios-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.1-SNAPSHOT</version>
         <configuration>
             <sourceDir>AppName</sourceDir>
             <appName>AppName</appName>
