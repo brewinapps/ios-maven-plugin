@@ -7,6 +7,7 @@ The ios-maven-plugin plugs in to the Maven build lifecycle to automate compilati
 2. Distribution of iOS applications
 3. Versioning of iOS applications
 4. One-step HockeyApp deployment
+5. Packaging of iOS applications (.ipa & .dSYM) for deployment to Nexus/Artifactory
 
 ## Requirements
 1. The plugin relies on several tools that are only available on Mac OS X: xcodebuild, xcrun and agvtool.
@@ -82,8 +83,5 @@ To deploy to HockeyApp add `-Dios.hockeyAppToken=YOUR_TOKEN` as an argument and 
 ### Tips
 1. ios-maven-plugin sets the CFBundleShortVersionString to the Maven project version by default. You can override this behaviour by adding the `-Dios.version` argument.
 2. To set CFBundleVersion to the svn revision or git commit add `-Dios.buildId=$SVN_REVISION` or `-Dios.buildId=$GIT_COMMIT` respectively.
-
-## Plans
-1. Set up proper packaging for deployment to Nexus/Artifactory
 
 *WARNING: This is a work in progress, use with care.*
