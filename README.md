@@ -55,13 +55,6 @@ Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
             <appName>AppName</appName>
             <codeSignIdentity>iPhone Developer: Acme Inc</codeSignIdentity>
         </configuration>
-        <executions>
-            <execution>
-                <goals>
-                    <goal>build</goal>
-                </goals>
-            </execution>
-        </executions>
     </plugin>
 
 **Compile to verify**
