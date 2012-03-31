@@ -33,7 +33,7 @@ public class IOSDeployMojo extends AbstractMojo {
 	private String releaseNotes;
 		
 	/**
-	 * iOS Target Directory
+	 * iOS App name
 	 * @parameter
 	 * 		expression="${ios.appName}"
 	 * @required
