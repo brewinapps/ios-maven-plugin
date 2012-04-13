@@ -1,5 +1,7 @@
 # ios-maven-plugin
 
+[![Build Status](https://secure.travis-ci.org/brewinapps/ios-maven-plugin.png)](http://travis-ci.org/brewinapps/ios-maven-plugin)
+
 The ios-maven-plugin plugs in to the Maven build lifecycle to automate compilation and deployment of iOS applications. This enables continuous integration for the iOS platform with ease.
 
 ## Features
