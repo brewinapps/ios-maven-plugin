@@ -1,4 +1,16 @@
-package com.brewinapps.maven.plugins.ios;
+/**
+ * Maven iOS Plugin
+ * 
+ * User: sbott
+ * Date: 19.07.2012
+ * Time: 19:54:44
+ *
+ * This code is copyright (c) 2012 let's dev.
+ * URL: http://www.letsdev.de
+ * e-Mail: contact@letsdev.de
+ */
+
+package de.letsdev.maven.plugins.ios;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -20,7 +32,7 @@ import org.apache.http.util.EntityUtils;
 
 /**
  * 
- * @author Brewin' Apps AS
+ * @author let's dev
  */
 public class ProjectDeployer {
 	
@@ -31,7 +43,7 @@ public class ProjectDeployer {
 	public static void deploy(final Map<String, String> properties) 
 	throws IOSException {
 		
-		System.out.println("Deploying to HockeyApp...");		
+		System.out.println("Deploying to HockeyApp ...");		
 		try {
 			File appPath = new File(properties.get("targetDir")
 					+ "/" + properties.get("configuration") + "-iphoneos/");

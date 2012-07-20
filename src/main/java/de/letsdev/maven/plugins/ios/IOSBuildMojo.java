@@ -1,4 +1,16 @@
-package com.brewinapps.maven.plugins.ios;
+/**
+ * Maven iOS Plugin
+ * 
+ * User: sbott
+ * Date: 19.07.2012
+ * Time: 19:54:44
+ *
+ * This code is copyright (c) 2012 let's dev.
+ * URL: http://www.letsdev.de
+ * e-Mail: contact@letsdev.de
+ */
+
+package de.letsdev.maven.plugins.ios;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +23,7 @@ import org.apache.maven.project.MavenProject;
 
 /**
  * 
- * @author Brewin' Apps AS
+ * @author let's dev
  * @goal build
  * @phase compile
  */
@@ -70,6 +82,13 @@ public class IOSBuildMojo extends AbstractMojo {
 	 * 		expression="${ios.buildId}"
 	 */
 	private String buildId;	
+	
+	/**
+	 * target
+	 * @parameter
+	 * 		expression="${ios.target}"
+	 */
+	private String target;	
 		
 	/**
 	* The maven project.
@@ -78,28 +97,27 @@ public class IOSBuildMojo extends AbstractMojo {
 	* @required
 	* @readonly
 	*/
-	protected MavenProject project;
+	protected MavenProject mavenProject;
 	
 	/**
 	 * 
 	 */
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
-			final String targetDir = project.getBuild().getDirectory();
+			final String targetDir = mavenProject.getBuild().getDirectory();
 			
 			Map<String, String> properties = new HashMap<String, String>();
 			properties.put("appName", appName);
 			properties.put("codeSignIdentity", codeSignIdentity);
 			properties.put("sdk", sdk);
-			properties.put("baseDir", project.getBasedir().toString());
 			properties.put("sourceDir", sourceDir);
 			properties.put("targetDir", targetDir);
 			properties.put("configuration", configuration);
 			properties.put("buildId", buildId);
-			properties.put("version", project.getVersion());
 			properties.put("scheme", scheme);
+			properties.put("target", target);
 			
-			ProjectBuilder.build(properties);
+			ProjectBuilder.build(properties, mavenProject);
 		} catch (IOSException e) {
 			throw new MojoExecutionException(e.getMessage());
 		}

@@ -9,13 +9,13 @@
 			<configuration>
 				<phases>
 					<compile>
-						com.brewinapps.maven.plugins:ios-maven-plugin:build
+						de.letsdev.maven.plugins:maven-ios-plugin:build
 					</compile>
 					<process-resources>
 						org.apache.maven.plugins:maven-resources-plugin:resources
 					</process-resources>
 					<package>
-						com.brewinapps.maven.plugins:ios-maven-plugin:package
+						de.letsdev.maven.plugins:maven-ios-plugin:package
 					</package>
 					<install>
 						org.apache.maven.plugins:maven-install-plugin:install

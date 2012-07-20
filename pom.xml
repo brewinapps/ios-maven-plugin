@@ -1,16 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.brewinapps.maven.plugins</groupId>
-	<artifactId>ios-maven-plugin</artifactId>
+	<groupId>de.letsdev.maven.plugins</groupId>
+	<artifactId>maven-ios-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
-	<version>1.2-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 
-	<name>iOS Maven Plugin</name>
-	<url>https://github.com/brewinapps/ios-maven-plugin</url>
+	<name>Maven iOS Plugin</name>
+	<url>https://github.com/letsdev/ios-maven-plugin</url>
 
 	<organization>
-		<name>Brewin' Apps AS</name>
-		<url>http://www.brewinapps.no</url>
+		<name>let's dev</name>
+		<url>http://www.letsdev.de</url>
 	</organization>
 
 	<properties>
@@ -20,19 +20,19 @@
 	</properties>
 
 	<scm>
-		<connection>scm:git:git@github.com:brewinapps/ios-maven-plugin.git</connection>
-		<developerConnection>scm:git:git@github.com:brewinapps/ios-maven-plugin.git</developerConnection>
-		<url>scm:git:git@github.com:brewinapps/ios-maven-plugin.git</url>
+		<connection>scm:git:git@github.com:letsdev/maven-ios-plugin.git</connection>
+		<developerConnection>scm:git:git@github.com:letsdev/maven-ios-plugin.git</developerConnection>
+		<url>scm:git:git@github.com:letsdev/maven-ios-plugin.git</url>
 	</scm>
 
 	<distributionManagement>
 		<repository>
-			<id>brewinapps.releaseRepository</id>
-			<url>${brewinapps.releaseRepository}</url>
+			<id>releases</id>
+			<url>${releases.url}</url>
 		</repository>
 		<snapshotRepository>
-			<id>brewinapps.snapshotRepository</id>
-			<url>${brewinapps.snapshotRepository}</url>
+			<id>snapshots</id>
+			<url>${snapshots.url}</url>
 		</snapshotRepository>
 	</distributionManagement>
 

@@ -1,8 +1,8 @@
-# ios-maven-plugin
+# maven-ios-plugin
 
-[![Build Status](https://secure.travis-ci.org/brewinapps/ios-maven-plugin.png)](http://travis-ci.org/brewinapps/ios-maven-plugin)
+#[![Build Status](https://secure.travis-ci.org/brewinapps/ios-maven-plugin.png)](http://travis-ci.org/brewinapps/ios-maven-plugin)
 
-The ios-maven-plugin plugs in to the Maven build lifecycle to automate compilation and deployment of iOS applications. This enables continuous integration for the iOS platform with ease.
+The maven-ios-plugin plugs in to the Maven build lifecycle to automate compilation and deployment of iOS applications. This enables continuous integration for the iOS platform with ease.
 
 ## Features
 1. Compilation of iOS applications
@@ -50,9 +50,9 @@ Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
 **Configure a basic POM for your iOS project or module and add:**
 
     <plugin>
-        <groupId>com.brewinapps.maven.plugins</groupId>
-        <artifactId>ios-maven-plugin</artifactId>
-        <version>1.1-SNAPSHOT</version>
+        <groupId>de.letsdev.maven.plugins</groupId>
+        <artifactId>maven-ios-plugin</artifactId>
+        <version>1.0-SNAPSHOT</version>
         <extensions>true</extensions>                
         <configuration>
             <codeSignIdentity>iPhone Distribution: ACME Inc</codeSignIdentity>

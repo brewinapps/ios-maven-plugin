@@ -1,4 +1,16 @@
-package com.brewinapps.maven.plugins.ios;
+/**
+ * Maven iOS Plugin
+ * 
+ * User: sbott
+ * Date: 19.07.2012
+ * Time: 19:54:44
+ *
+ * This code is copyright (c) 2012 let's dev.
+ * URL: http://www.letsdev.de
+ * e-Mail: contact@letsdev.de
+ */
+
+package de.letsdev.maven.plugins.ios;
 
 import java.io.File;
 
@@ -10,7 +22,7 @@ import org.apache.maven.project.MavenProject;
 
 /**
  * 
- * @author Brewin' Apps AS
+ * @author let's dev
  * @goal package
  * @phase package
  */
@@ -50,14 +62,14 @@ public class IOSPackageMojo extends AbstractMojo {
 			final String appDir = targetDir + "/" + configuration + "-iphoneos/";			
 			final String artifactName = appName + ".zip";
 			
-			ProcessBuilder pb = new ProcessBuilder(
+			ProcessBuilder processBuilder = new ProcessBuilder(
 					"zip",
 					"-r", 
 					artifactName, 
 					appName + ".app.dSYM",
 					appName + ".ipa");
-			pb.directory(new File(appDir));
-			CommandHelper.performCommand(pb);
+			processBuilder.directory(new File(appDir));
+			CommandHelper.performCommand(processBuilder);
 
 			project.getArtifact().setFile(new File(appDir + "/" + artifactName));
 		} catch (IOSException e) {

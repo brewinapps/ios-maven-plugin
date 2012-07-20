@@ -1,37 +1,45 @@
-package com.brewinapps.maven.plugins.ios;
+/**
+ * Maven iOS Plugin
+ * 
+ * User: sbott
+ * Date: 19.07.2012
+ * Time: 19:54:44
+ *
+ * This code is copyright (c) 2012 let's dev.
+ * URL: http://www.letsdev.de
+ * e-Mail: contact@letsdev.de
+ */
+
+package de.letsdev.maven.plugins.ios;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-/**
- * 
- * @author Brewin' Apps AS
- */
 public class CommandHelper {
 
 	/**
-	 * @param pb
+	 * @param processBuilder
 	 * @throws IOSException
 	 */
-	public static void performCommand(final ProcessBuilder pb) throws IOSException {
-		pb.redirectErrorStream(true);
+	public static void performCommand(final ProcessBuilder processBuilder) throws IOSException {
+		processBuilder.redirectErrorStream(true);
 		
 		StringBuilder joinedCommand = new StringBuilder();
-		for (String segment : pb.command()) {
+		for (String segment : processBuilder.command()) {
 			joinedCommand.append(segment + " ");
 		}
 		System.out.printf("Executing '%s'\n", joinedCommand.toString().trim());
 		
-		Process p = null;
+		Process process = null;
 		try {
-			p = pb.start();
+			process = processBuilder.start();
 		} catch (IOException e) {
 			throw new IOSException(e);
 		}
 		
 		BufferedReader input = new BufferedReader(
-				new InputStreamReader(p.getInputStream()));
+				new InputStreamReader(process.getInputStream()));
 
 		int rc;
 		try {
@@ -47,7 +55,7 @@ public class CommandHelper {
 		}
 		
 		try {
-			rc = p.waitFor();
+			rc = process.waitFor();
 		} catch (InterruptedException e) {
 			throw new IOSException(e);
 		}
