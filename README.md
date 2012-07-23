@@ -1,6 +1,6 @@
 # maven-ios-plugin
 
-#[![Build Status](https://secure.travis-ci.org/brewinapps/ios-maven-plugin.png)](http://travis-ci.org/brewinapps/ios-maven-plugin)
+#[![Build Status](https://secure.travis-ci.org/letsdev/maven-ios-plugin.png)](http://travis-ci.org/letsdev/maven-ios-plugin)
 
 The maven-ios-plugin plugs in to the Maven build lifecycle to automate compilation and deployment of iOS applications. This enables continuous integration for the iOS platform with ease.
 
@@ -10,6 +10,7 @@ The maven-ios-plugin plugs in to the Maven build lifecycle to automate compilati
 3. Versioning of iOS applications
 4. One-step HockeyApp deployment
 5. Packaging of iOS applications (.ipa & .dSYM) for deployment to Nexus/Artifactory
+6. Packaging of iOS frameworks for deployment to Nexus/Artifactory
 
 ## Requirements
 1. The plugin relies on several tools that are only available on Mac OS X: xcodebuild, xcrun and agvtool.
@@ -44,6 +45,7 @@ Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
 8. ios.buildId
 9. ios.hockeyAppToken
 10. ios.releaseNotes
+11. ios.target
 
 ## Getting started with ios-maven-plugin and Jenkins
 
@@ -78,5 +80,6 @@ To deploy to HockeyApp add `-Dios.hockeyAppToken=YOUR_TOKEN` as an argument and 
 ### Tips
 1. ios-maven-plugin sets the CFBundleShortVersionString to the Maven project version by default. You can override this behaviour by adding the `-Dios.version` argument.
 2. To set CFBundleVersion to the svn revision or git commit add `-Dios.buildId=$SVN_REVISION` or `-Dios.buildId=$GIT_COMMIT` respectively.
+3. Use target 'framework' to pack iOS-Frameworks.
 
 *WARNING: This is a work in progress, use with care.*
