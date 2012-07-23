@@ -89,17 +89,12 @@ public class ProjectBuilder {
 						.getAbsoluteFile().toString(), infoPlistFile,
 						properties.get("buildId"));
 
-				System.out.println("Command: "
-						+ processBuilder.command().toString());
-
 				processBuilder.directory(workDir);
 				CommandHelper.performCommand(processBuilder);
 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 		}
 
 		// Build the application
@@ -110,17 +105,27 @@ public class ProjectBuilder {
 		buildParameters.add("-configuration");
 		buildParameters.add(properties.get("configuration"));
 		buildParameters.add("SYMROOT=" + targetDir.getAbsolutePath());
-		buildParameters.add("CODE_SIGN_IDENTITY="
-				+ properties.get("codeSignIdentity"));
+		buildParameters.add("CODE_SIGN_IDENTITY="+ properties.get("codeSignIdentity"));
 
 		if (properties.get("scheme") != null) {
 			buildParameters.add("-scheme");
 			buildParameters.add(properties.get("scheme"));
 		}
 
-		if (properties.get("target") != null) {
-			buildParameters.add("-target");
-			buildParameters.add(properties.get("target"));
+		// Add target. Uses target 'framework' to build Frameworks.
+		buildParameters.add("-target");
+		
+		if ((properties.get("target") != null) || (mavenProject.getPackaging().equals("ios-framework"))) {
+								
+			if (mavenProject.getPackaging().equals("ios-framework")) {
+				buildParameters.add("framework");
+			
+			} else {	
+				buildParameters.add(properties.get("target"));
+			}
+			
+		} else {
+			buildParameters.add(mavenProject.getArtifactId());
 		}
 
 		processBuilder = new ProcessBuilder(buildParameters);
@@ -129,20 +134,23 @@ public class ProjectBuilder {
 		
 		
 
-		if (properties.get("target").equals("framework")) {
+		if (mavenProject.getPackaging().equals("ios-framework")) {
 			
-			// Zip Framwork
+			// Zip Frameworks
+			
+			File targetWorkDir = new File(targetDir.toString() + "/" + properties.get("configuration") + "-iphoneos/");
+			
 			processBuilder = new ProcessBuilder(
 					"zip",
 					"-r",
-					mavenProject.getArtifactId() + ".framwork.zip",
-					properties.get("configuration") + "-iphoneos/" + mavenProject.getArtifactId() + ".framwork"				
-					);
-		
-			processBuilder.directory(targetDir);
+					"../" + mavenProject.getArtifactId() + ".framework.zip",
+					mavenProject.getArtifactId() + ".framework"				
+					);					
+			
+			processBuilder.directory(targetWorkDir);
 			CommandHelper.performCommand(processBuilder);
 
-		} else {
+		} else if (mavenProject.getPackaging().equals("ipa")) {
 
 			// Generate IPA
 			processBuilder = new ProcessBuilder(

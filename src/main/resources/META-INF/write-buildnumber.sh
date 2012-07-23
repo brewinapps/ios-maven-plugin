@@ -4,8 +4,6 @@ SCRIPT_LOCATION=$(cd "$(dirname "$0")"; pwd)
 PLIST_LOCATION=$1
 NEW_BUILD_NUMBER=$2
 
-echo "foo"
-
 echo "OLD BUILD NUMBER=$(/usr/libexec/PlistBuddy -c "Print CFBuildNumber" $PLIST_LOCATION)"
 echo "NEW BUILD NUMBER= $NEW_BUILD_NUMBER"
 

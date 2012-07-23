@@ -26,12 +26,78 @@
 				</phases>
 			</configuration>
 		</component>
-		<component>
-			<role>org.apache.maven.artifact.handler.ArtifactHandler</role>
-			<role-hint>ios</role-hint>
-			<implementation>
-				org.apache.maven.artifact.handler.DefaultArtifactHandler
-			</implementation>
-		</component>
+		
+	 	<component>
+	      <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+	      <role-hint>ios-framework</role-hint>
+	      <implementation>
+	        org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping
+	      </implementation>
+	      <configuration>
+	        	<phases>
+					<compile>
+						de.letsdev.maven.plugins:maven-ios-plugin:build
+					</compile>
+					<process-resources>
+						org.apache.maven.plugins:maven-resources-plugin:resources
+					</process-resources>
+					<package>
+						de.letsdev.maven.plugins:maven-ios-plugin:package
+					</package>
+					<install>
+						org.apache.maven.plugins:maven-install-plugin:install
+					</install>
+					<deploy>
+						org.apache.maven.plugins:maven-deploy-plugin:deploy
+					</deploy>
+				</phases>
+	      </configuration>
+	    </component>
+	    <component>
+	      <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+	      <role-hint>ios-framework</role-hint>
+	      <implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler</implementation>
+	      <configuration>
+	        <extension>ios-framework</extension>
+	        <type>ios-framework</type>
+	      </configuration>
+	    </component>	
+	    
+	   	<component>
+	      <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+	      <role-hint>ipa</role-hint>
+	      <implementation>
+	        org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping
+	      </implementation>
+	      <configuration>
+	        	<phases>
+					<compile>
+						de.letsdev.maven.plugins:maven-ios-plugin:build
+					</compile>
+					<process-resources>
+						org.apache.maven.plugins:maven-resources-plugin:resources
+					</process-resources>
+					<package>
+						de.letsdev.maven.plugins:maven-ios-plugin:package
+					</package>
+					<install>
+						org.apache.maven.plugins:maven-install-plugin:install
+					</install>
+					<deploy>
+						org.apache.maven.plugins:maven-deploy-plugin:deploy
+					</deploy>
+				</phases>
+	      </configuration>
+	    </component>
+	    <component>
+	      <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+	      <role-hint>ipa</role-hint>
+	      <implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler</implementation>
+	      <configuration>
+	        <extension>ipa</extension>
+	        <type>ipa</type>
+	      </configuration>
+	    </component>
+		
 	</components>
 </component-set>

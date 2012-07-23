@@ -16,7 +16,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<httpcomponents.version>4.1</httpcomponents.version>
-		<maven.version>2.0</maven.version>
+		<maven.version>2.2.1</maven.version>
 	</properties>
 
 	<scm>
