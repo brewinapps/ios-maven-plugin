@@ -114,4 +114,6 @@ To deploy to HockeyApp add `-Dios.hockeyAppToken=YOUR_TOKEN` as an argument and 
 2. If you use buildId add CFBuildNumber to your Info.plist-file.
 3. To set CFBuildNumber to the svn revision or git commit add `-Dios.buildId=$SVN_REVISION` or `-Dios.buildId=$GIT_COMMIT` respectively.
 
+
+
 *WARNING: This is a work in progress, use with care.*
