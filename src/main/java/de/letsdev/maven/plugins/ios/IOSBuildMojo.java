@@ -33,7 +33,7 @@ public class IOSBuildMojo extends AbstractMojo {
 	 * iOS Source Directory
 	 * @parameter
 	 * 		expression="${ios.sourceDir}"
-	 * 		default-value="."
+	 * 		default-value="src/ios"
 	 */
 	private String sourceDir;
 	

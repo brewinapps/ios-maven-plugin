@@ -9,7 +9,7 @@
 			<configuration>
 				<phases>
 					<compile>
-						de.letsdev.maven.plugins:maven-ios-plugin:build
+					    de.letsdev.maven.plugins:maven-ios-plugin:build
 					</compile>
 					<process-resources>
 						org.apache.maven.plugins:maven-resources-plugin:resources

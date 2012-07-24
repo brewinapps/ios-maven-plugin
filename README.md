@@ -4,6 +4,8 @@
 
 The maven-ios-plugin plugs in to the Maven build lifecycle to automate compilation and deployment of iOS applications. This enables continuous integration for the iOS platform with ease.
 
+This Plugin is based on Brewin' Apps' ios-maven-plugin. Thanks.
+
 ## Features
 1. Compilation of iOS applications
 2. Distribution of iOS applications
@@ -13,8 +15,8 @@ The maven-ios-plugin plugs in to the Maven build lifecycle to automate compilati
 6. Packaging of iOS frameworks for deployment to Nexus/Artifactory
 
 ## Requirements
-1. The plugin relies on several tools that are only available on Mac OS X: xcodebuild, xcrun and agvtool.
-2. To let ios-maven-plugin take care of versioning, be sure to set 'Versioning System' in the project settings to `apple-generic`
+1. The plugin relies on several tools that are only available on Mac OS X: xcodebuild, xcrun and agvtool.  Install the Xcode Command Line Tools (Xcode -> Preferences... -> Downloads).  
+2. To let maven-ios-plugin take care of versioning, be sure to set 'Versioning System' in the project settings to `apple-generic`
 
 ## Maven Goals
 
@@ -23,13 +25,14 @@ Compiles the application and generates an IPA package
 
 **Parameters**
 
-1. ios.sourceDir
-2. ios.appName
+1. ios.sourceDir			(default: src/ios)
+2. ios.appName				(required)
 3. ios.scheme
-4. ios.sdk
-5. ios.codeSignIdentity
-6. ios.configuration
+4. ios.sdk					(default: iphoneos)
+5. ios.codeSignIdentity 	(required)
+6. ios.configuration		(default: Release)
 7. ios.buildId
+8. ios.target
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
@@ -45,9 +48,15 @@ Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
 8. ios.buildId
 9. ios.hockeyAppToken
 10. ios.releaseNotes
-11. ios.target
 
 ## Getting started with ios-maven-plugin and Jenkins
+
+**Use Packaging to build iOS-Framework or IPA**
+
+	<project>
+		<groupId>de.letsdev.ios.app.maven</groupId>
+		<artifactId>maven-ios-project</artifactId>
+		<packaging>ipa</packaging> <!-- <packaging>ios-framework</packaging> -->
 
 **Configure a basic POM for your iOS project or module and add:**
 
@@ -61,6 +70,29 @@ Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
             <appName>AcmeApp</appName>
         </configuration>				                
     </plugin>
+    
+
+    
+    
+**Use the maven-dependency-plugin to unpack dependencies**
+    
+    <plugin>
+	    <groupId>org.apache.maven.plugins</groupId>
+	    <artifactId>maven-dependency-plugin</artifactId>
+	    <version>2.4</version>
+	    <executions>
+	      <execution>
+	        <id>unpack-ios-dependencies</id>
+	        <phase>compile</phase>
+	        <goals>
+	          <goal>unpack-dependencies</goal>
+	        </goals>
+	        <configuration>
+	          <outputDirectory>${project.build.directory}/ios-dependencies</outputDirectory>
+	        </configuration>
+	      </execution>
+	    </executions>
+	 </plugin>
             
 **Compile to verify**
 

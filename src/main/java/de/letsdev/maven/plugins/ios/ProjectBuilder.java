@@ -35,11 +35,11 @@ public class ProjectBuilder {
 	 */
 	public static void build(final Map<String, String> properties,
 			MavenProject mavenProject) throws IOSException {
+
 		// Make sure the source directory exists
-		// File workDir = new File(properties.get("baseDir") + "/" +
-		// properties.get("sourceDir"));
-		File workDir = new File(mavenProject.getBasedir().toString()
-				+ "/src/ios/" + mavenProject.getArtifactId());
+		File workDir = new File(mavenProject.getBasedir().toString() + "/"
+				+ properties.get("sourceDir") + "/"
+				+ mavenProject.getArtifactId());
 
 		if (!workDir.exists()) {
 			throw new IOSException("Invalid sourceDir specified: "
@@ -65,7 +65,6 @@ public class ProjectBuilder {
 			String infoPlistFile = workDir + "/" + mavenProject.getArtifactId()
 					+ "/" + mavenProject.getArtifactId() + "-Info.plist";
 
-			
 			// Run shell-script from resource-folder.
 			try {
 				File tempFile = File.createTempFile("write-buildnumber", "sh");
@@ -105,7 +104,7 @@ public class ProjectBuilder {
 		buildParameters.add("-configuration");
 		buildParameters.add(properties.get("configuration"));
 		buildParameters.add("SYMROOT=" + targetDir.getAbsolutePath());
-		buildParameters.add("CODE_SIGN_IDENTITY="+ properties.get("codeSignIdentity"));
+		buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get("codeSignIdentity"));
 
 		if (properties.get("scheme") != null) {
 			buildParameters.add("-scheme");
@@ -114,16 +113,17 @@ public class ProjectBuilder {
 
 		// Add target. Uses target 'framework' to build Frameworks.
 		buildParameters.add("-target");
-		
-		if ((properties.get("target") != null) || (mavenProject.getPackaging().equals("ios-framework"))) {
-								
+
+		if ((properties.get("target") != null)
+				|| (mavenProject.getPackaging().equals("ios-framework"))) {
+
 			if (mavenProject.getPackaging().equals("ios-framework")) {
 				buildParameters.add("framework");
-			
-			} else {	
+
+			} else {
 				buildParameters.add(properties.get("target"));
 			}
-			
+
 		} else {
 			buildParameters.add(mavenProject.getArtifactId());
 		}
@@ -131,28 +131,23 @@ public class ProjectBuilder {
 		processBuilder = new ProcessBuilder(buildParameters);
 		processBuilder.directory(workDir);
 		CommandHelper.performCommand(processBuilder);
-		
-		
 
+		// Zip Frameworks
 		if (mavenProject.getPackaging().equals("ios-framework")) {
-			
-			// Zip Frameworks
-			
-			File targetWorkDir = new File(targetDir.toString() + "/" + properties.get("configuration") + "-iphoneos/");
-			
-			processBuilder = new ProcessBuilder(
-					"zip",
-					"-r",
-					"../" + mavenProject.getArtifactId() + ".framework.zip",
-					mavenProject.getArtifactId() + ".framework"				
-					);					
-			
+
+			File targetWorkDir = new File(targetDir.toString() + "/"
+					+ properties.get("configuration") + "-iphoneos/");
+
+			processBuilder = new ProcessBuilder("zip", "-r", "../"
+					+ mavenProject.getArtifactId() + ".framework.zip",
+					mavenProject.getArtifactId() + ".framework");
+
 			processBuilder.directory(targetWorkDir);
 			CommandHelper.performCommand(processBuilder);
 
-		} else if (mavenProject.getPackaging().equals("ipa")) {
-
 			// Generate IPA
+		} else {
+
 			processBuilder = new ProcessBuilder(
 					"xcrun",
 					"-sdk",
@@ -165,7 +160,7 @@ public class ProjectBuilder {
 					targetDir + "/" + properties.get("configuration")
 							+ "-iphoneos/" + properties.get("appName") + ".ipa",
 					"--sign", properties.get("codeSignIdentity"));
-		
+
 			processBuilder.directory(workDir);
 			CommandHelper.performCommand(processBuilder);
 		}
