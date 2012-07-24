@@ -111,7 +111,7 @@ To deploy to HockeyApp add `-Dios.hockeyAppToken=YOUR_TOKEN` as an argument and 
 
 ### Tips
 1. ios-maven-plugin sets the CFBundleShortVersionString to the Maven project version by default. You can override this behaviour by adding the `-Dios.version` argument.
-2. To set CFBundleVersion to the svn revision or git commit add `-Dios.buildId=$SVN_REVISION` or `-Dios.buildId=$GIT_COMMIT` respectively.
-3. Use target 'framework' to pack iOS-Frameworks.
+2. If you use buildId add CFBuildNumber to your Info.plist-file.
+3. To set CFBuildNumber to the svn revision or git commit add `-Dios.buildId=$SVN_REVISION` or `-Dios.buildId=$GIT_COMMIT` respectively.
 
 *WARNING: This is a work in progress, use with care.*
