@@ -15,7 +15,7 @@
 	        <version>1.0-SNAPSHOT</version>
 	        <extensions>true</extensions>                
 	        <configuration>
-	            <codeSignIdentity>iPhone Distribution: Madrigal Electromotive GmbH</codeSignIdentity>
+	            <codeSignIdentity>iPhone Distribution: ACME Inc</codeSignIdentity>
 	            <appName>maven-ios-example-project</appName>
 	        </configuration>			                
 	     </plugin>

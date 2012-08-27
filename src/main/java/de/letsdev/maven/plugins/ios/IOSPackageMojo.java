@@ -57,24 +57,10 @@ public class IOSPackageMojo extends AbstractMojo {
 	 * 
 	 */
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		try {
 			final String targetDir = project.getBuild().getDirectory();			
 			final String appDir = targetDir + "/" + configuration + "-iphoneos/";			
-			final String artifactName = appName + ".zip";
+			final String artifactName = appName + ".ipa";			
 			
-			ProcessBuilder processBuilder = new ProcessBuilder(
-					"zip",
-					"-r", 
-					artifactName, 
-					appName + ".app.dSYM",
-					appName + ".ipa");
-			processBuilder.directory(new File(appDir));
-			CommandHelper.performCommand(processBuilder);
-
 			project.getArtifact().setFile(new File(appDir + "/" + artifactName));
-		} catch (IOSException e) {
-			throw new MojoExecutionException(e.getMessage());
-		}
 	}
-
 }
