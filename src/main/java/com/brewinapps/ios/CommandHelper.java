@@ -1,4 +1,4 @@
-package com.brewinapps.maven.plugins.ios;
+package com.brewinapps.ios;
 
 import java.io.BufferedReader;
 import java.io.IOException;
