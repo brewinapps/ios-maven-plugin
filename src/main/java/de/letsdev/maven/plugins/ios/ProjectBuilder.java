@@ -89,11 +89,11 @@ public class ProjectBuilder {
         List<String> buildParameters = new ArrayList<String>();
         buildParameters.add("xcodebuild");
         buildParameters.add("-sdk");
-        buildParameters.add(properties.get("sdk"));
+        buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString()));
         buildParameters.add("-configuration");
-        buildParameters.add(properties.get("configuration"));
+        buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()));
         buildParameters.add("SYMROOT=" + targetDir.getAbsolutePath());
-        buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get("codeSignIdentity"));
+        buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()));
 
         if (properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString()) != null) {
             buildParameters.add("-scheme");
