@@ -16,17 +16,20 @@ public class Utils {
 
     public enum PLUGIN_PROPERTIES {
 
+        APP_DIR("appDir"),
         APPNAME("appName"),
+        BUILD_ID("buildId"),
         CODE_SIGN_IDENTITY("codeSignIdentity"),
+        CONFIGURATION("configuration"),
+        HOCKEY_APP_TOKEN("hockeyAppToken"),
+        KEYCHAIN_PASSWORD("keychainPassword"),
+        KEYCHAIN_PATH("keychainPath"),
+        RELEASE_NOTES("releaseNotes"),
+        SCHEME("scheme"),
         SDK("sdk"),
         SOURCE_DIR("sourceDir"),
-        TARGET_DIR("targetDir"),
-        CONFIGURATION("configuration"),
-        BUILD_ID("buildId"),
-        SCHEME("scheme"),
         TARGET("target"),
-        KEYCHAIN_PATH("keychainPath"),
-        KEYCHAIN_PASSWORD("keychainPassword");
+        TARGET_DIR("targetDir");
 
         private PLUGIN_PROPERTIES(String name) {
             this.name = name;

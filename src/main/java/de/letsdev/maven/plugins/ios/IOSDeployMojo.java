@@ -12,13 +12,13 @@
 
 package de.letsdev.maven.plugins.ios;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -79,11 +79,11 @@ public class IOSDeployMojo extends AbstractMojo {
 					"/" + targetDir + "/" + configuration + "-iphoneos/";			
 			
 			Map<String, String> properties = new HashMap<String, String>();
-			properties.put("appName", appName);
-			properties.put("hockeyAppToken", hockeyAppToken);
-			properties.put("releaseNotes", releaseNotes);
-			properties.put("appDir", appDir);
-			properties.put("configuration", configuration);
+			properties.put(Utils.PLUGIN_PROPERTIES.APPNAME.toString(), appName);
+			properties.put(Utils.PLUGIN_PROPERTIES.HOCKEY_APP_TOKEN.toString(), hockeyAppToken);
+			properties.put(Utils.PLUGIN_PROPERTIES.RELEASE_NOTES.toString(), releaseNotes);
+			properties.put(Utils.PLUGIN_PROPERTIES.APP_DIR.toString(), appDir);
+			properties.put(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString(), configuration);
 			
 			ProjectDeployer.deploy(properties);
 		} catch (IOSException e) {
