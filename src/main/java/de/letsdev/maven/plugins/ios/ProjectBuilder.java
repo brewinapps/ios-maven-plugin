@@ -106,6 +106,10 @@ public class ProjectBuilder {
 		buildParameters.add("SYMROOT=" + targetDir.getAbsolutePath());
 		buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get("codeSignIdentity"));
 
+        if(properties.containsKey("keychainPath")) {
+            buildParameters.add("OTHER_CODE_SIGN_FLAGS=\"--keychain " + properties.get("keychainPath") +"\"");
+        }
+
 		if (properties.get("scheme") != null) {
 			buildParameters.add("-scheme");
 			buildParameters.add(properties.get("scheme"));

@@ -67,6 +67,14 @@ public class IOSBuildMojo extends AbstractMojo {
 	 * @required
 	 */
 	private String codeSignIdentity;
+
+    /**
+     * Path to keychain to sign with
+     * @parameter
+     * 		expression="${ios.keychainPath}"
+     * @required
+     */
+    private String keychainPath;
 	
 	/**
 	 * iOS configuration
@@ -116,6 +124,7 @@ public class IOSBuildMojo extends AbstractMojo {
 			properties.put("buildId", buildId);
 			properties.put("scheme", scheme);
 			properties.put("target", target);
+            properties.put("keychainPath", keychainPath);
 			
 			ProjectBuilder.build(properties, mavenProject);
 		} catch (IOSException e) {
