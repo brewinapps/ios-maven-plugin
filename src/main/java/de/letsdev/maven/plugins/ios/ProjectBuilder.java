@@ -103,12 +103,8 @@ public class ProjectBuilder {
 		buildParameters.add(properties.get("sdk"));
 		buildParameters.add("-configuration");
 		buildParameters.add(properties.get("configuration"));
-		buildParameters.add("SYMROOT=" + targetDir.getAbsolutePath());
-		buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get("codeSignIdentity"));
-
-        if(properties.containsKey("keychainPath")) {
-            buildParameters.add("OTHER_CODE_SIGN_FLAGS=\"--keychain " + properties.get("keychainPath") +"\"");
-        }
+		buildParameters.add("SYMROOT=\"" + targetDir.getAbsolutePath() + "\"");
+		buildParameters.add("CODE_SIGN_IDENTITY=\"" + properties.get("codeSignIdentity") + "\"");
 
 		if (properties.get("scheme") != null) {
 			buildParameters.add("-scheme");
@@ -118,8 +114,7 @@ public class ProjectBuilder {
 		// Add target. Uses target 'framework' to build Frameworks.
 		buildParameters.add("-target");
 
-		if ((properties.get("target") != null)
-				|| (mavenProject.getPackaging().equals("ios-framework"))) {
+		if (properties.containsKey("target") || (mavenProject.getPackaging().equals("ios-framework"))) {
 
 			if (mavenProject.getPackaging().equals("ios-framework")) {
 				buildParameters.add("framework");
@@ -131,6 +126,10 @@ public class ProjectBuilder {
 		} else {
 			buildParameters.add(mavenProject.getArtifactId());
 		}
+
+        if(properties.containsKey("keychainPath")) {
+            buildParameters.add("OTHER_CODE_SIGN_FLAGS=\"--keychain " + properties.get("keychainPath") +"\"");
+        }
 
 		processBuilder = new ProcessBuilder(buildParameters);
 		processBuilder.directory(workDir);
