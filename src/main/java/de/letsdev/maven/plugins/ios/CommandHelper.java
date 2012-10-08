@@ -12,9 +12,10 @@
 
 package de.letsdev.maven.plugins.ios;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.StringTokenizer;
-import org.apache.commons.io.IOUtils;
 
 public class CommandHelper {
 
@@ -31,28 +32,28 @@ public class CommandHelper {
 		}
 		System.out.printf("Executing '%s'\n", joinedCommand.toString().trim());
 
-        Process p = null;
-        try {
-            p = processBuilder.start();
-        } catch (IOException e) {
-            throw new IOSException("An error occured, error=" +e.getMessage());
-        }
-        try {
-            System.out.println(IOUtils.toString(p.getInputStream()));
-        } catch (IOException e) {
-            throw new IOSException("An error occured, error=" +e.getMessage());
-        }
-        p.destroy();
+//        Process p = null;
+//        try {
+//            p = processBuilder.start();
+//        } catch (IOException e) {
+//            throw new IOSException("An error occured, error=" +e.getMessage());
+//        }
+//        try {
+//            System.out.println(IOUtils.toString(p.getInputStream()));
+//        } catch (IOException e) {
+//            throw new IOSException("An error occured, error=" +e.getMessage());
+//        }
+//        p.destroy();
 
 
 		
-		/*Process process = null;
+		Process process = null;
 		try {
 			process = processBuilder.start();
 		} catch (IOException e) {
 			throw new IOSException(e);
 		}
-		
+
 		BufferedReader input = new BufferedReader(
 				new InputStreamReader(process.getInputStream()));
 
@@ -68,17 +69,17 @@ public class CommandHelper {
 			throw new IOSException("An error occured while reading the " +
 					"input stream");
 		}
-		
+
 		try {
 			rc = process.waitFor();
 		} catch (InterruptedException e) {
 			throw new IOSException(e);
 		}
-		
+
 		if (rc != 0) {
 			throw new IOSException("The XC command was " +
 					"unsuccessful");
-		}*/
+		}
 	}
 
     public static String[] getCommand(String input) {
