@@ -30,8 +30,16 @@ public class CommandHelper {
 			joinedCommand.append(segment + " ");
 		}
 		System.out.printf("Executing '%s'\n", joinedCommand.toString().trim());
+
+
+        try {
+            Runtime.getRuntime().exec(joinedCommand.toString());
+        } catch (IOException e) {
+            throw new IOSException("The XC command was " +
+                    "unsuccessful, exception=" + e.getLocalizedMessage());
+        }
 		
-		Process process = null;
+		/*Process process = null;
 		try {
 			process = processBuilder.start();
 		} catch (IOException e) {
@@ -63,7 +71,7 @@ public class CommandHelper {
 		if (rc != 0) {
 			throw new IOSException("The XC command was " +
 					"unsuccessful");
-		}
+		}*/
 	}
 
 }
