@@ -12,14 +12,13 @@
 
 package de.letsdev.maven.plugins.ios;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 
@@ -123,17 +122,17 @@ public class IOSBuildMojo extends AbstractMojo {
 			final String targetDir = mavenProject.getBuild().getDirectory();
 			
 			Map<String, String> properties = new HashMap<String, String>();
-			properties.put("appName", appName);
-			properties.put("codeSignIdentity", codeSignIdentity);
-			properties.put("sdk", sdk);
-			properties.put("sourceDir", sourceDir);
-			properties.put("targetDir", targetDir);
-			properties.put("configuration", configuration);
-			properties.put("buildId", buildId);
-			properties.put("scheme", scheme);
-			properties.put("target", target);
-            properties.put("keychainPath", keychainPath);
-            properties.put("keychainPassword", keychainPassword);
+			properties.put(Utils.PLUGIN_PROPERTIES.APPNAME.toString(), appName);
+			properties.put(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString(), codeSignIdentity);
+			properties.put(Utils.PLUGIN_PROPERTIES.SDK.toString(), sdk);
+			properties.put(Utils.PLUGIN_PROPERTIES.SOURCE_DIR.toString(), sourceDir);
+			properties.put(Utils.PLUGIN_PROPERTIES.TARGET_DIR.toString(), targetDir);
+			properties.put(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString(), configuration);
+			properties.put(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString(), buildId);
+			properties.put(Utils.PLUGIN_PROPERTIES.SCHEME.toString(), scheme);
+			properties.put(Utils.PLUGIN_PROPERTIES.TARGET.toString(), target);
+            properties.put(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString(), keychainPath);
+            properties.put(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString(), keychainPassword);
 			
 			ProjectBuilder.build(properties, mavenProject);
 		} catch (IOSException e) {

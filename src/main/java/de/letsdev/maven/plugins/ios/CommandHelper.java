@@ -1,6 +1,6 @@
 /**
  * Maven iOS Plugin
- * 
+ *
  * User: sbott
  * Date: 19.07.2012
  * Time: 19:54:44
@@ -19,68 +19,50 @@ import java.util.StringTokenizer;
 
 public class CommandHelper {
 
-	/**
-	 * @param processBuilder
-	 * @throws IOSException
-	 */
-	public static void performCommand(final ProcessBuilder processBuilder) throws IOSException {
-		processBuilder.redirectErrorStream(true);
-		
-		StringBuilder joinedCommand = new StringBuilder();
-		for (String segment : processBuilder.command()) {
-			joinedCommand.append(segment + " ");
-		}
-		System.out.printf("Executing '%s'\n", joinedCommand.toString().trim());
+    /**
+     * @param processBuilder
+     * @throws IOSException
+     */
+    public static void performCommand(final ProcessBuilder processBuilder) throws IOSException {
+        processBuilder.redirectErrorStream(true);
 
-//        Process p = null;
-//        try {
-//            p = processBuilder.start();
-//        } catch (IOException e) {
-//            throw new IOSException("An error occured, error=" +e.getMessage());
-//        }
-//        try {
-//            System.out.println(IOUtils.toString(p.getInputStream()));
-//        } catch (IOException e) {
-//            throw new IOSException("An error occured, error=" +e.getMessage());
-//        }
-//        p.destroy();
+        StringBuilder joinedCommand = new StringBuilder();
+        for (String segment : processBuilder.command()) {
+            joinedCommand.append(segment).append(" ");
+        }
+        System.out.printf("Executing '%s'\n", joinedCommand.toString().trim());
 
+        Process process;
+        try {
+            process = processBuilder.start();
+        } catch (IOException e) {
+            throw new IOSException(e);
+        }
 
-		
-		Process process = null;
-		try {
-			process = processBuilder.start();
-		} catch (IOException e) {
-			throw new IOSException(e);
-		}
+        BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-		BufferedReader input = new BufferedReader(
-				new InputStreamReader(process.getInputStream()));
+        int rc;
+        try {
+            // Display output
+            String outLine;
+            while ((outLine = input.readLine()) != null) {
+                System.out.println(outLine);
+            }
+            input.close();
+        } catch (IOException e) {
+            throw new IOSException("An error occured while reading the input stream");
+        }
 
-		int rc;
-		try {
-			// Display output
-			String outLine = null;
-			while((outLine = input.readLine()) != null) {
-				System.out.println(outLine);
-			}
-			input.close();
-		} catch (IOException e) {
-			throw new IOSException("An error occured while reading the " +
-					"input stream");
-		}
+        try {
+            rc = process.waitFor();
+        } catch (InterruptedException e) {
+            throw new IOSException(e);
+        }
 
-		try {
-			rc = process.waitFor();
-		} catch (InterruptedException e) {
-			throw new IOSException(e);
-		}
-
-		if (rc != 0) {
-			throw new IOSException("The XC command was " +
-					"unsuccessful");
-		}
-	}
+        if (rc != 0) {
+            throw new IOSException("The XC command was unsuccessful");
+        }
+    }
 
     public static String[] getCommand(String input) {
         StringTokenizer tokenizer = new StringTokenizer(input);

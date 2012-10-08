@@ -16,7 +16,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<httpcomponents.version>4.1.2</httpcomponents.version>
-		<maven.version>3.0.3</maven.version>
+		<maven.version>2.2.1</maven.version>
+        <commons.io.version>2.1</commons.io.version>
+        <junit.version>3.8.1</junit.version>
 	</properties>
 
 	<scm>
@@ -30,35 +32,19 @@
             <id>snapshots</id>
             <name>Snapshots</name>
             <url>${snapshots.url}</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
         </snapshotRepository>
         <repository>
             <id>releases</id>
             <name>Releases</name>
             <url>${releases.url}</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
         </repository>
     </distributionManagement>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-plugin-api</artifactId>
-			<version>${maven.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-project</artifactId>
-			<version>2.2.1</version>
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -78,9 +64,19 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.2</version>
+            <version>${commons.io.version}</version>
         </dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>${maven.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-project</artifactId>
+            <version>${maven.version}</version>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<resources>

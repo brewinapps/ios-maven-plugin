@@ -13,7 +13,6 @@
 package de.letsdev.maven.plugins.ios;
 
 import org.apache.maven.project.MavenProject;
-import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -30,8 +29,7 @@ public class ProjectBuilder {
 	 * @param properties
 	 * @throws IOSException
 	 */
-	public static void build(final Map<String, String> properties,
-			MavenProject mavenProject) throws IOSException {
+	public static void build(final Map<String, String> properties, MavenProject mavenProject) throws IOSException {
 
 		// Make sure the source directory exists
 		File workDir = new File(mavenProject.getBasedir().toString() + "/"
