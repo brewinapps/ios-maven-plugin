@@ -12,16 +12,13 @@
 
 package de.letsdev.maven.plugins.ios;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import org.apache.maven.project.MavenProject;
+import org.apache.commons.io.IOUtils;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.maven.project.MavenProject;
 
 /**
  * 
@@ -136,6 +133,20 @@ public class ProjectBuilder {
             String command = "security unlock-keychain -p \'" + properties.get("keychainPassword") + "\' " + properties.get("keychainPath");
             processBuilder = new ProcessBuilder(CommandHelper.getCommand(command));
             CommandHelper.performCommand(processBuilder);
+
+            Process p = null;
+            try {
+                p = Runtime.getRuntime().exec(command);
+                System.out.println("NEW" + IOUtils.toString(p.getInputStream()));
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            finally {
+                if(p != null) {
+                    p.destroy();
+                }
+            }
+
         }
 
 		processBuilder = new ProcessBuilder(buildParameters);
