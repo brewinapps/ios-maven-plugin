@@ -131,6 +131,14 @@ public class ProjectBuilder {
             buildParameters.add("OTHER_CODE_SIGN_FLAGS=\"--keychain " + properties.get("keychainPath") +"\"");
         }
 
+        //unlock keychain
+        if(properties.containsKey("keychainPath") && properties.containsKey("keychainPassword")) {
+            String command = "security unlock-keychain -p \"" + properties.containsKey("keychainPassword") + "\" " + properties.containsKey("keychainPath");
+            processBuilder = new ProcessBuilder(CommandHelper.getCommand(command));
+            processBuilder.directory(workDir);
+            CommandHelper.performCommand(processBuilder);
+        }
+
 		processBuilder = new ProcessBuilder(buildParameters);
 		processBuilder.directory(workDir);
 		CommandHelper.performCommand(processBuilder);
@@ -167,5 +175,13 @@ public class ProjectBuilder {
 			processBuilder.directory(workDir);
 			CommandHelper.performCommand(processBuilder);
 		}
+
+        //lock keychain
+        if(properties.containsKey("keychainPath") && properties.containsKey("keychainPassword")) {
+            String command = "security lock-keychain " + properties.containsKey("keychainPath");
+            processBuilder = new ProcessBuilder(CommandHelper.getCommand(command));
+            processBuilder.directory(workDir);
+            CommandHelper.performCommand(processBuilder);
+        }
 	}
 }

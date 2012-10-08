@@ -104,7 +104,7 @@ public class CommandHelper {
 		}*/
 	}
 
-    private static String[] getCommand(String input) {
+    public static String[] getCommand(String input) {
         StringTokenizer tokenizer = new StringTokenizer(input);
         String[] result = new String[tokenizer.countTokens()];
         for (int i = 0; tokenizer.hasMoreTokens(); i++) {

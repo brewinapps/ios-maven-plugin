@@ -75,6 +75,14 @@ public class IOSBuildMojo extends AbstractMojo {
      * @required
      */
     private String keychainPath;
+
+    /**
+     * Password to unlock keychain to sign with
+     * @parameter
+     * 		expression="${ios.keychainPassword}"
+     * @required
+     */
+    private String keychainPassword;
 	
 	/**
 	 * iOS configuration
@@ -125,6 +133,7 @@ public class IOSBuildMojo extends AbstractMojo {
 			properties.put("scheme", scheme);
 			properties.put("target", target);
             properties.put("keychainPath", keychainPath);
+            properties.put("keychainPassword", keychainPassword);
 			
 			ProjectBuilder.build(properties, mavenProject);
 		} catch (IOSException e) {
