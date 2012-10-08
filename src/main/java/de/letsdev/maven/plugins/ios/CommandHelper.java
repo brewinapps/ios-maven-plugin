@@ -43,12 +43,12 @@ public class CommandHelper {
         try {
             p = new ProcessBuilder(getCommand(joinedCommand.toString())).start();
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new IOSException("An error occured, error=" +e.getMessage());
         }
         try {
             System.out.println(IOUtils.toString(p.getInputStream()));
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new IOSException("An error occured, error=" +e.getMessage());
         }
         p.destroy();
 
