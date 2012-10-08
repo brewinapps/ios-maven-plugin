@@ -44,10 +44,27 @@ public class Utils {
 
     public enum PLUGIN_SUFFIX {
 
+        APP("app"),
         IPA("ipa"),
         FRAMEWORK("framework");
 
         private PLUGIN_SUFFIX(String name) {
+            this.name = name;
+        }
+
+        private final String name;
+
+        public String toString() {
+            return name;
+        }
+    }
+
+    public enum PLUGIN_PACKAGING {
+
+        IPA("ipa"),
+        IOS_FRAMEWORK("ios-framework");
+
+        private PLUGIN_PACKAGING(String name) {
             this.name = name;
         }
 
