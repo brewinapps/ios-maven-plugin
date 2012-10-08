@@ -140,7 +140,6 @@ public class ProjectBuilder {
                     properties.get("keychainPath")
             );
 
-            processBuilder = new ProcessBuilder(processBuilder);
             processBuilder.directory(workDir);
             CommandHelper.performCommand(processBuilder);
         }
