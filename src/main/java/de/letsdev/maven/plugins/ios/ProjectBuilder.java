@@ -103,9 +103,9 @@ public class ProjectBuilder {
 		buildParameters.add(properties.get("sdk"));
 		buildParameters.add("-configuration");
 		buildParameters.add(properties.get("configuration"));
-		buildParameters.add("SYMROOT");
+		buildParameters.add("SYMROOT=");
         buildParameters.add(targetDir.getAbsolutePath());
-		buildParameters.add("CODE_SIGN_IDENTITY");
+		buildParameters.add("CODE_SIGN_IDENTITY=");
         buildParameters.add(properties.get("codeSignIdentity"));
 
 		if (properties.get("scheme") != null) {
