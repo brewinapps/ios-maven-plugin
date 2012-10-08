@@ -131,21 +131,21 @@ public class ProjectBuilder {
         //unlock keychain
         if(properties.containsKey("keychainPath") && properties.containsKey("keychainPassword")) {
             String command = "security unlock-keychain -p \'" + properties.get("keychainPassword") + "\' " + properties.get("keychainPath");
-//            processBuilder = new ProcessBuilder(CommandHelper.getCommand(command));
-//            CommandHelper.performCommand(processBuilder);
+            processBuilder = new ProcessBuilder(CommandHelper.getCommand(command));
+            CommandHelper.performCommand(processBuilder);
 
-            Process p = null;
-            try {
-                p = Runtime.getRuntime().exec(command);
-                System.out.println("NEW" + IOUtils.toString(p.getInputStream()));
-            } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-            finally {
-                if(p != null) {
-                    p.destroy();
-                }
-            }
+//            Process p = null;
+//            try {
+//                p = Runtime.getRuntime().exec(command);
+//                System.out.println("NEW" + IOUtils.toString(p.getInputStream()));
+//            } catch (IOException e) {
+//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//            }
+//            finally {
+//                if(p != null) {
+//                    p.destroy();
+//                }
+//            }
 
         }
 
