@@ -54,8 +54,6 @@ public class CommandHelper {
         p.destroy();
 
 
-
-        Process p = null;
         try {
             p = processBuilder.start();
         } catch (IOException e) {
