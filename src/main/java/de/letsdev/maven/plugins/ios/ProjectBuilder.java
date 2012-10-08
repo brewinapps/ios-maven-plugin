@@ -134,9 +134,9 @@ public class ProjectBuilder {
         //unlock keychain
         if(properties.containsKey("keychainPath") && properties.containsKey("keychainPassword")) {
             processBuilder = new ProcessBuilder(
-                    "security unlock-keychain",
+                    "/usr/bin/security unlock-keychain",
                     "-p",
-                    properties.get("keychainPassword"),
+                    "\'" + properties.get("keychainPassword") + "\'",
                     properties.get("keychainPath")
             );
 
