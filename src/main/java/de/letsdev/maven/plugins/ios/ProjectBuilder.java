@@ -125,7 +125,7 @@ public class ProjectBuilder {
 		}
 
         if(properties.containsKey("keychainPath")) {
-            buildParameters.add("OTHER_CODE_SIGN_FLAGS='--keychain " + properties.get("keychainPath") +"'");
+            buildParameters.add("OTHER_CODE_SIGN_FLAGS=\'--keychain " + properties.get("keychainPath") +"\'");
         }
 
         //unlock keychain
