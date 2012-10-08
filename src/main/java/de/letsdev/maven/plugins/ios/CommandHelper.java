@@ -12,9 +12,9 @@
 
 package de.letsdev.maven.plugins.ios;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+import org.apache.commons.io.IOUtils;
 
 public class CommandHelper {
 
@@ -32,12 +32,28 @@ public class CommandHelper {
 		System.out.printf("Executing '%s'\n", joinedCommand.toString().trim());
 
 
+//        try {
+//            Runtime.getRuntime().exec(joinedCommand.toString());
+//        } catch (IOException e) {
+//            throw new IOSException("The XC command was " +
+//                    "unsuccessful, exception=" + e.getLocalizedMessage());
+//        }
+
+        Process p = null;
         try {
-            Runtime.getRuntime().exec(joinedCommand.toString());
+            p = new ProcessBuilder(getCommand(joinedCommand.toString())).start();
         } catch (IOException e) {
-            throw new IOSException("The XC command was " +
-                    "unsuccessful, exception=" + e.getLocalizedMessage());
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+        try {
+            System.out.println(IOUtils.toString(p.getInputStream()));
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        p.destroy();
+
+
+
 		
 		/*Process process = null;
 		try {
@@ -73,5 +89,14 @@ public class CommandHelper {
 					"unsuccessful");
 		}*/
 	}
+
+    private static String[] getCommand(String input) {
+        StringTokenizer tokenizer = new StringTokenizer(input);
+        String[] result = new String[tokenizer.countTokens()];
+        for (int i = 0; tokenizer.hasMoreTokens(); i++) {
+            result[i] = tokenizer.nextToken();
+        }
+        return result;
+    }
 
 }
