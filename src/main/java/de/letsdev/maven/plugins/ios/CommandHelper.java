@@ -41,7 +41,7 @@ public class CommandHelper {
 
         Process p = null;
         try {
-            p = new ProcessBuilder(getCommand(joinedCommand.toString())).start();
+            p = processBuilder.start();
         } catch (IOException e) {
             throw new IOSException("An error occured, error=" +e.getMessage());
         }
