@@ -130,8 +130,15 @@ public class ProjectBuilder {
 
         //unlock keychain
         if(properties.containsKey("keychainPath") && properties.containsKey("keychainPassword")) {
-            String command = "security unlock-keychain -p \'" + properties.get("keychainPassword") + "\' " + properties.get("keychainPath");
-            processBuilder = new ProcessBuilder(CommandHelper.getCommand(command));
+            List<String> keychainParameters = new ArrayList<String>();
+            keychainParameters.add("security");
+            keychainParameters.add("unlock-keychain");
+            keychainParameters.add("-p");
+            keychainParameters.add(properties.get("keychainPassword"));
+            keychainParameters.add(properties.get("keychainPath"));
+
+//            String command = "security unlock-keychain -p \'" + properties.get("keychainPassword") + "\' " + properties.get("keychainPath");
+            processBuilder = new ProcessBuilder(keychainParameters);
             CommandHelper.performCommand(processBuilder);
 
 //            Process p = null;
