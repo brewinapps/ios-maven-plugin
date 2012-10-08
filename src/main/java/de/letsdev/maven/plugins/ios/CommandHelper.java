@@ -39,6 +39,22 @@ public class CommandHelper {
 //                    "unsuccessful, exception=" + e.getLocalizedMessage());
 //        }
 
+        String command = "security list-keychain";
+        Process p = null;
+        try {
+            p = new ProcessBuilder(getCommand(command)).start();
+        } catch (IOException e) {
+            throw new IOSException("An error occured, error=" +e.getMessage());
+        }
+        try {
+            System.out.println(IOUtils.toString(p.getInputStream()));
+        } catch (IOException e) {
+            throw new IOSException("An error occured, error=" +e.getMessage());
+        }
+        p.destroy();
+
+
+
         Process p = null;
         try {
             p = processBuilder.start();
