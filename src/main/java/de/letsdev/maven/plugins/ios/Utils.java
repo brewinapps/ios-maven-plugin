@@ -41,4 +41,20 @@ public class Utils {
             return name;
         }
     }
+
+    public enum PLUGIN_SUFFIX {
+
+        IPA("ipa"),
+        FRAMEWORK("framework");
+
+        private PLUGIN_SUFFIX(String name) {
+            this.name = name;
+        }
+
+        private final String name;
+
+        public String toString() {
+            return name;
+        }
+    }
 }

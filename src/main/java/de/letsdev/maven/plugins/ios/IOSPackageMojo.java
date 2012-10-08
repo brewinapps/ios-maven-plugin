@@ -12,12 +12,12 @@
 
 package de.letsdev.maven.plugins.ios;
 
-import java.io.File;
-
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
+
+import java.io.File;
 
 
 /**
@@ -59,7 +59,7 @@ public class IOSPackageMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 			final String targetDir = project.getBuild().getDirectory();			
 			final String appDir = targetDir + "/" + configuration + "-iphoneos/";			
-			final String artifactName = appName + ".ipa";			
+			final String artifactName = appName + "." + Utils.PLUGIN_SUFFIX.IPA;
 			
 			project.getArtifact().setFile(new File(appDir + "/" + artifactName));
 	}
