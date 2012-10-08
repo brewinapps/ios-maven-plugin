@@ -133,14 +133,17 @@ public class ProjectBuilder {
 
         //unlock keychain
         if(properties.containsKey("keychainPath") && properties.containsKey("keychainPassword")) {
+//            processBuilder = new ProcessBuilder(
+//                    "/usr/bin/security unlock-keychain",
+//                    "-p",
+//                    "\'" + properties.get("keychainPassword") + "\'",
+//                    properties.get("keychainPath")
+//            );
+
             processBuilder = new ProcessBuilder(
-                    "/usr/bin/security unlock-keychain",
-                    "-p",
-                    "\'" + properties.get("keychainPassword") + "\'",
-                    properties.get("keychainPath")
+                    "security unlock-keychain -p \'" + properties.get("keychainPassword") + "\' " + properties.get("keychainPath")
             );
 
-            processBuilder.directory(workDir);
             CommandHelper.performCommand(processBuilder);
         }
 
