@@ -58,7 +58,7 @@
             <role-hint>ios-framework</role-hint>
             <implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler</implementation>
             <configuration>
-                <extension>ios-framework</extension>
+                <extension>framework.zip</extension>
                 <type>ios-framework</type>
             </configuration>
         </component>

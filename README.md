@@ -29,7 +29,7 @@ Compiles the application and generates an IPA package
 2. ios.appName				(required)
 3. ios.scheme
 4. ios.sdk					(default: iphoneos)
-5. ios.codeSignIdentity 	(required)
+5. ios.codeSignIdentity
 6. ios.configuration		(default: Release)  Release or Debug
 7. ios.buildId              (The build number. e.g. 1234) For using jenkins as build server use ${env.BUILD_NUMBER} here
 8. ios.target               (The Xcode build target)
@@ -38,6 +38,7 @@ Compiles the application and generates an IPA package
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
+Also deploys a ios framework. Then the dependency type is "ios-framework". The framework folder will be compressed by zip and then deployed as zip.
 
 **Parameters**
 
@@ -117,6 +118,83 @@ To sign the package, unlock the keychain on the jenkins node. The two commands b
               <keychainPassword>theKeyChainPassword</keychainPassword>
 	      </configuration>
 	</plugin>
+
+**Build a ios maven framework**
+
+*Attention The filesystem structure must look like that.
+
+src/ios/LDMyiOSFramework/LDMyiOSFramework <- The sources of the project main target
+src/ios/LDMyiOSFramework/LDMyiOSFramework.xcodeproj  <- by convetion the xcode project file has to be here
+src/ios/LDMyiOSFramework/framework <- the place for the framework target
+pom.xml
+
+The pom.xml has to be adjusted like following:
+
+Snippet:
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>de.letsdev.ios.frameworks</groupId>
+    <artifactId>LDMyiOSFramework</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>ios-framework</packaging>
+    ...
+
+                <plugin>
+                    <groupId>de.letsdev.maven.plugins</groupId>
+                    <artifactId>maven-ios-plugin</artifactId>
+                    <version>1.1-SNAPSHOT</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <appName>LDMyiOSFramework</appName>
+                        <!--<target>framework</target>-->  <!-- framework xcode target is default here -->
+                        <buildId>${env.BUILD_NUMBER}</buildId>
+                        <configuration>Release</configuration>
+                    </configuration>
+                </plugin>
+
+
+
+    ...
+
+
+
+**Use iOS Frameworks with the maven plugin**
+
+Configure the dependency plugin to unpack the ios framework by the dependency plugin.
+
+...
+    <plugin>
+	    <groupId>org.apache.maven.plugins</groupId>
+	    <artifactId>maven-dependency-plugin</artifactId>
+	    <version>2.4</version>
+	    <executions>
+	      <execution>
+	        <id>unpack-ios-dependencies</id>
+	        <phase>compile</phase>
+	        <goals>
+	          <goal>unpack-dependencies</goal>
+	        </goals>
+	        <configuration>
+	          <outputDirectory>${project.build.directory}/ios-dependencies</outputDirectory>
+	        </configuration>
+	      </execution>
+	    </executions>
+	 </plugin>
+
+...
+
+
+Add the dependency in the pom.xml of your project into dependencies section.
+
+...
+        <dependency>
+            <groupId>de.letsdev.ios.frameworks</groupId>
+            <artifactId>LDMyiOSFramework</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <type>ios-framework</type>
+        </dependency>
+...
 
 **Deploy to HockeyApp**
 

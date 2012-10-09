@@ -12,10 +12,12 @@
 
 package de.letsdev.maven.plugins.ios;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 
 import java.io.File;
 
@@ -53,9 +55,15 @@ public class IOSPackageMojo extends AbstractMojo {
     protected MavenProject mavenProject;
 
     /**
+     * @component
+     */
+    private MavenProjectHelper projectHelper;
+
+    /**
      *
      */
     public void execute() throws MojoExecutionException, MojoFailureException {
+        Artifact currentArtifact = mavenProject.getArtifact();
         final String targetDir = mavenProject.getBuild().getDirectory();
         String destinationDirectory = null;
         String artifactName = null;
@@ -63,12 +71,13 @@ public class IOSPackageMojo extends AbstractMojo {
         if (mavenProject.getPackaging().equals(Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString())) {
             artifactName = appName + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP;
             destinationDirectory = targetDir;
+//            this.projectHelper.attachArtifact( mavenProject, Utils.PLUGIN_SUFFIX.IOS_FRAMEWORK.toString(), null, new File(destinationDirectory + "/" + artifactName));
         }
         else if(mavenProject.getPackaging().equals(Utils.PLUGIN_PACKAGING.IPA.toString())) {
             artifactName = appName + "." + Utils.PLUGIN_SUFFIX.IPA;
             destinationDirectory = targetDir + "/" + configuration + "-iphoneos/";
         }
 
-        mavenProject.getArtifact().setFile(new File(destinationDirectory + "/" + artifactName));
+        currentArtifact.setFile(new File(destinationDirectory + "/" + artifactName));
     }
 }

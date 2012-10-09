@@ -146,7 +146,7 @@ public class ProjectBuilder {
 
             File targetWorkDir = new File(targetDir.toString() + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-iphoneos/");
 
-            processBuilder = new ProcessBuilder("zip", "-r", "../" + mavenProject.getArtifactId() + ".framework.zip",mavenProject.getArtifactId() + ".framework");
+            processBuilder = new ProcessBuilder("zip", "-r", "../" + mavenProject.getArtifactId() + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString(),mavenProject.getArtifactId() + ".framework");
 
             processBuilder.directory(targetWorkDir);
             CommandHelper.performCommand(processBuilder);
