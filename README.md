@@ -11,7 +11,7 @@ This Plugin is based on Brewin' Apps' ios-maven-plugin. Thanks.
 2. Distribution of iOS applications
 3. Versioning of iOS applications
 4. One-step HockeyApp deployment
-5. Packaging of iOS applications (.ipa & .dSYM) for deployment to Nexus/Artifactory
+5. Packaging of iOS applications (.ipa & .dSYM) incl. unlock/lock keychain for deployment to Nexus/Artifactory
 6. Packaging of iOS frameworks for deployment to Nexus/Artifactory
 
 ## Requirements
@@ -30,9 +30,11 @@ Compiles the application and generates an IPA package
 3. ios.scheme
 4. ios.sdk					(default: iphoneos)
 5. ios.codeSignIdentity 	(required)
-6. ios.configuration		(default: Release)
-7. ios.buildId
-8. ios.target
+6. ios.configuration		(default: Release)  Release or Debug
+7. ios.buildId              (The build number. e.g. 1234) For using jenkins as build server use ${env.BUILD_NUMBER} here
+8. ios.target               (The Xcode build target)
+9. ios.keychainPath         (The file system path to the keychain file) e.g. /Users/lestdev/Library/Keychains/letsdev.keychain
+9. ios.keychainPassword     (The keychain password to use for unlock keychain) Befor the build the keychain will be unlocked and locked again after the build.
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
@@ -63,16 +65,14 @@ Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
     <plugin>
         <groupId>de.letsdev.maven.plugins</groupId>
         <artifactId>maven-ios-plugin</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
         <extensions>true</extensions>                
         <configuration>
             <codeSignIdentity>iPhone Distribution: ACME Inc</codeSignIdentity>
             <appName>AcmeApp</appName>
         </configuration>				                
     </plugin>
-    
 
-    
     
 **Use the maven-dependency-plugin to unpack dependencies**
     
@@ -102,8 +102,21 @@ Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
 
 To sign the package, unlock the keychain on the jenkins node. The two commands below can be set up as a pre-build shell script.
 
-    security list-keychains -s ~/Library/Keychains/jenkins.keychain
-    security unlock-keychain -p CHANGEME ~/Library/Keychains/jenkins.keychain
+    <plugin>
+	   <groupId>de.letsdev.maven.plugins</groupId>
+	      <artifactId>maven-ios-plugin</artifactId>
+	      <version>1.1</version>
+	      <extensions>true</extensions>
+	      <configuration>
+	          <codeSignIdentity>iPhone Distribution: let's dev iOS App Development</codeSignIdentity>
+	          <appName>MaveniOSApp</appName>
+		      <target>letsdev</target>
+			  <buildId>${env.BUILD_NUMBER}</buildId>
+			  <configuration>Release</configuration>
+              <keychainPath>/Users/letsdev/Library/Keychains/letsdev.keychain</keychainPath>
+              <keychainPassword>theKeyChainPassword</keychainPassword>
+	      </configuration>
+	</plugin>
 
 **Deploy to HockeyApp**
 

@@ -71,7 +71,6 @@ public class IOSBuildMojo extends AbstractMojo {
      * Path to keychain to sign with
      * @parameter
      * 		expression="${ios.keychainPath}"
-     * @required
      */
     private String keychainPath;
 
@@ -79,7 +78,6 @@ public class IOSBuildMojo extends AbstractMojo {
      * Password to unlock keychain to sign with
      * @parameter
      * 		expression="${ios.keychainPassword}"
-     * @required
      */
     private String keychainPassword;
 	
