@@ -120,22 +120,28 @@ public class IOSBuildMojo extends AbstractMojo {
 			final String targetDir = mavenProject.getBuild().getDirectory();
 			
 			Map<String, String> properties = new HashMap<String, String>();
-			properties.put(Utils.PLUGIN_PROPERTIES.APPNAME.toString(), appName);
-			properties.put(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString(), codeSignIdentity);
-			properties.put(Utils.PLUGIN_PROPERTIES.SDK.toString(), sdk);
-			properties.put(Utils.PLUGIN_PROPERTIES.SOURCE_DIR.toString(), sourceDir);
-			properties.put(Utils.PLUGIN_PROPERTIES.TARGET_DIR.toString(), targetDir);
-			properties.put(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString(), configuration);
-			properties.put(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString(), buildId);
-			properties.put(Utils.PLUGIN_PROPERTIES.SCHEME.toString(), scheme);
-			properties.put(Utils.PLUGIN_PROPERTIES.TARGET.toString(), target);
-            properties.put(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString(), keychainPath);
-            properties.put(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString(), keychainPassword);
+			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.APPNAME.toString(), appName);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString(), codeSignIdentity);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SDK.toString(), sdk);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SOURCE_DIR.toString(), sourceDir);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.TARGET_DIR.toString(), targetDir);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString(), configuration);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.BUILD_ID.toString(), buildId);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SCHEME.toString(), scheme);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.TARGET.toString(), target);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString(), keychainPath);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString(), keychainPassword);
 			
 			ProjectBuilder.build(properties, mavenProject);
 		} catch (IOSException e) {
 			throw new MojoExecutionException(e.getMessage());
 		}
 	}
+
+    private void addProperty(Map<String, String> properties, String key, String value) {
+        if(properties != null && key != null && value != null) {
+            properties.put(key, value);
+        }
+    }
 
 }
