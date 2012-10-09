@@ -103,6 +103,7 @@ Also deploys a ios framework. Then the dependency type is "ios-framework". The f
 
 To sign the package, unlock the keychain on the jenkins node. The two commands below can be set up as a pre-build shell script.
 
+```
     <plugin>
 	   <groupId>de.letsdev.maven.plugins</groupId>
 	      <artifactId>maven-ios-plugin</artifactId>
@@ -118,22 +119,25 @@ To sign the package, unlock the keychain on the jenkins node. The two commands b
               <keychainPassword>theKeyChainPassword</keychainPassword>
 	      </configuration>
 	</plugin>
+```
 
 **Build a ios maven framework**
 
 ***Attention***
 The filesystem structure must look like that.
 
+```
 src/ios/LDMyiOSFramework/LDMyiOSFramework <- The sources of the project main target
 src/ios/LDMyiOSFramework/LDMyiOSFramework.xcodeproj  <- by convetion the xcode project file has to be here
 src/ios/LDMyiOSFramework/framework <- the place for the framework target
 pom.xml
+```
 
 The pom.xml has to be adjusted like following:
 
 Snippet:
 
-
+```
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -159,13 +163,13 @@ Snippet:
     <!-- Plugin configuration -->
 
 </project>
-
+```
 
 **Use iOS Frameworks with the maven plugin**
 
 Configure the dependency plugin to unpack the ios framework by the dependency plugin.
 
-
+```
 ...
 
     <plugin>
@@ -187,10 +191,11 @@ Configure the dependency plugin to unpack the ios framework by the dependency pl
 	 </plugin>
 
 ...
-
+```
 
 Add the dependency in the pom.xml of your project into dependencies section.
 
+```
 ...
         <dependency>
             <groupId>de.letsdev.ios.frameworks</groupId>
@@ -199,6 +204,7 @@ Add the dependency in the pom.xml of your project into dependencies section.
             <type>ios-framework</type>
         </dependency>
 ...
+```
 
 **Deploy to HockeyApp**
 
