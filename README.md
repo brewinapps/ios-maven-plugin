@@ -121,7 +121,8 @@ To sign the package, unlock the keychain on the jenkins node. The two commands b
 
 **Build a ios maven framework**
 
-*Attention The filesystem structure must look like that.
+***Attention***
+The filesystem structure must look like that.
 
 src/ios/LDMyiOSFramework/LDMyiOSFramework <- The sources of the project main target
 src/ios/LDMyiOSFramework/LDMyiOSFramework.xcodeproj  <- by convetion the xcode project file has to be here
@@ -131,6 +132,8 @@ pom.xml
 The pom.xml has to be adjusted like following:
 
 Snippet:
+
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -138,6 +141,8 @@ Snippet:
     <artifactId>LDMyiOSFramework</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>ios-framework</packaging>
+
+
     ...
 
                 <plugin>
@@ -157,13 +162,16 @@ Snippet:
 
     ...
 
+</project>
 
 
 **Use iOS Frameworks with the maven plugin**
 
 Configure the dependency plugin to unpack the ios framework by the dependency plugin.
 
+
 ...
+
     <plugin>
 	    <groupId>org.apache.maven.plugins</groupId>
 	    <artifactId>maven-dependency-plugin</artifactId>
