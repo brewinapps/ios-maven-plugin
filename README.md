@@ -142,8 +142,7 @@ Snippet:
     <version>1.0.0-SNAPSHOT</version>
     <packaging>ios-framework</packaging>
 
-
-    ...
+    <!-- Plugin configuration -->
 
                 <plugin>
                     <groupId>de.letsdev.maven.plugins</groupId>
@@ -157,10 +156,7 @@ Snippet:
                         <configuration>Release</configuration>
                     </configuration>
                 </plugin>
-
-
-
-    ...
+    <!-- Plugin configuration -->
 
 </project>
 
