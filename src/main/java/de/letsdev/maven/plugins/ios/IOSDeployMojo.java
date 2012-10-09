@@ -75,8 +75,7 @@ public class IOSDeployMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
 			final String targetDir = mavenProject.getBuild().getDirectory();
-			final String appDir = mavenProject.getBasedir().getAbsoluteFile() + 
-					"/" + targetDir + "/" + configuration + "-iphoneos/";			
+			final String appDir = mavenProject.getBasedir().getAbsoluteFile() + "/" + targetDir + "/" + configuration + "-iphoneos/";
 			
 			Map<String, String> properties = new HashMap<String, String>();
 			properties.put(Utils.PLUGIN_PROPERTIES.APPNAME.toString(), appName);

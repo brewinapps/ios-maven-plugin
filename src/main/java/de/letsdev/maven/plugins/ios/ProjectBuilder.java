@@ -144,12 +144,9 @@ public class ProjectBuilder {
         // Zip Frameworks
         if (mavenProject.getPackaging().equals(Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString())) {
 
-            File targetWorkDir = new File(targetDir.toString() + "/"
-                    + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-iphoneos/");
+            File targetWorkDir = new File(targetDir.toString() + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-iphoneos/");
 
-            processBuilder = new ProcessBuilder("zip", "-r", "../"
-                    + mavenProject.getArtifactId() + ".framework.zip",
-                    mavenProject.getArtifactId() + ".framework");
+            processBuilder = new ProcessBuilder("zip", "-r", "../" + mavenProject.getArtifactId() + ".framework.zip",mavenProject.getArtifactId() + ".framework");
 
             processBuilder.directory(targetWorkDir);
             CommandHelper.performCommand(processBuilder);

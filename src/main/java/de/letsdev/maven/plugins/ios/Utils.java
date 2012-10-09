@@ -46,7 +46,8 @@ public class Utils {
 
         APP("app"),
         IPA("ipa"),
-        FRAMEWORK("framework");
+        FRAMEWORK("framework"),
+        FRAMEWORK_ZIP("framework.zip");
 
         private PLUGIN_SUFFIX(String name) {
             this.name = name;
