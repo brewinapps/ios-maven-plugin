@@ -63,7 +63,6 @@ public class IOSBuildMojo extends AbstractMojo {
 	 * iOS code sign identity
 	 * @parameter
 	 * 		expression="${ios.codeSignIdentity}"
-	 * @required
 	 */
 	private String codeSignIdentity;
 

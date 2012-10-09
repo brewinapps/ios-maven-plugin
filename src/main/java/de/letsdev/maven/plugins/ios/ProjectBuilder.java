@@ -93,9 +93,12 @@ public class ProjectBuilder {
         buildParameters.add("-configuration");
         buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()));
         buildParameters.add("SYMROOT=" + targetDir.getAbsolutePath());
-        buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()));
 
-        if (properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString()) != null) {
+        if(properties.containsKey(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString())) {
+            buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()));
+        }
+
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.SCHEME.toString())) {
             buildParameters.add("-scheme");
             buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString()));
         }
