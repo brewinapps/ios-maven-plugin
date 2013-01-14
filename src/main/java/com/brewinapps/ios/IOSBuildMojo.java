@@ -63,11 +63,19 @@ public class IOSBuildMojo extends AbstractMojo {
 	 * 		default-value="Release"
 	 */
 	private String configuration;
+
+	/**
+	 * iOS version 
+	 * @parameter
+	 * 		expression="${ios.version}"
+	 */
+	private String version;
 	
 	/**
 	 * build id
 	 * @parameter
-	 * 		expression="${ios.buildId}"
+	 * 		expression="${ios.buildId}" 
+	 * 		default-value="${project.version}"
 	 */
 	private String buildId;	
 		
@@ -96,7 +104,7 @@ public class IOSBuildMojo extends AbstractMojo {
 			properties.put("targetDir", targetDir);
 			properties.put("configuration", configuration);
 			properties.put("buildId", buildId);
-			properties.put("version", project.getVersion());
+			properties.put("version", version);
 			properties.put("scheme", scheme);
 			
 			ProjectBuilder.build(properties);
