@@ -73,7 +73,7 @@ public class IOSDeployMojo extends AbstractMojo {
 			properties.put("appDir", appDir);
 			properties.put("configuration", configuration);
 			properties.put("targetDir", targetDir);
-			
+
 			ProjectDeployer.deploy(properties);
 		} catch (IOSException e) {
 			System.out.println(e.getMessage());

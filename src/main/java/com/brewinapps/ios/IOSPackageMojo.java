@@ -6,6 +6,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 
 
 /**
@@ -31,7 +32,14 @@ public class IOSPackageMojo extends AbstractMojo {
 	 * 		default-value="Release"
 	 */
 	private String configuration;
-	
+
+    /**
+     * <p>Classifier to add to the artifact generated.</p>
+     *
+     * @parameter
+     */
+    private String classifier;
+
 	/**
 	* The maven project.
 	* 
@@ -41,6 +49,14 @@ public class IOSPackageMojo extends AbstractMojo {
 	*/
 	protected MavenProject project;
 	
+	 /**
+     * Maven ProjectHelper.
+     *
+     * @component
+     * @readonly
+     */
+    protected MavenProjectHelper projectHelper;
+
 	/**
 	 * 
 	 */
@@ -59,7 +75,12 @@ public class IOSPackageMojo extends AbstractMojo {
 			pb.directory(new File(appDir));
 			CommandHelper.performCommand(pb);
 
-			project.getArtifact().setFile(new File(appDir + "/" + artifactName));
+			if (classifier == null) {
+				project.getArtifact().setFile(new File(appDir + "/" + artifactName));
+			} else {
+				projectHelper.attachArtifact(project, "ios", classifier, new File(appDir + "/" + artifactName));
+			}
+
 		} catch (IOSException e) {
 			throw new MojoExecutionException(e.getMessage());
 		}
