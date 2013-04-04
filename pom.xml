@@ -29,12 +29,12 @@
 
 	<distributionManagement>
 		<repository>
-			<id>central</id>
-			<url>https://nexus.brewinapps.net/content/repositories/releases</url>
+			<id>brewinapps.central</id>
+			<url>https://mvn.brewinapps.com/content/repositories/releases</url>
 		</repository>
 		<snapshotRepository>
-			<id>central</id>
-			<url>https://nexus.brewinapps.net/content/repositories/snapshots</url>
+			<id>brewinapps.central</id>
+			<url>https://mvn.brewinapps.com/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 
