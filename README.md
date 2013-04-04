@@ -43,6 +43,7 @@ Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
 4. ios.sdk
 5. ios.codeSignIdentity
 6. ios.configuration
+7. ios.version
 8. ios.buildId
 9. ios.hockeyAppToken
 10. ios.releaseNotes
