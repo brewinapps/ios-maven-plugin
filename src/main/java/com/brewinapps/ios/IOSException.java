@@ -18,6 +18,15 @@ public class IOSException extends Exception {
 	/**
 	 * 
 	 * @param msg
+	 * @param e
+	 */
+	public IOSException(String msg, Exception e) {
+		super(msg, e);
+	}
+	
+	/**
+	 * 
+	 * @param msg
 	 */
 	public IOSException(String msg) {
 		super(msg);
