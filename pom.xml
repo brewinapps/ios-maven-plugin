@@ -9,6 +9,34 @@
 	<name>iOS Maven Plugin</name>
 	<url>https://github.com/brewinapps/ios-maven-plugin</url>
 
+	<developers>
+		<developer>
+			<id>jbye</id>
+			<name>John Alexander Bye</name>
+			<url>http://www.bye.fm</url>
+			<email>john@brewinapps.com</email>
+			<organization>Brewin' Apps</organization>
+			<organizationUrl>http://www.brewinapps.com</organizationUrl>
+		</developer>
+	</developers>
+
+	<contributors>
+		<contributor>
+			<name>Mathieu Boniface</name>
+		</contributor>
+		<contributor>
+			<name>jgmchan</name>
+		</contributor>
+	</contributors>
+
+	<licenses>
+		<license>
+			<name>Public domain (Unlicense)</name>
+			<url>http://unlicense.org/</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
 	<organization>
 		<name>Brewin' Apps AS</name>
 		<url>http://www.brewinapps.no</url>
@@ -97,6 +125,18 @@
 						<phase>verify</phase>
 						<goals>
 							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
 						</goals>
 					</execution>
 				</executions>
