@@ -28,7 +28,8 @@ Compiles the application and generates an IPA package
 4. ios.sdk
 5. ios.codeSignIdentity
 6. ios.configuration
-7. ios.buildId
+7. ios.version
+8. ios.buildId
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
