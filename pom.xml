@@ -1,6 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+
 	<groupId>com.brewinapps</groupId>
 	<artifactId>ios-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
@@ -52,19 +59,8 @@
 	<scm>
 		<connection>scm:git:git@github.com:brewinapps/ios-maven-plugin.git</connection>
 		<developerConnection>scm:git:git@github.com:brewinapps/ios-maven-plugin.git</developerConnection>
-		<url>scm:git:git@github.com:brewinapps/ios-maven-plugin.git</url>
+		<url>git@github.com:brewinapps/ios-maven-plugin.git</url>
 	</scm>
-
-	<distributionManagement>
-		<repository>
-			<id>brewinapps.central</id>
-			<url>https://mvn.brewinapps.com/content/repositories/releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>brewinapps.central</id>
-			<url>https://mvn.brewinapps.com/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 	<dependencies>
 		<dependency>
