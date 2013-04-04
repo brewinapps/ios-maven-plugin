@@ -28,6 +28,8 @@ public class CommandHelper {
 			p = pb.start();
 		} catch (IOException e) {
 			throw new IOSException(e);
+		} catch (NullPointerException e) {
+			throw new IOSException(String.format("A command argument is null '%s'", pb.command()), e);
 		}
 		
 		BufferedReader input = new BufferedReader(
