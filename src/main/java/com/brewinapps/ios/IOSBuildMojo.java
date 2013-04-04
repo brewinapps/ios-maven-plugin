@@ -68,14 +68,14 @@ public class IOSBuildMojo extends AbstractMojo {
 	 * iOS version 
 	 * @parameter
 	 * 		expression="${ios.version}"
+	 * 		default-value="${project.version}"
 	 */
 	private String version;
 	
 	/**
 	 * build id
 	 * @parameter
-	 * 		expression="${ios.buildId}" 
-	 * 		default-value="${project.version}"
+	 * 		expression="${ios.buildId}"
 	 */
 	private String buildId;	
 		
