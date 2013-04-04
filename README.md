@@ -10,6 +10,7 @@ The ios-maven-plugin plugs in to the Maven build lifecycle to automate compilati
 3. Versioning of iOS applications
 4. One-step HockeyApp deployment
 5. Packaging of iOS applications (.ipa & .dSYM) for deployment to Nexus/Artifactory
+6. Available in the central repository
 
 ## Requirements
 1. The plugin relies on several tools that are only available on Mac OS X: xcodebuild, xcrun and agvtool.
@@ -51,9 +52,9 @@ Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
 **Configure a basic POM for your iOS project or module and add:**
 
     <plugin>
-        <groupId>com.brewinapps.maven.plugins</groupId>
+        <groupId>com.brewinapps</groupId>
         <artifactId>ios-maven-plugin</artifactId>
-        <version>1.1-SNAPSHOT</version>
+        <version>1.2</version>
         <extensions>true</extensions>                
         <configuration>
             <codeSignIdentity>iPhone Distribution: ACME Inc</codeSignIdentity>
