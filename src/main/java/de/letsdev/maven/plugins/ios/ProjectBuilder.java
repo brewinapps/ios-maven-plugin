@@ -42,12 +42,18 @@ public class ProjectBuilder {
         File targetDir = new File(mavenProject.getBuild().getDirectory());
 
         // Run agvtool to stamp marketing version
-        ProcessBuilder processBuilder = new ProcessBuilder("agvtool", "new-marketing-version", mavenProject.getVersion());
+        String projectVersion =  mavenProject.getVersion();
+
+        if (properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString()) != null) {
+            projectVersion =  properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString());
+        }
+
+        ProcessBuilder processBuilder = new ProcessBuilder("agvtool", "new-marketing-version", projectVersion);
         processBuilder.directory(workDir);
         CommandHelper.performCommand(processBuilder);
 
         // Run agvtool to stamp version
-        processBuilder = new ProcessBuilder("agvtool", "new-version", "-all", mavenProject.getVersion());
+        processBuilder = new ProcessBuilder("agvtool", "new-version", "-all", projectVersion);
         processBuilder.directory(workDir);
         CommandHelper.performCommand(processBuilder);
 
@@ -55,6 +61,12 @@ public class ProjectBuilder {
         if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
             String infoPlistFile = workDir + "/" + mavenProject.getArtifactId()
                     + "/" + mavenProject.getArtifactId() + "-Info.plist";
+
+            if (properties.get(Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString()) != null) {
+                infoPlistFile = workDir + "/" + mavenProject.getArtifactId()
+                        + "/" + properties.get(Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString());
+
+            }
 
             // Run shell-script from resource-folder.
             try {

@@ -29,7 +29,9 @@ public class Utils {
         SDK("sdk"),
         SOURCE_DIR("sourceDir"),
         TARGET("target"),
-        TARGET_DIR("targetDir");
+        TARGET_DIR("targetDir"),
+        INFO_PLIST("infoPlist"),
+        IPA_VERSION("ipaVersion");
 
         private PLUGIN_PROPERTIES(String name) {
             this.name = name;

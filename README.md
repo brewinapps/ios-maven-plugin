@@ -34,7 +34,9 @@ Compiles the application and generates an IPA package
 7. ios.buildId              (The build number. e.g. 1234) For using jenkins as build server use ${env.BUILD_NUMBER} here
 8. ios.target               (The Xcode build target)
 9. ios.keychainPath         (The file system path to the keychain file) e.g. /Users/lestdev/Library/Keychains/letsdev.keychain
-9. ios.keychainPassword     (The keychain password to use for unlock keychain) Befor the build the keychain will be unlocked and locked again after the build.
+10. ios.keychainPassword     (The keychain password to use for unlock keychain) Before the build the keychain will be unlocked and locked again after the build.
+11. ios.infoPlist            (default: $projectName/projectName-Info.plist) The path to the Info.plist, relative to the project directory.
+12. ios.ipaVersion           (The version number for the IPA, different to the maven project version.)
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp

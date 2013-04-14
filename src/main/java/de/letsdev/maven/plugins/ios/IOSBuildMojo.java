@@ -100,9 +100,23 @@ public class IOSBuildMojo extends AbstractMojo {
 	 * @parameter
 	 * 		expression="${ios.target}"
 	 */
-	private String target;	
-		
-	/**
+	private String target;
+
+    /**
+     * infoPlist
+     * @parameter
+     * 		expression="${ios.infoPlist}"
+     */
+    private String infoPlist;
+
+    /**
+     * ipaVersion
+     * @parameter
+     * 		expression="${ios.ipaVersion}"
+     */
+    private String ipaVersion;
+
+    /**
 	* The maven project.
 	* 
 	* @parameter expression="${project}"
@@ -130,7 +144,9 @@ public class IOSBuildMojo extends AbstractMojo {
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.TARGET.toString(), target);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString(), keychainPath);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString(), keychainPassword);
-			
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString(), infoPlist);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString(), ipaVersion);
+
 			ProjectBuilder.build(properties, mavenProject);
 		} catch (IOSException e) {
 			throw new MojoExecutionException(e.getMessage());
