@@ -38,12 +38,26 @@ public class IOSPackageMojo extends AbstractMojo {
     private String appName;
 
     /**
+     * build id
+     * @parameter
+     * 		expression="${ios.buildId}"
+     */
+    private String buildId;
+
+    /**
      * iOS configuration
      *
      * @parameter expression="${ios.configuration}"
      * default-value="Release"
      */
     private String configuration;
+
+    /**
+     * ipaVersion
+     * @parameter
+     * 		expression="${ios.ipaVersion}"
+     */
+    private String ipaVersion;
 
     /**
      * The maven project.
@@ -67,14 +81,21 @@ public class IOSPackageMojo extends AbstractMojo {
         final String targetDir = mavenProject.getBuild().getDirectory();
         String destinationDirectory = null;
         String artifactName = null;
+        String projectVersion = mavenProject.getVersion();
+
+        if (ipaVersion != null) {
+            projectVersion = ipaVersion;
+        }
+        if (buildId != null) {
+            projectVersion += "_(" + buildId + ")";
+        }
 
         if (mavenProject.getPackaging().equals(Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString())) {
             artifactName = appName + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP;
             destinationDirectory = targetDir;
 //            this.projectHelper.attachArtifact( mavenProject, Utils.PLUGIN_SUFFIX.IOS_FRAMEWORK.toString(), null, new File(destinationDirectory + "/" + artifactName));
-        }
-        else if(mavenProject.getPackaging().equals(Utils.PLUGIN_PACKAGING.IPA.toString())) {
-            artifactName = appName + "." + Utils.PLUGIN_SUFFIX.IPA;
+        } else if (mavenProject.getPackaging().equals(Utils.PLUGIN_PACKAGING.IPA.toString())) {
+            artifactName = appName + "_" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA;
             destinationDirectory = targetDir + "/" + configuration + "-iphoneos/";
         }
 

@@ -31,7 +31,8 @@ public class Utils {
         TARGET("target"),
         TARGET_DIR("targetDir"),
         INFO_PLIST("infoPlist"),
-        IPA_VERSION("ipaVersion");
+        IPA_VERSION("ipaVersion"),
+        ASSETS_DIRECTORY("assetsDirectory");
 
         private PLUGIN_PROPERTIES(String name) {
             this.name = name;

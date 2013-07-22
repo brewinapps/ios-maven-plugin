@@ -37,6 +37,7 @@ Compiles the application and generates an IPA package
 10. ios.keychainPassword     (The keychain password to use for unlock keychain) Before the build the keychain will be unlocked and locked again after the build.
 11. ios.infoPlist            (default: $projectName/projectName-Info.plist) The path to the Info.plist, relative to the project directory.
 12. ios.ipaVersion           (The version number for the IPA, different to the maven project version.)
+13. ios.assetsDirectory      (The name of the assets folder.)
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp

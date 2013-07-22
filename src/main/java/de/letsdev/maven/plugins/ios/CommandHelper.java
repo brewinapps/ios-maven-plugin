@@ -60,7 +60,7 @@ public class CommandHelper {
         }
 
         if (rc != 0) {
-            throw new IOSException("The XC command was unsuccessful");
+            throw new IOSException("The Xcode command was unsuccessful");
         }
     }
 

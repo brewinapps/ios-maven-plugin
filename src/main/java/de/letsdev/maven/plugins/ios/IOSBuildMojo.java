@@ -117,6 +117,12 @@ public class IOSBuildMojo extends AbstractMojo {
     private String ipaVersion;
 
     /**
+     * assetsDirectory
+     * @parameter
+     */
+    private String assetsDirectory;
+
+    /**
 	* The maven project.
 	* 
 	* @parameter expression="${project}"
@@ -146,6 +152,7 @@ public class IOSBuildMojo extends AbstractMojo {
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString(), keychainPassword);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString(), infoPlist);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString(), ipaVersion);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString(), assetsDirectory);
 
 			ProjectBuilder.build(properties, mavenProject);
 		} catch (IOSException e) {

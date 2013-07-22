@@ -21,7 +21,7 @@ public class IOSException extends Exception {
 	
 	/**
 	 * 
-	 * @param e
+	 * @param e Exception
 	 */
 	public IOSException(Exception e) {
 		super(e);
@@ -29,7 +29,7 @@ public class IOSException extends Exception {
 	
 	/**
 	 * 
-	 * @param msg
+	 * @param msg Message
 	 */
 	public IOSException(String msg) {
 		super(msg);
