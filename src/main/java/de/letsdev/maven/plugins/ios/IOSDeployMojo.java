@@ -78,7 +78,7 @@ public class IOSDeployMojo extends AbstractMojo {
 			final String appDir = mavenProject.getBasedir().getAbsoluteFile() + "/" + targetDir + "/" + configuration + "-iphoneos/";
 			
 			Map<String, String> properties = new HashMap<String, String>();
-			properties.put(Utils.PLUGIN_PROPERTIES.APPNAME.toString(), appName);
+			properties.put(Utils.PLUGIN_PROPERTIES.APP_NAME.toString(), appName);
 			properties.put(Utils.PLUGIN_PROPERTIES.HOCKEY_APP_TOKEN.toString(), hockeyAppToken);
 			properties.put(Utils.PLUGIN_PROPERTIES.RELEASE_NOTES.toString(), releaseNotes);
 			properties.put(Utils.PLUGIN_PROPERTIES.APP_DIR.toString(), appDir);

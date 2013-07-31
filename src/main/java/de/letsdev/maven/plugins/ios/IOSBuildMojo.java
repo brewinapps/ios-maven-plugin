@@ -43,6 +43,13 @@ public class IOSBuildMojo extends AbstractMojo {
 	 * @required
 	 */
 	private String appName;
+
+    /**
+     * iOS project name
+     * @parameter
+     * 		expression="${ios.projectName}"
+     */
+    private String projectName;
 	
 	/**
 	 * iOS scheme
@@ -139,10 +146,11 @@ public class IOSBuildMojo extends AbstractMojo {
 			final String targetDir = mavenProject.getBuild().getDirectory();
 			
 			Map<String, String> properties = new HashMap<String, String>();
-			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.APPNAME.toString(), appName);
+			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.APP_NAME.toString(), appName);
+			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString(), projectName);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString(), codeSignIdentity);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SDK.toString(), sdk);
-            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SOURCE_DIR.toString(), sourceDir);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SOURCE_DIRECTORY.toString(), sourceDir);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.TARGET_DIR.toString(), targetDir);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString(), configuration);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.BUILD_ID.toString(), buildId);

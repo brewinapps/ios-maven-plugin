@@ -31,37 +31,44 @@ public class ProjectBuilder {
     public static void build(final Map<String, String> properties, MavenProject mavenProject) throws IOSException {
 
         // Make sure the source directory exists
-        File workDir = new File(mavenProject.getBasedir().toString() + "/"
-                + properties.get(Utils.PLUGIN_PROPERTIES.SOURCE_DIR.toString()) + "/"
-                + mavenProject.getArtifactId());
-
-        if (!workDir.exists()) {
-            throw new IOSException("Invalid sourceDir specified: " + workDir.getAbsolutePath());
+        String projectName = mavenProject.getArtifactId();
+        if (properties.get(Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString()) != null) {
+            projectName = properties.get(Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString());
         }
 
-        File projectDir = new File(workDir.toString() + "/" + mavenProject.getArtifactId());
-        File assetsDir = null;
-        File assetsTempDir = null;
-        File newAssetsDir = null;
+        File workDirectory = new File(mavenProject.getBasedir().toString() + "/"
+                + properties.get(Utils.PLUGIN_PROPERTIES.SOURCE_DIRECTORY.toString()) + "/"
+                + projectName);
+
+        if (!workDirectory.exists()) {
+            throw new IOSException("Invalid sourceDirectory specified: " + workDirectory.getAbsolutePath());
+        }
+
+        File projectDirectory = new File(workDirectory.toString() + "/" + projectName);
+        File assetsDirectory = null;
+        File assetsTempDirectory = null;
+        File newAssetsDirectory = null;
 
         //Rename assets directory
         if (properties.get(Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString()) != null) {
-            assetsDir = new File(projectDir.toString() + "/assets");
-            assetsTempDir = new File(projectDir.toString() + "/assets.tmp");
-            newAssetsDir = new File(projectDir.toString() + properties.get(Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString()));
+            assetsDirectory = new File(projectDirectory.toString() + "/assets");
+            assetsTempDirectory = new File(projectDirectory.toString() + "/assets.tmp");
+            newAssetsDirectory = new File(projectDirectory.toString() + "/" + properties.get(Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString()));
 
-            if (assetsDir.exists() && newAssetsDir.exists() && !assetsTempDir.exists()) {
-                ProcessBuilder processBuilder = new ProcessBuilder("mv", assetsDir.toString(), assetsTempDir.toString());
-                processBuilder.directory(projectDir);
+            if (assetsDirectory.exists() && !(newAssetsDirectory.toString().equalsIgnoreCase(assetsDirectory.toString()))){
+                ProcessBuilder processBuilder = new ProcessBuilder("mv", assetsDirectory.toString(), assetsTempDirectory.toString());
+                processBuilder.directory(projectDirectory);
                 CommandHelper.performCommand(processBuilder);
+            }
 
-                processBuilder = new ProcessBuilder("mv", properties.get(Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString()), assetsDir.toString());
-                processBuilder.directory(projectDir);
+            if (newAssetsDirectory.exists() && !(newAssetsDirectory.toString().equalsIgnoreCase(assetsDirectory.toString()))) {
+                ProcessBuilder processBuilder = new ProcessBuilder("mv", newAssetsDirectory.toString(), assetsDirectory.toString());
+                processBuilder.directory(projectDirectory);
                 CommandHelper.performCommand(processBuilder);
             }
         }
 
-        File targetDir = new File(mavenProject.getBuild().getDirectory());
+        File targetDirectory = new File(mavenProject.getBuild().getDirectory());
 
         // Run agvtool to stamp marketing version
         String projectVersion = mavenProject.getVersion();
@@ -71,21 +78,21 @@ public class ProjectBuilder {
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder("agvtool", "new-marketing-version", projectVersion);
-        processBuilder.directory(workDir);
+        processBuilder.directory(workDirectory);
         CommandHelper.performCommand(processBuilder);
 
         // Run agvtool to stamp version
         processBuilder = new ProcessBuilder("agvtool", "new-version", "-all", projectVersion);
-        processBuilder.directory(workDir);
+        processBuilder.directory(workDirectory);
         CommandHelper.performCommand(processBuilder);
 
         // Run PlistPuddy to stamp build if a build id is specified
         if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
-            String infoPlistFile = workDir + "/" + mavenProject.getArtifactId()
-                    + "/" + mavenProject.getArtifactId() + "-Info.plist";
+            String infoPlistFile = workDirectory + "/" + projectName
+                    + "/" + projectName + "-Info.plist";
 
             if (properties.get(Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString()) != null) {
-                infoPlistFile = workDir + "/" + properties.get(Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString());
+                infoPlistFile = workDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString());
 
             }
 
@@ -110,7 +117,7 @@ public class ProjectBuilder {
 
                 processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), infoPlistFile, properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()));
 
-                processBuilder.directory(workDir);
+                processBuilder.directory(workDirectory);
                 CommandHelper.performCommand(processBuilder);
 
             } catch (IOException e) {
@@ -125,7 +132,7 @@ public class ProjectBuilder {
         buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString()));
         buildParameters.add("-configuration");
         buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()));
-        buildParameters.add("SYMROOT=" + targetDir.getAbsolutePath());
+        buildParameters.add("SYMROOT=" + targetDirectory.getAbsolutePath());
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString())) {
             buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()));
@@ -149,7 +156,7 @@ public class ProjectBuilder {
             }
 
         } else {
-            buildParameters.add(mavenProject.getArtifactId());
+            buildParameters.add(projectName);
         }
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString())) {
@@ -171,17 +178,17 @@ public class ProjectBuilder {
         }
 
         processBuilder = new ProcessBuilder(buildParameters);
-        processBuilder.directory(workDir);
+        processBuilder.directory(workDirectory);
         CommandHelper.performCommand(processBuilder);
 
         // Zip Frameworks
         if (mavenProject.getPackaging().equals(Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString())) {
 
-            File targetWorkDir = new File(targetDir.toString() + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-iphoneos/");
+            File targetWorkDirectory = new File(targetDirectory.toString() + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-iphoneos/");
 
-            processBuilder = new ProcessBuilder("zip", "-r", "../" + mavenProject.getArtifactId() + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString(), mavenProject.getArtifactId() + ".framework");
+            processBuilder = new ProcessBuilder("zip", "-r", "../" + projectName + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString(), projectName + ".framework");
 
-            processBuilder.directory(targetWorkDir);
+            processBuilder.directory(targetWorkDirectory);
             CommandHelper.performCommand(processBuilder);
 
             // Generate IPA
@@ -190,20 +197,45 @@ public class ProjectBuilder {
                 projectVersion += "_(" + properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) + ")";
             }
 
+            File appTargetPath = new File(targetDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+                    + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()) + "." + Utils.PLUGIN_SUFFIX.APP);
+
+            File newAppTargetPath = new File(targetDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+                    + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.APP);
+
+            File ipaTargetPath = new File(targetDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+                    + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "_" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA);
+
+            File dsymTargetPath = new File(targetDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+                    + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()) + "." + Utils.PLUGIN_SUFFIX.APP_DSYM);
+
+            File newDsymTargetPath = new File(targetDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+                    + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.APP_DSYM);
+
+            if (appTargetPath.exists() && !(appTargetPath.toString().equalsIgnoreCase(newAppTargetPath.toString()))) {
+                processBuilder = new ProcessBuilder("mv", appTargetPath.toString(), newAppTargetPath.toString());
+                processBuilder.directory(projectDirectory);
+                CommandHelper.performCommand(processBuilder);
+            }
+
+            if (dsymTargetPath.exists() && !(dsymTargetPath.toString().equalsIgnoreCase(newDsymTargetPath.toString()))) {
+                processBuilder = new ProcessBuilder("mv", dsymTargetPath.toString(), newDsymTargetPath.toString());
+                processBuilder.directory(projectDirectory);
+                CommandHelper.performCommand(processBuilder);
+            }
+
             processBuilder = new ProcessBuilder(
                     "xcrun",
                     "-sdk",
                     "iphoneos",
                     "PackageApplication",
                     "-v",
-                    targetDir + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
-                            + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()) + "." + Utils.PLUGIN_SUFFIX.APP,
+                    newAppTargetPath.toString(),
                     "-o",
-                    targetDir + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
-                            + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.APPNAME.toString()) + "_" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA,
+                    ipaTargetPath.toString(),
                     "--sign", properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()));
 
-            processBuilder.directory(workDir);
+            processBuilder.directory(workDirectory);
             CommandHelper.performCommand(processBuilder);
         }
 
@@ -216,14 +248,16 @@ public class ProjectBuilder {
 
         //Rename assets directory to origin
         if (properties.get(Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString()) != null) {
-            if ((assetsDir != null) && assetsDir.exists() && (newAssetsDir != null) && !newAssetsDir.exists() && (assetsTempDir != null) && assetsTempDir.exists()) {
 
-                processBuilder = new ProcessBuilder("mv", assetsDir.toString(), Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString());
-                processBuilder.directory(projectDir);
+            if (assetsDirectory.exists()) {
+                processBuilder = new ProcessBuilder("mv", assetsDirectory.toString(), newAssetsDirectory.toString());
+                processBuilder.directory(projectDirectory);
                 CommandHelper.performCommand(processBuilder);
+            }
 
-                processBuilder = new ProcessBuilder("mv", assetsTempDir.toString(), assetsDir.toString());
-                processBuilder.directory(projectDir);
+            if (assetsTempDirectory.exists()) {
+                processBuilder = new ProcessBuilder("mv", assetsTempDirectory.toString(), assetsDirectory.toString());
+                processBuilder.directory(projectDirectory);
                 CommandHelper.performCommand(processBuilder);
             }
         }

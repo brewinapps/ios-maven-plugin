@@ -50,8 +50,8 @@ public class ProjectDeployer {
             ProcessBuilder pb = new ProcessBuilder(
                     "zip",
                     "-r",
-                    properties.get(Utils.PLUGIN_PROPERTIES.APPNAME.toString()) + ".dSYM.zip",
-                    properties.get(Utils.PLUGIN_PROPERTIES.APPNAME.toString()) + ".app.dSYM");
+                    properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + ".dSYM.zip",
+                    properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + ".app.dSYM");
             pb.directory(appPath);
             CommandHelper.performCommand(pb);
 
@@ -65,10 +65,10 @@ public class ProjectDeployer {
             // Set headers and parameters
             post.addHeader("X-HockeyAppToken", properties.get(Utils.PLUGIN_PROPERTIES.HOCKEY_APP_TOKEN.toString()));
             entity.addPart(Utils.PLUGIN_SUFFIX.IPA.toString(), new FileBody(
-                    new File(appPath + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APPNAME.toString()) + "." + Utils.PLUGIN_SUFFIX.IPA.toString()),
+                    new File(appPath + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.IPA.toString()),
                     "application/zip"));
             entity.addPart("dsym", new FileBody(
-                    new File(appPath + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APPNAME.toString()) + ".dSYM.zip"),
+                    new File(appPath + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + ".dSYM.zip"),
                     "application/zip"));
             entity.addPart("notes",
                     new StringBody(properties.get(Utils.PLUGIN_PROPERTIES.RELEASE_NOTES.toString()),
