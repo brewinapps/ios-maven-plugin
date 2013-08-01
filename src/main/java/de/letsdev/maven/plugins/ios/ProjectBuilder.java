@@ -112,7 +112,6 @@ public class ProjectBuilder {
                     outputStream.write(buffer, 0, bytesRead);
                 }
 
-                buffer = null;
                 outputStream.close();
 
                 processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), infoPlistFile, properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()));
@@ -141,6 +140,10 @@ public class ProjectBuilder {
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.SCHEME.toString())) {
             buildParameters.add("-scheme");
             buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString()));
+        }
+
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString())) {
+            buildParameters.add("PROVISIONING_PROFILE=" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()));
         }
 
         // Add target. Uses target 'framework' to build Frameworks.

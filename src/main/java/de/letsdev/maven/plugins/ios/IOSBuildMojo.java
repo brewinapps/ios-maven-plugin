@@ -50,6 +50,16 @@ public class IOSBuildMojo extends AbstractMojo {
      * 		expression="${ios.projectName}"
      */
     private String projectName;
+
+    /**
+     * iOS provisioning profile  UUID
+     *
+     * If not set the default provisioning file in xcode project will be used.
+     * @parameter
+     * 		expression="${ios.provisioningProfileUUID}"
+     */
+    private String provisioningProfileUUID;
+
 	
 	/**
 	 * iOS scheme
@@ -143,24 +153,25 @@ public class IOSBuildMojo extends AbstractMojo {
 	 */
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
-			final String targetDir = mavenProject.getBuild().getDirectory();
+			final String targetDir = this.mavenProject.getBuild().getDirectory();
 			
 			Map<String, String> properties = new HashMap<String, String>();
-			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.APP_NAME.toString(), appName);
-			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString(), projectName);
-            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString(), codeSignIdentity);
-            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SDK.toString(), sdk);
-            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SOURCE_DIRECTORY.toString(), sourceDir);
+			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.APP_NAME.toString(), this.appName);
+			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString(), this.projectName);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString(), this.codeSignIdentity);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SDK.toString(), this.sdk);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SOURCE_DIRECTORY.toString(), this.sourceDir);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.TARGET_DIR.toString(), targetDir);
-            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString(), configuration);
-            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.BUILD_ID.toString(), buildId);
-            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SCHEME.toString(), scheme);
-            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.TARGET.toString(), target);
-            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString(), keychainPath);
-            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString(), keychainPassword);
-            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString(), infoPlist);
-            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString(), ipaVersion);
-            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString(), assetsDirectory);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString(), this.configuration);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.BUILD_ID.toString(), this.buildId);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SCHEME.toString(), this.scheme);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.TARGET.toString(), this.target);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString(), this.keychainPath);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString(), this.keychainPassword);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString(), this.infoPlist);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString(), this.ipaVersion);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString(), this.assetsDirectory);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString(), this.provisioningProfileUUID);
 
 			ProjectBuilder.build(properties, mavenProject);
 		} catch (IOSException e) {

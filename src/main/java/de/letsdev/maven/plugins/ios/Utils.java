@@ -32,6 +32,7 @@ public class Utils {
         SDK("sdk"),
         SOURCE_DIRECTORY("sourceDir"),
         PROJECT_NAME("projectName"),
+        PROVISIONING_PROFILE_UUID("provisioningProfileUUID"),
         TARGET("target"),
         TARGET_DIR("targetDir");
 

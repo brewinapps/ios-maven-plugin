@@ -3,7 +3,7 @@
 	<groupId>de.letsdev.ios.app.maven</groupId>
 	<artifactId>maven-ios-example-project</artifactId>
 	<packaging>ipa</packaging>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.3-SNAPSHOT</version>
 
 	<name>maven-ios-example-project</name>
 	
@@ -12,11 +12,12 @@
     	<plugin>
 	        <groupId>de.letsdev.maven.plugins</groupId>
 	        <artifactId>maven-ios-plugin</artifactId>
-	        <version>1.0-SNAPSHOT</version>
+	        <version>1.3-SNAPSHOT</version>
 	        <extensions>true</extensions>                
 	        <configuration>
-	            <codeSignIdentity>iPhone Distribution: ACME Inc</codeSignIdentity>
+	            <codeSignIdentity>iPhone Distribution: TEST</codeSignIdentity>
 	            <appName>maven-ios-example-project</appName>
+                <provisioningProfileUUID>12312312-36CA-4C0F-83C3-12321312123E3</provisioningProfileUUID>
 	        </configuration>			                
 	     </plugin>
 	     
@@ -40,25 +41,6 @@
 	     
 	  </plugins>
 	 </build>
-	 
-	 <distributionManagement>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>Snapshots</name>
-            <url>${snapshots.url}</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </snapshotRepository>
-        <repository>
-            <id>releases</id>
-            <name>Releases</name>
-            <url>${releases.url}</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </distributionManagement>
 	   
 	 <dependencies>
         <dependency>

@@ -1,1 +1,4 @@
 target
+example-project/src/ios/maven-ios-example-project/Build
+example-project/src/ios/maven-ios-example-project/maven-ios-example-project.xcodeproj/project.xcworkspace/xcuserdata
+example-project/src/ios/maven-ios-example-project/maven-ios-example-project.xcodeproj/xcuserdata

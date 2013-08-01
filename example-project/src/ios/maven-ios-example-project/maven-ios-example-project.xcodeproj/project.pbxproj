@@ -309,6 +309,7 @@
 				GCC_PREFIX_HEADER = "maven-ios-example-project/maven-ios-example-project-Prefix.pch";
 				INFOPLIST_FILE = "maven-ios-example-project/maven-ios-example-project-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = armv7;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -324,6 +325,7 @@
 				GCC_PREFIX_HEADER = "maven-ios-example-project/maven-ios-example-project-Prefix.pch";
 				INFOPLIST_FILE = "maven-ios-example-project/maven-ios-example-project-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = armv7;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
