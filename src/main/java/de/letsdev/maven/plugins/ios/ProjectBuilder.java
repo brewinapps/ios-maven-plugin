@@ -88,40 +88,17 @@ public class ProjectBuilder {
 
         // Run PlistPuddy to stamp build if a build id is specified
         if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
-            String infoPlistFile = workDirectory + "/" + projectName
-                    + "/" + projectName + "-Info.plist";
+            executePlistScript("write-buildnumber.sh",  properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()), workDirectory, projectName, properties, processBuilder);
+        }
 
-            if (properties.get(Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString()) != null) {
-                infoPlistFile = workDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString());
+        // Run PlistPuddy to overwrite the bundle identifier in info plist
+        if (properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()) != null) {
+            executePlistScript("write-bundleidentifier.sh",  properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()), workDirectory, projectName, properties, processBuilder);
+        }
 
-            }
-
-            // Run shell-script from resource-folder.
-            try {
-                File tempFile = File.createTempFile("write-buildnumber", "sh");
-
-                InputStream inputStream = ProjectBuilder.class
-                        .getResourceAsStream("/META-INF/write-buildnumber.sh");
-                OutputStream outputStream = new FileOutputStream(tempFile);
-
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-
-                outputStream.close();
-
-                processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), infoPlistFile, properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()));
-
-                processBuilder.directory(workDirectory);
-                CommandHelper.performCommand(processBuilder);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        // Run PlistPuddy to overwrite the display name in info plist
+        if (properties.get(Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString()) != null) {
+            executePlistScript("write-displayname.sh",  properties.get(Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString()), workDirectory, projectName, properties, processBuilder);
         }
 
         // Build the application
@@ -263,6 +240,43 @@ public class ProjectBuilder {
                 processBuilder.directory(projectDirectory);
                 CommandHelper.performCommand(processBuilder);
             }
+        }
+    }
+
+    private static void executePlistScript(String scriptName, String value, File workDirectory, String projectName, final Map<String, String> properties, ProcessBuilder processBuilder) throws IOSException {
+        String infoPlistFile = workDirectory + "/" + projectName
+                + "/" + projectName + "-Info.plist";
+
+        if (properties.get(Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString()) != null) {
+            infoPlistFile = workDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString());
+
+        }
+
+        // Run shell-script from resource-folder.
+        try {
+            File tempFile = File.createTempFile(scriptName, "sh");
+
+            InputStream inputStream = ProjectBuilder.class
+                    .getResourceAsStream("/META-INF/" + scriptName);
+            OutputStream outputStream = new FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+
+            processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), infoPlistFile, value);
+
+            processBuilder.directory(workDirectory);
+            CommandHelper.performCommand(processBuilder);
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -18,7 +18,9 @@
 	            <codeSignIdentity>iPhone Distribution: TEST</codeSignIdentity>
 	            <appName>maven-ios-example-project</appName>
                 <provisioningProfileUUID>12312312-36CA-4C0F-83C3-12321312123E3</provisioningProfileUUID>
-	        </configuration>			                
+                <bundleIdentifier>de.letsdev.${PRODUCT_NAME:rfc1034identifier}</bundleIdentifier>
+                <displayName>ACMETEST</displayName>
+	        </configuration>
 	     </plugin>
 	     
 		 <plugin>

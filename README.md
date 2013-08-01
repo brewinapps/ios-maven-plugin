@@ -41,7 +41,9 @@ Compiles the application and generates an IPA package
 12. ios.ipaVersion           (The version number for the IPA, different to the maven project version.)
 13. ios.assetsDirectory      (The name of the assets folder. The assets folder in your project has to be "assets".)
 14. ios.projectName          (The name of the project.)
-15. ios.provisioningProfileUUID (The UUID of the provisioning profile to be used. If not set the default provisioning profile we be used instead.)
+15. ios.provisioningProfileUUID (The UUID of the provisioning profile to be used. If not set the default provisioning profile will be used instead.)
+16. ios.bundleIdentifier (The bundle identifier to overwrite in info plist. If not set the default bundle identifier will be used instead.)
+17. ios.displayName (The display name to overwrite in info plist. If not set the default display name will be used instead.)
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp

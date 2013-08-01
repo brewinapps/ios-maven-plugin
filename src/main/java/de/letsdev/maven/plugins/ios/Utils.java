@@ -20,6 +20,8 @@ public class Utils {
         APP_NAME("appName"),
         ASSETS_DIRECTORY("assetsDirectory"),
         BUILD_ID("buildId"),
+        BUNDLE_IDENTIFIER("bundleIdentifier"),
+        DISPLAY_NAME("displayName"),
         CODE_SIGN_IDENTITY("codeSignIdentity"),
         CONFIGURATION("configuration"),
         HOCKEY_APP_TOKEN("hockeyAppToken"),

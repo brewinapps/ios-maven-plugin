@@ -60,6 +60,24 @@ public class IOSBuildMojo extends AbstractMojo {
      */
     private String provisioningProfileUUID;
 
+    /**
+     * iOS bundle identifier
+     *
+     * If not set the bundle identifier in the info.plist will be used
+     * @parameter
+     * 		expression="${ios.bundleIdentifier}"
+     */
+    private String bundleIdentifier;
+
+    /**
+     * iOS display name
+     *
+     * If not set the display name in the info.plist will be used
+     * @parameter
+     * 		expression="${ios.displayName}"
+     */
+    private String displayName;
+
 	
 	/**
 	 * iOS scheme
@@ -172,8 +190,10 @@ public class IOSBuildMojo extends AbstractMojo {
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString(), this.ipaVersion);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString(), this.assetsDirectory);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString(), this.provisioningProfileUUID);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString(), this.bundleIdentifier);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString(), this.displayName);
 
-			ProjectBuilder.build(properties, mavenProject);
+			ProjectBuilder.build(properties, this.mavenProject);
 		} catch (IOSException e) {
 			throw new MojoExecutionException(e.getMessage());
 		}
