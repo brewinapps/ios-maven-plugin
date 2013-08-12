@@ -135,5 +135,8 @@ public class IOSPackageMojo extends AbstractMojo {
 
         currentArtifact.setFile(artifactFile);
 
+        if(this.classifier != null ){
+            projectHelper.attachArtifact(mavenProject, artifactType, this.classifier, artifactFile);
+        }
     }
 }
