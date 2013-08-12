@@ -38,11 +38,17 @@ public class IOSBuildMojo extends AbstractMojo {
 	
 	/**
 	 * iOS app name
-	 * @parameter
-	 * 		expression="${ios.appName}"
-	 * @required
+	 * @parameter expression="${ios.appName}"
+     * @required
 	 */
-	private String appName;
+    private String appName;
+
+    /**
+     * classifier
+     * @parameter
+     * 		expression="${ios.classifier}"
+     */
+    private String classifier;
 
     /**
      * iOS project name
@@ -165,7 +171,7 @@ public class IOSBuildMojo extends AbstractMojo {
 	* @readonly
 	*/
 	protected MavenProject mavenProject;
-	
+
 	/**
 	 * 
 	 */
@@ -192,6 +198,7 @@ public class IOSBuildMojo extends AbstractMojo {
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString(), this.provisioningProfileUUID);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString(), this.bundleIdentifier);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString(), this.displayName);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CLASSIFIER.toString(), this.classifier);
 
 			ProjectBuilder.build(properties, this.mavenProject);
 		} catch (IOSException e) {

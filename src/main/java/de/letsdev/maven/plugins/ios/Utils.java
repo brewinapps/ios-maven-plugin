@@ -22,6 +22,7 @@ public class Utils {
         BUILD_ID("buildId"),
         BUNDLE_IDENTIFIER("bundleIdentifier"),
         DISPLAY_NAME("displayName"),
+        CLASSIFIER("classifier"),
         CODE_SIGN_IDENTITY("codeSignIdentity"),
         CONFIGURATION("configuration"),
         HOCKEY_APP_TOKEN("hockeyAppToken"),

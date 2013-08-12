@@ -12,6 +12,7 @@
 
 package de.letsdev.maven.plugins.ios;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -19,7 +20,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 
-import java.io.File;
+import java.io.*;
 
 
 /**
@@ -36,6 +37,13 @@ public class IOSPackageMojo extends AbstractMojo {
      * @required
      */
     private String appName;
+
+    /**
+     * iOS classifier
+     *
+     * @parameter expression="${ios.classifier}"
+     */
+    private String classifier;
 
     /**
      * build id
@@ -83,6 +91,10 @@ public class IOSPackageMojo extends AbstractMojo {
         String artifactName = null;
         String projectVersion = mavenProject.getVersion();
 
+        String classifierString = (this.classifier != null? "-" + this.classifier + "-" : "-");
+
+        String artifactType = (currentArtifact.getType() == null || "pom".equals(currentArtifact.getType() ) ? Utils.PLUGIN_PACKAGING.IPA.toString() : currentArtifact.getType());
+
         if (ipaVersion != null) {
             projectVersion = ipaVersion;
         }
@@ -94,11 +106,34 @@ public class IOSPackageMojo extends AbstractMojo {
             artifactName = appName + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP;
             destinationDirectory = targetDir;
 //            this.projectHelper.attachArtifact( mavenProject, Utils.PLUGIN_SUFFIX.IOS_FRAMEWORK.toString(), null, new File(destinationDirectory + "/" + artifactName));
-        } else if (mavenProject.getPackaging().equals(Utils.PLUGIN_PACKAGING.IPA.toString())) {
+        }
+        else {
+            mavenProject.setPackaging(Utils.PLUGIN_PACKAGING.IPA.toString());
             artifactName = appName + "_" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA;
             destinationDirectory = targetDir + "/" + configuration + "-iphoneos/";
         }
 
-        currentArtifact.setFile(new File(destinationDirectory + "/" + artifactName));
+        File destinationFile = new File(destinationDirectory + "/" + artifactName);
+
+        File artifactFile =  new File(targetDir + "/" + appName + classifierString + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA);
+
+        InputStream in = null;
+        OutputStream out = null;
+
+        try {
+            in = new FileInputStream(destinationFile);
+            out = new FileOutputStream(artifactFile, true);
+            IOUtils.copy(in, out);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
+        }
+
+        currentArtifact.setFile(artifactFile);
+
     }
 }
