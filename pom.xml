@@ -5,6 +5,7 @@
     <packaging>maven-plugin</packaging>
     <version>1.5-SNAPSHOT</version>
 
+
     <name>Maven iOS Plugin</name>
     <url>https://github.com/letsdev/ios-maven-plugin</url>
 
