@@ -123,6 +123,10 @@ public class ProjectBuilder {
             buildParameters.add("PROVISIONING_PROFILE=" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()));
         }
 
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.APP_NAME.toString())) {
+            buildParameters.add("PRODUCT_NAME=" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()));
+        }
+
         // Add target. Uses target 'framework' to build Frameworks.
         buildParameters.add("-target");
 
