@@ -151,6 +151,13 @@ public class IOSBuildMojo extends AbstractMojo {
     private String infoPlist;
 
     /**
+     * app icon name
+     * @parameter
+     * 		expression="${ios.appIconName}"
+     */
+    private String appIconName;
+
+    /**
      * ipaVersion
      * @parameter
      * 		expression="${ios.ipaVersion}"
@@ -165,7 +172,7 @@ public class IOSBuildMojo extends AbstractMojo {
 
     /**
 	* The maven project.
-	* 
+	*
 	* @parameter expression="${project}"
 	* @required
 	* @readonly
@@ -173,14 +180,15 @@ public class IOSBuildMojo extends AbstractMojo {
 	protected MavenProject mavenProject;
 
 	/**
-	 * 
+	 *
 	 */
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
 			final String targetDir = this.mavenProject.getBuild().getDirectory();
-			
+
 			Map<String, String> properties = new HashMap<String, String>();
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.APP_NAME.toString(), this.appName);
+			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.APP_ICON_NAME.toString(), this.appIconName);
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString(), this.projectName);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString(), this.codeSignIdentity);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SDK.toString(), this.sdk);
