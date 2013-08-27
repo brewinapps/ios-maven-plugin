@@ -15,6 +15,7 @@ http://www.letsdev.de - professional mobile solutions
 4. One-step HockeyApp deployment
 5. Packaging of iOS applications (.ipa & .dSYM) incl. unlock/lock keychain for deployment to Nexus/Artifactory
 6. Packaging of iOS frameworks for deployment to Nexus/Artifactory
+7. Use Multiple executions e.g for branding or customizing of apps. (Different app icon names, different display names etc.)
 
 ## Requirements
 1. The plugin relies on several tools that are only available on Mac OS X: xcodebuild, xcrun and agvtool.  Install the Xcode Command Line Tools (Xcode -> Preferences... -> Downloads).  
@@ -28,7 +29,7 @@ Compiles the application and generates an IPA package
 **Parameters**
 
 1. ios.sourceDir			(default: src/ios)
-2. ios.appName				(required)
+2. ios.appName				(required)  is also the name of the bundle identifier
 3. ios.scheme
 4. ios.sdk					(default: iphoneos)
 5. ios.codeSignIdentity
@@ -44,6 +45,7 @@ Compiles the application and generates an IPA package
 15. ios.provisioningProfileUUID (The UUID of the provisioning profile to be used. If not set the default provisioning profile will be used instead.)
 16. ios.bundleIdentifier (The bundle identifier to overwrite in info plist. If not set the default bundle identifier will be used instead.)
 17. ios.displayName (The display name to overwrite in info plist. If not set the default display name will be used instead.)
+18. ios.appIconName (The app icon name to overwrite in info plist. If not set the default app icon name will be used instead. e.g. <appIconName>free-icon.png</appIconName>)
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
