@@ -5,7 +5,7 @@ PLIST_LOCATION=$1
 NEW_APP_ICON_NAME=$2
 
 APP_ICON_PREFIX="${NEW_APP_ICON_NAME%%.*}"
-APP_ICON_SUFFIX="${NEW_APP_ICON_NAME##*.}"
+APP_ICON_SUFFIX="png"
 
 
 /usr/libexec/PlistBuddy -c "Delete :CFBundleIcons" $PLIST_LOCATION
