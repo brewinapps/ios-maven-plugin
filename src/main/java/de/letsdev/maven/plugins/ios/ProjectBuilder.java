@@ -119,7 +119,8 @@ public class ProjectBuilder {
         buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString()));
         buildParameters.add("-configuration");
         buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()));
-        buildParameters.add("SHARED_PRECOMPS_DIR");
+//        buildParameters.add("SHARED_PRECOMPS_DIR");
+        buildParameters.add("CACHE_ROOT");
         buildParameters.add(precompiledHeadersDir.getAbsolutePath());
         buildParameters.add("SYMROOT=" + targetDirectory.getAbsolutePath());
 
