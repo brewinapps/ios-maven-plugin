@@ -154,9 +154,8 @@ public class ProjectBuilder {
             buildParameters.add(projectName);
         }
 
-        buildParameters.add("SHARED_PRECOMPS_DIR");
+        buildParameters.add("SHARED_PRECOMPS_DIR=" + precompiledHeadersDir.getAbsolutePath());
 //        buildParameters.add("CACHE_ROOT");
-        buildParameters.add(precompiledHeadersDir.getAbsolutePath());
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString())) {
             buildParameters.add("OTHER_CODE_SIGN_FLAGS=--keychain " + properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
