@@ -250,6 +250,7 @@ public class ProjectBuilder {
                     "-o",
                     ipaTargetPath.toString(),
                     "--sign", properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()),
+                    "-kill-cache",
                     "TMPDIR=" + ipaTmpDir.getAbsolutePath()
                     );
 
