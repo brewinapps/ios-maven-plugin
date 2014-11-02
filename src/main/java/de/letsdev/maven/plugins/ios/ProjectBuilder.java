@@ -116,6 +116,9 @@ public class ProjectBuilder {
         //BEG clean the application
         List<String> cleanParameters = new ArrayList<String>();
         cleanParameters.add("xcodebuild");
+        cleanParameters.add("-alltargets");
+        cleanParameters.add("-configuration");
+        cleanParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()));
         cleanParameters.add("clean");
         processBuilder = new ProcessBuilder(cleanParameters);
         processBuilder.directory(workDirectory);
