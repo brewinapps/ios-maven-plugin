@@ -8,6 +8,14 @@ This is a plugin provided by let's dev GmbH & Co.KG
 
 http://www.letsdev.de - professional mobile solutions
 
+## Last-Changes
+
+02.11.2014 - Release version 1.9.3
+02.11.2014 - adjusted to xcode 6.1 and iOS8 build, some issues occurred here
+02.11.2014 - prepared build with an clean step
+02.11.2014 - fixed issue with precompiled headers path in /var/folders/...
+
+
 ## Features
 1. Compilation of iOS applications
 2. Distribution of iOS applications
