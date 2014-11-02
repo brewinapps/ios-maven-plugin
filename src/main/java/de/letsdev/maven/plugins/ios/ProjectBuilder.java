@@ -236,7 +236,7 @@ public class ProjectBuilder {
                     newAppTargetPath.toString(),
                     "-o",
                     ipaTargetPath.toString(),
-                    "--sign", "\"" + properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()) + "\"",
+                    "--sign", "\'" + properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()) + "\'",
                     "TMPDIR=" + ipaTmpDir.getAbsolutePath()
                     );
 
