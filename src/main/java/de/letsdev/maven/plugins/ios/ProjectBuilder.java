@@ -133,7 +133,7 @@ public class ProjectBuilder {
         buildParameters.add("-configuration");
         buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()));
         buildParameters.add("SYMROOT=" + targetDirectory.getAbsolutePath());
-        buildParameters.add("CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist");
+        buildParameters.add("CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist"); //since xcode 6.1 is necessary, if not set, app is not able to be signed with a key.
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString())) {
             buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()));
@@ -168,8 +168,7 @@ public class ProjectBuilder {
             buildParameters.add(projectName);
         }
 
-        buildParameters.add("SHARED_PRECOMPS_DIR=" + precompiledHeadersDir.getAbsolutePath());
-//        buildParameters.add("CACHE_ROOT");
+        buildParameters.add("SHARED_PRECOMPS_DIR=" + precompiledHeadersDir.getAbsolutePath());   //this is really important to avoid collisions, if not set /var/folders will be used here
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString())) {
             buildParameters.add("OTHER_CODE_SIGN_FLAGS=--keychain " + properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
@@ -241,23 +240,9 @@ public class ProjectBuilder {
                 System.err.println("Could not create ipa temp dir at path = " + ipaTmpDir.getAbsolutePath());
             }
 
-
-            //BEG set tmpdir environment variable, to avoid collisions
-//            processBuilder = new ProcessBuilder(
-//                    "export TMPDIR=" + ipaTmpDir.getAbsolutePath()
-//            );
-//            processBuilder.directory(workDirectory);
-
-//            ProcessBuilder builder = new ProcessBuilder();
-//            builder.environment().put("TMPDIR", ipaTmpDir.getAbsolutePath());
-//
-//            CommandHelper.performCommand(builder);
-            //END set tmpdir environment variable
-
             processBuilder = new ProcessBuilder(
                     "xcrun",
-                    "--no-cache",
-//                    "TMPDIR=" + ipaTmpDir.getAbsolutePath(),
+                    "--no-cache",  //disbale caching
                     "-sdk",
                     properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString()),
                     "PackageApplication",
@@ -269,7 +254,7 @@ public class ProjectBuilder {
                     );
 
             processBuilder.directory(workDirectory);
-            processBuilder.environment().put("TMPDIR", ipaTmpDir.getAbsolutePath());
+            processBuilder.environment().put("TMPDIR", ipaTmpDir.getAbsolutePath());  //this is really important to avoid collisions, if not set /var/folders will be used here
             CommandHelper.performCommand(processBuilder);
         }
 
