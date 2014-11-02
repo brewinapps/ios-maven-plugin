@@ -237,8 +237,7 @@ public class ProjectBuilder {
                     "-o",
                     ipaTargetPath.toString(),
                     "--sign", properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()),
-                    "TMPDIR",
-                    ipaTmpDir.getAbsolutePath()
+                    "TMPDIR=ipaTmpDir.getAbsolutePath()"
                     );
 
             processBuilder.directory(workDirectory);
