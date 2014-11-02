@@ -240,6 +240,15 @@ public class ProjectBuilder {
                 System.err.println("Could not create ipa temp dir at path = " + ipaTmpDir.getAbsolutePath());
             }
 
+
+            //BEG set tmpdir environment variable, to avoid collisions
+            processBuilder = new ProcessBuilder(
+                    "export TMPDIR=" + ipaTmpDir.getAbsolutePath()
+            );
+            processBuilder.directory(workDirectory);
+            CommandHelper.performCommand(processBuilder);
+            //END set tmpdir environment variable
+
             processBuilder = new ProcessBuilder(
                     "xcrun",
                     "--no-cache",
