@@ -247,10 +247,10 @@ public class ProjectBuilder {
 //            );
 //            processBuilder.directory(workDirectory);
 
-            ProcessBuilder builder = new ProcessBuilder();
-            builder.environment().put("TMPDIR", ipaTmpDir.getAbsolutePath());
-
-            CommandHelper.performCommand(builder);
+//            ProcessBuilder builder = new ProcessBuilder();
+//            builder.environment().put("TMPDIR", ipaTmpDir.getAbsolutePath());
+//
+//            CommandHelper.performCommand(builder);
             //END set tmpdir environment variable
 
             processBuilder = new ProcessBuilder(
@@ -268,6 +268,7 @@ public class ProjectBuilder {
                     );
 
             processBuilder.directory(workDirectory);
+            processBuilder.environment().put("TMPDIR", ipaTmpDir.getAbsolutePath());
             CommandHelper.performCommand(processBuilder);
         }
 
