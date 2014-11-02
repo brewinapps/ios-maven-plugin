@@ -243,6 +243,7 @@ public class ProjectBuilder {
             processBuilder = new ProcessBuilder(
                     "xcrun",
                     "--no-cache",
+                    "TMPDIR=" + ipaTmpDir.getAbsolutePath(),
                     "-sdk",
                     properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString()),
                     "PackageApplication",
@@ -250,8 +251,7 @@ public class ProjectBuilder {
                     newAppTargetPath.toString(),
                     "-o",
                     ipaTargetPath.toString(),
-                    "--sign", properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()),
-                    "TMPDIR=" + ipaTmpDir.getAbsolutePath()
+                    "--sign", properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString())
                     );
 
             processBuilder.directory(workDirectory);
