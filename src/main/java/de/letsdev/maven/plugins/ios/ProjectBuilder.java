@@ -242,11 +242,15 @@ public class ProjectBuilder {
 
 
             //BEG set tmpdir environment variable, to avoid collisions
-            processBuilder = new ProcessBuilder(
-                    "export TMPDIR=" + ipaTmpDir.getAbsolutePath()
-            );
-            processBuilder.directory(workDirectory);
-            CommandHelper.performCommand(processBuilder);
+//            processBuilder = new ProcessBuilder(
+//                    "export TMPDIR=" + ipaTmpDir.getAbsolutePath()
+//            );
+//            processBuilder.directory(workDirectory);
+
+            ProcessBuilder builder = new ProcessBuilder();
+            builder.environment().put("TMPDIR", ipaTmpDir.getAbsolutePath());
+
+            CommandHelper.performCommand(builder);
             //END set tmpdir environment variable
 
             processBuilder = new ProcessBuilder(
