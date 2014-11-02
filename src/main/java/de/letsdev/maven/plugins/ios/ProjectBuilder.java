@@ -155,6 +155,7 @@ public class ProjectBuilder {
         }
 
         buildParameters.add("SHARED_PRECOMPS_DIR=" + precompiledHeadersDir.getAbsolutePath());
+        buildParameters.add("clean build");
 //        buildParameters.add("CACHE_ROOT");
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString())) {
