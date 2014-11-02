@@ -18,6 +18,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author let's dev
@@ -106,6 +107,11 @@ public class ProjectBuilder {
             executePlistScript("write-displayname.sh",  properties.get(Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString()), workDirectory, projectName, properties, processBuilder);
         }
 
+        File precompiledHeadersDir = new File(targetDirectory, "precomp-dir-" + UUID.randomUUID().toString());
+        if(!precompiledHeadersDir.mkdir()){
+           System.err.println("Could not create precompiled headers dir at path = " + precompiledHeadersDir.getAbsolutePath());
+        }
+
         // Build the application
         List<String> buildParameters = new ArrayList<String>();
         buildParameters.add("xcodebuild");
@@ -113,6 +119,8 @@ public class ProjectBuilder {
         buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString()));
         buildParameters.add("-configuration");
         buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()));
+        buildParameters.add("SHARED_PRECOMPS_DIR");
+        buildParameters.add(precompiledHeadersDir.getAbsolutePath());
         buildParameters.add("SYMROOT=" + targetDirectory.getAbsolutePath());
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString())) {
@@ -213,16 +221,24 @@ public class ProjectBuilder {
                 CommandHelper.performCommand(processBuilder);
             }
 
+            File ipaTmpDir = new File(targetDirectory, "ipa-temp-dir-" + UUID.randomUUID().toString());
+            if(!ipaTmpDir.mkdir()){
+                System.err.println("Could not create ipa temp dir at path = " + ipaTmpDir.getAbsolutePath());
+            }
+
             processBuilder = new ProcessBuilder(
                     "xcrun",
                     "-sdk",
-                    "iphoneos",
+                    properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString()),
                     "PackageApplication",
                     "-v",
                     newAppTargetPath.toString(),
                     "-o",
                     ipaTargetPath.toString(),
-                    "--sign", properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()));
+                    "--sign", properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()),
+                    "TMPDIR",
+                    ipaTmpDir.getAbsolutePath()
+                    );
 
             processBuilder.directory(workDirectory);
             CommandHelper.performCommand(processBuilder);
