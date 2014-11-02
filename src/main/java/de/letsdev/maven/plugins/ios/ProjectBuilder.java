@@ -242,6 +242,7 @@ public class ProjectBuilder {
 
             processBuilder = new ProcessBuilder(
                     "xcrun",
+                    "--no-cache",
                     "-sdk",
                     properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString()),
                     "PackageApplication",
@@ -250,7 +251,6 @@ public class ProjectBuilder {
                     "-o",
                     ipaTargetPath.toString(),
                     "--sign", properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()),
-                    "--no-cache",
                     "TMPDIR=" + ipaTmpDir.getAbsolutePath()
                     );
 
