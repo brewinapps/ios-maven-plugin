@@ -119,9 +119,6 @@ public class ProjectBuilder {
         buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString()));
         buildParameters.add("-configuration");
         buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()));
-//        buildParameters.add("SHARED_PRECOMPS_DIR");
-        buildParameters.add("CACHE_ROOT");
-        buildParameters.add(precompiledHeadersDir.getAbsolutePath());
         buildParameters.add("SYMROOT=" + targetDirectory.getAbsolutePath());
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString())) {
@@ -156,6 +153,10 @@ public class ProjectBuilder {
         } else {
             buildParameters.add(projectName);
         }
+
+        buildParameters.add("SHARED_PRECOMPS_DIR");
+//        buildParameters.add("CACHE_ROOT");
+        buildParameters.add(precompiledHeadersDir.getAbsolutePath());
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString())) {
             buildParameters.add("OTHER_CODE_SIGN_FLAGS=--keychain " + properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
