@@ -112,6 +112,16 @@ public class ProjectBuilder {
            System.err.println("Could not create precompiled headers dir at path = " + precompiledHeadersDir.getAbsolutePath());
         }
 
+
+        //BEG clean the application
+        List<String> cleanParameters = new ArrayList<String>();
+        cleanParameters.add("xcodebuild");
+        cleanParameters.add("clean");
+        processBuilder = new ProcessBuilder(cleanParameters);
+        processBuilder.directory(workDirectory);
+        CommandHelper.performCommand(processBuilder);
+        //END clean the application
+
         // Build the application
         List<String> buildParameters = new ArrayList<String>();
         buildParameters.add("xcodebuild");
@@ -155,7 +165,6 @@ public class ProjectBuilder {
         }
 
         buildParameters.add("SHARED_PRECOMPS_DIR=" + precompiledHeadersDir.getAbsolutePath());
-        buildParameters.add("clean build");
 //        buildParameters.add("CACHE_ROOT");
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString())) {
