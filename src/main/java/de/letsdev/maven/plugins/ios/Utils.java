@@ -23,6 +23,8 @@ public class Utils {
         BUILD_ID("buildId"),
         BUNDLE_IDENTIFIER("bundleIdentifier"),
         DISPLAY_NAME("displayName"),
+        DEPLOY_IPA_PATH("deployIpaPath"),
+        DEPLOY_ICON_PATH("deployIconPath"),
         CLASSIFIER("classifier"),
         CODE_SIGN_IDENTITY("codeSignIdentity"),
         CONFIGURATION("configuration"),
