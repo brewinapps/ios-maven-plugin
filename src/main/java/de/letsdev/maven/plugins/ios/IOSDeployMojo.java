@@ -53,12 +53,26 @@ public class IOSDeployMojo extends AbstractMojo {
 	private String appName;	
 	
 	/**
-	 * iOS configuration
+	 * iOS Deploy IPA Path
 	 * @parameter
-	 * 		expression="${ios.configuration}"
-	 * 		default-value="Release"
+	 * 		expression="${ios.deployIpaPath}"
 	 */
-	private String configuration;	
+	private String deployIpaPath;
+
+    /**
+     * iOS Deploy Icon Path
+     * @parameter
+     * 		expression="${ios.deployIconPath}"
+     */
+    private String deployIconPath;
+
+    /**
+     * iOS configuration
+     * @parameter
+     * 		expression="${ios.configuration}"
+     * 		default-value="Release"
+     */
+    private String configuration;
 		
 	/**
 	* The maven project.
@@ -83,7 +97,9 @@ public class IOSDeployMojo extends AbstractMojo {
 			properties.put(Utils.PLUGIN_PROPERTIES.RELEASE_NOTES.toString(), releaseNotes);
 			properties.put(Utils.PLUGIN_PROPERTIES.APP_DIR.toString(), appDir);
 			properties.put(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString(), configuration);
-			
+			properties.put(Utils.PLUGIN_PROPERTIES.DEPLOY_IPA_PATH.toString(), deployIpaPath);
+			properties.put(Utils.PLUGIN_PROPERTIES.DEPLOY_ICON_PATH.toString(), deployIpaPath);
+
 			ProjectDeployer.deploy(properties);
 		} catch (IOSException e) {
 			System.out.println(e.getMessage());

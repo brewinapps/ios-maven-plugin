@@ -125,6 +125,12 @@ public class ProjectBuilder {
         CommandHelper.performCommand(processBuilder);
         //END clean the application
 
+        // Run PlistPuddy to export the deploy plist
+        if ((properties.get(Utils.PLUGIN_PROPERTIES.DEPLOY_IPA_PATH.toString()) != null)
+                && (properties.get(Utils.PLUGIN_PROPERTIES.DEPLOY_IPA_PATH.toString()) != null)) {
+            executePlistScript("write-displayname.sh",  properties.get(Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString()), workDirectory, projectName, properties, processBuilder);
+        }
+
         // Build the application
         List<String> buildParameters = new ArrayList<String>();
         buildParameters.add("xcodebuild");
