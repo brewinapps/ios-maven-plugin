@@ -31,14 +31,14 @@ public class IOSBuildMojo extends AbstractMojo {
 	/**
 	 * iOS Source Directory
 	 * @parameter
-	 * 		expression="${ios.sourceDir}"
+	 * 		property="ios.sourceDir"
 	 * 		default-value="src/ios"
 	 */
 	private String sourceDir;
 	
 	/**
 	 * iOS app name
-	 * @parameter expression="${ios.appName}"
+	 * @parameter property="ios.appName"
      * @required
 	 */
     private String appName;
@@ -46,14 +46,14 @@ public class IOSBuildMojo extends AbstractMojo {
     /**
      * classifier
      * @parameter
-     * 		expression="${ios.classifier}"
+     * 		property="ios.classifier"
      */
     private String classifier;
 
     /**
      * iOS project name
      * @parameter
-     * 		expression="${ios.projectName}"
+     * 		property="ios.projectName"
      */
     private String projectName;
 
@@ -62,7 +62,7 @@ public class IOSBuildMojo extends AbstractMojo {
      *
      * If not set the default provisioning file in xcode project will be used.
      * @parameter
-     * 		expression="${ios.provisioningProfileUUID}"
+     * 		property="ios.provisioningProfileUUID"
      */
     private String provisioningProfileUUID;
 
@@ -71,7 +71,7 @@ public class IOSBuildMojo extends AbstractMojo {
      *
      * If not set the bundle identifier in the info.plist will be used
      * @parameter
-     * 		expression="${ios.bundleIdentifier}"
+     * 		property="ios.bundleIdentifier"
      */
     private String bundleIdentifier;
 
@@ -80,7 +80,7 @@ public class IOSBuildMojo extends AbstractMojo {
      *
      * If not set the display name in the info.plist will be used
      * @parameter
-     * 		expression="${ios.displayName}"
+     * 		property="ios.displayName"
      */
     private String displayName;
 
@@ -88,14 +88,14 @@ public class IOSBuildMojo extends AbstractMojo {
 	/**
 	 * iOS scheme
 	 * @parameter
-	 * 		expression="${ios.scheme}"
+	 * 		property="ios.scheme"
 	 */
 	private String scheme;		
 	
 	/**
 	 * iOS SDK
 	 * @parameter
-	 * 		expression="${ios.sdk}"
+	 * 		property="ios.sdk"
 	 * 		default-value="iphoneos"
 	 */
 	private String sdk;
@@ -103,28 +103,28 @@ public class IOSBuildMojo extends AbstractMojo {
 	/**
 	 * iOS code sign identity
 	 * @parameter
-	 * 		expression="${ios.codeSignIdentity}"
+	 * 		property="ios.codeSignIdentity"
 	 */
 	private String codeSignIdentity;
 
     /**
      * Path to keychain to sign with
      * @parameter
-     * 		expression="${ios.keychainPath}"
+     * 		property="ios.keychainPath"
      */
     private String keychainPath;
 
     /**
      * Password to unlock keychain to sign with
      * @parameter
-     * 		expression="${ios.keychainPassword}"
+     * 		property="ios.keychainPassword"
      */
     private String keychainPassword;
 	
 	/**
 	 * iOS configuration
 	 * @parameter
-	 * 		expression="${ios.configuration}"
+	 * 		property="ios.configuration"
 	 * 		default-value="Release"
 	 */
 	private String configuration;
@@ -132,35 +132,35 @@ public class IOSBuildMojo extends AbstractMojo {
 	/**
 	 * build id
 	 * @parameter
-	 * 		expression="${ios.buildId}"
+	 * 		property="ios.buildId"
 	 */
 	private String buildId;	
 	
 	/**
 	 * target
 	 * @parameter
-	 * 		expression="${ios.target}"
+	 * 		property="ios.target"
 	 */
 	private String target;
 
     /**
      * infoPlist
      * @parameter
-     * 		expression="${ios.infoPlist}"
+     * 		property="ios.infoPlist"
      */
     private String infoPlist;
 
     /**
      * app icon name
      * @parameter
-     * 		expression="${ios.appIconName}"
+     * 		property="ios.appIconName"
      */
     private String appIconName;
 
     /**
      * ipaVersion
      * @parameter
-     * 		expression="${ios.ipaVersion}"
+     * 		property="ios.ipaVersion"
      */
     private String ipaVersion;
 
@@ -173,7 +173,7 @@ public class IOSBuildMojo extends AbstractMojo {
     /**
 	* The maven project.
 	*
-	* @parameter expression="${project}"
+	* @parameter property="project"
 	* @required
 	* @readonly
 	*/
