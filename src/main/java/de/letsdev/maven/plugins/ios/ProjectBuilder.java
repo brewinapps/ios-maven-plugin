@@ -87,22 +87,22 @@ public class ProjectBuilder {
         processBuilder.directory(workDirectory);
         CommandHelper.performCommand(processBuilder);
 
-        // Run PlistPuddy to stamp build if a build id is specified
+        // Run PlistBuddy to stamp build if a build id is specified
         if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
             executePlistScript("write-buildnumber.sh",  properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()), workDirectory, projectName, properties, processBuilder);
         }
 
-        // Run PlistPuddy to app icon name if a build id is specified
+        // Run PlistBuddy to app icon name if a build id is specified
         if (properties.get(Utils.PLUGIN_PROPERTIES.APP_ICON_NAME.toString()) != null) {
             executePlistScript("write-app-icon-name.sh",  properties.get(Utils.PLUGIN_PROPERTIES.APP_ICON_NAME.toString()), workDirectory, projectName, properties, processBuilder);
         }
 
-        // Run PlistPuddy to overwrite the bundle identifier in info plist
+        // Run PlistBuddy to overwrite the bundle identifier in info plist
         if (properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()) != null) {
             executePlistScript("write-bundleidentifier.sh",  properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()), workDirectory, projectName, properties, processBuilder);
         }
 
-        // Run PlistPuddy to overwrite the display name in info plist
+        // Run PlistBuddy to overwrite the display name in info plist
         if (properties.get(Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString()) != null) {
             executePlistScript("write-displayname.sh",  properties.get(Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString()), workDirectory, projectName, properties, processBuilder);
         }
@@ -111,7 +111,6 @@ public class ProjectBuilder {
         if(!precompiledHeadersDir.mkdir()){
            System.err.println("Could not create precompiled headers dir at path = " + precompiledHeadersDir.getAbsolutePath());
         }
-
 
         //BEG clean the application
         List<String> cleanParameters = new ArrayList<String>();
@@ -124,12 +123,6 @@ public class ProjectBuilder {
         processBuilder.directory(workDirectory);
         CommandHelper.performCommand(processBuilder);
         //END clean the application
-
-        // Run PlistPuddy to export the deploy plist
-        if ((properties.get(Utils.PLUGIN_PROPERTIES.DEPLOY_IPA_PATH.toString()) != null)
-                && (properties.get(Utils.PLUGIN_PROPERTIES.DEPLOY_IPA_PATH.toString()) != null)) {
-            executePlistScript("write-displayname.sh",  properties.get(Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString()), workDirectory, projectName, properties, processBuilder);
-        }
 
         // Build the application
         List<String> buildParameters = new ArrayList<String>();
@@ -211,7 +204,7 @@ public class ProjectBuilder {
             // Generate IPA
         } else {
             if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
-                projectVersion += "_(" + properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) + ")";
+                projectVersion += "-b" + properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString());
             }
 
             File appTargetPath = new File(targetDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
@@ -221,7 +214,7 @@ public class ProjectBuilder {
                     + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.APP);
 
             File ipaTargetPath = new File(targetDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
-                    + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "_" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA);
+                    + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "-" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA);
 
             File dsymTargetPath = new File(targetDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
                     + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()) + "." + Utils.PLUGIN_SUFFIX.APP_DSYM);
@@ -274,17 +267,24 @@ public class ProjectBuilder {
         //Rename assets directory to origin
         if (properties.get(Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString()) != null) {
 
-            if (assetsDirectory.exists()) {
+            if ((assetsTempDirectory != null) && (assetsDirectory.exists())) {
                 processBuilder = new ProcessBuilder("mv", assetsDirectory.toString(), newAssetsDirectory.toString());
                 processBuilder.directory(projectDirectory);
                 CommandHelper.performCommand(processBuilder);
             }
 
-            if (assetsTempDirectory.exists()) {
-                processBuilder = new ProcessBuilder("mv", assetsTempDirectory.toString(), assetsDirectory.toString());
-                processBuilder.directory(projectDirectory);
-                CommandHelper.performCommand(processBuilder);
+            if ((assetsTempDirectory != null) && (assetsTempDirectory.exists())) {
+                    processBuilder = new ProcessBuilder("mv", assetsTempDirectory.toString(), assetsDirectory.toString());
+                    processBuilder.directory(projectDirectory);
+                    CommandHelper.performCommand(processBuilder);
             }
+        }
+
+        // Generate the the deploy plist file
+        if ((properties.get(Utils.PLUGIN_PROPERTIES.DEPLOY_IPA_PATH.toString()) != null) && (properties.get(Utils.PLUGIN_PROPERTIES.DEPLOY_ICON_PATH.toString()) != null)) {
+            final String deployPlistName = properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "-" + projectVersion + "." + Utils.PLUGIN_SUFFIX.PLIST;
+            writeDeployPlistFile(targetDirectory, projectName, deployPlistName, properties, processBuilder);
+
         }
     }
 
@@ -294,7 +294,6 @@ public class ProjectBuilder {
 
         if (properties.get(Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString()) != null) {
             infoPlistFile = workDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString());
-
         }
 
         // Run shell-script from resource-folder.
@@ -318,6 +317,49 @@ public class ProjectBuilder {
             processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), infoPlistFile, value);
 
             processBuilder.directory(workDirectory);
+            CommandHelper.performCommand(processBuilder);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void writeDeployPlistFile(File targetDirectory, String projectName, String deployPlistName, final Map<String, String> properties, ProcessBuilder processBuilder) throws IOSException {
+        String infoPlistFile = targetDirectory + File.separator + projectName + File.separator + deployPlistName;
+
+        // Run shell-script from resource-folder.
+        try {
+            final String scriptName = "write-deploy-plist";
+
+            final String ipaLocation = properties.get(Utils.PLUGIN_PROPERTIES.IPA_LOCATION.toString());
+            final String iconLocation = properties.get(Utils.PLUGIN_PROPERTIES.ICON_LOCATION.toString());
+            final String displayName = properties.get(Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString());
+            final String bundleIdentifier = properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString());
+            final String bundleVersion = properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString());
+
+            File tempFile = File.createTempFile(scriptName, "sh");
+
+            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
+            OutputStream outputStream = new FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+
+            processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
+                    deployPlistName,
+                    ipaLocation,
+                    iconLocation,
+                    displayName,
+                    bundleIdentifier,
+                    bundleVersion);
+
+            processBuilder.directory(targetDirectory);
             CommandHelper.performCommand(processBuilder);
 
         } catch (IOException e) {
