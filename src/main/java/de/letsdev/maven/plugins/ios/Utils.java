@@ -40,7 +40,9 @@ public class Utils {
         PROJECT_NAME("projectName"),
         PROVISIONING_PROFILE_UUID("provisioningProfileUUID"),
         TARGET("target"),
-        TARGET_DIR("targetDir");
+        TARGET_DIR("targetDir"),
+        IPA_LOCATION("ipaLocation"),
+        ICON_LOCATION("iconLocation");
 
         private PLUGIN_PROPERTIES(String name) {
             this.name = name;
@@ -54,12 +56,12 @@ public class Utils {
     }
 
     public enum PLUGIN_SUFFIX {
-
         APP("app"),
         IPA("ipa"),
         APP_DSYM("app.dSYM"),
         FRAMEWORK("framework"),
-        FRAMEWORK_ZIP("framework.zip");
+        FRAMEWORK_ZIP("framework.zip"),
+        PLIST("plist");
 
         private PLUGIN_SUFFIX(String name) {
             this.name = name;
