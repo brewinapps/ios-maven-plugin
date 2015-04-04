@@ -24,8 +24,7 @@
         <connection>scm:git:git@github.com:letsdev/maven-ios-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:letsdev/maven-ios-plugin.git</developerConnection>
         <url>scm:git:git@github.com:letsdev/maven-ios-plugin.git</url>
-      <tag>version-1.9.3</tag>
-  </scm>
+    </scm>
 
     <distributionManagement>
         <snapshotRepository>
