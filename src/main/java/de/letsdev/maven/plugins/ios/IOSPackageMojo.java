@@ -33,7 +33,7 @@ public class IOSPackageMojo extends AbstractMojo {
     /**
      * iOS app name
      *
-     * @parameter expression="${ios.appName}"
+     * @parameter property="ios.appName"
      * @required
      */
     private String appName;
@@ -41,21 +41,21 @@ public class IOSPackageMojo extends AbstractMojo {
     /**
      * iOS classifier
      *
-     * @parameter expression="${ios.classifier}"
+     * @parameter property="ios.classifier"
      */
     private String classifier;
 
     /**
      * build id
      * @parameter
-     * 		expression="${ios.buildId}"
+     * 		property="ios.buildId"
      */
     private String buildId;
 
     /**
      * iOS configuration
      *
-     * @parameter expression="${ios.configuration}"
+     * @parameter property="ios.configuration"
      * default-value="Release"
      */
     private String configuration;
@@ -63,14 +63,14 @@ public class IOSPackageMojo extends AbstractMojo {
     /**
      * ipaVersion
      * @parameter
-     * 		expression="${ios.ipaVersion}"
+     * 		property="ios.ipaVersion"
      */
     private String ipaVersion;
 
     /**
      * The maven project.
      *
-     * @parameter expression="${project}"
+     * @parameter property="project"
      * @required
      * @readonly
      */
@@ -99,23 +99,23 @@ public class IOSPackageMojo extends AbstractMojo {
             projectVersion = ipaVersion;
         }
         if (buildId != null) {
-            projectVersion += "_(" + buildId + ")";
+            projectVersion += "-b" + buildId;
         }
 
         if (mavenProject.getPackaging().equals(Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString())) {
             artifactName = appName + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP;
             destinationDirectory = targetDir;
-//            this.projectHelper.attachArtifact( mavenProject, Utils.PLUGIN_SUFFIX.IOS_FRAMEWORK.toString(), null, new File(destinationDirectory + "/" + artifactName));
+//            this.projectHelper.attachArtifact( mavenProject, Utils.PLUGIN_SUFFIX.IOS_FRAMEWORK.toString(), null, new File(destinationDirectory + File.separator + artifactName));
         }
         else {
             mavenProject.setPackaging(Utils.PLUGIN_PACKAGING.IPA.toString());
-            artifactName = appName + "_" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA;
-            destinationDirectory = targetDir + "/" + configuration + "-iphoneos/";
+            artifactName = appName + "-" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA;
+            destinationDirectory = targetDir + File.separator + configuration + "-iphoneos" + File.separator;
         }
 
-        File destinationFile = new File(destinationDirectory + "/" + artifactName);
+        File destinationFile = new File(destinationDirectory + File.separator + artifactName);
 
-        File artifactFile =  new File(targetDir + "/" + appName + classifierString + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA);
+        File artifactFile =  new File(targetDir + File.separator + appName + classifierString + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA);
 
         InputStream in = null;
         OutputStream out = null;
