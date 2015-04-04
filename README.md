@@ -10,10 +10,11 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
-02.11.2014 - Release version 1.9.3
-02.11.2014 - adjusted to xcode 6.1 and iOS8 build, some issues occurred here
-02.11.2014 - prepared build with an clean step
-02.11.2014 - fixed issue with precompiled headers path in /var/folders/...
+2015-04-04 - Added auto generation of deploy plist file
+2014-11-02 - Release version 1.9.3
+2014-11-02 - Adjusted to xcode 6.1 and iOS8 build, some issues occurred here
+2014-11-02 - Prepared build with an clean step
+2014-11-ß2 - Fixed issue with precompiled headers path in /var/folders/...
 
 
 ## Features
@@ -36,24 +37,24 @@ Compiles the application and generates an IPA package
 
 **Parameters**
 
-1. ios.sourceDir			(default: src/ios)
-2. ios.appName				(required)  is also the name of the bundle identifier
+1. ios.sourceDir			 (default: src/ios)
+2. ios.appName				 (required)  is also the name of the bundle identifier
 3. ios.scheme
-4. ios.sdk					(default: iphoneos)
+4. ios.sdk					 (default: iphoneos)
 5. ios.codeSignIdentity
-6. ios.configuration		(default: Release)  Release or Debug
-7. ios.buildId              (The build number. e.g. 1234) For using jenkins as build server use ${env.BUILD_NUMBER} here
-8. ios.target               (The Xcode build target)
-9. ios.keychainPath         (The file system path to the keychain file) e.g. /Users/lestdev/Library/Keychains/letsdev.keychain
+6. ios.configuration		 (default: Release)  Release or Debug
+7. ios.buildId               (The build number. e.g. 1234) For using jenkins as build server use ${env.BUILD_NUMBER} here
+8. ios.target                (The Xcode build target)
+9. ios.keychainPath          (The file system path to the keychain file) e.g. /Users/lestdev/Library/Keychains/letsdev.keychain
 10. ios.keychainPassword     (The keychain password to use for unlock keychain) Before the build the keychain will be unlocked and locked again after the build.
 11. ios.infoPlist            (default: projectName/projectName-Info.plist) The path to the Info.plist, relative to the project directory.
 12. ios.ipaVersion           (The version number for the IPA, different to the maven project version.)
 13. ios.assetsDirectory      (The name of the assets folder. The assets folder in your project has to be "assets".)
 14. ios.projectName          (The name of the project.)
 15. ios.provisioningProfileUUID (The UUID of the provisioning profile to be used. If not set the default provisioning profile will be used instead.)
-16. ios.bundleIdentifier (The bundle identifier to overwrite in info plist. If not set the default bundle identifier will be used instead.)
-17. ios.displayName (The display name to overwrite in info plist. If not set the default display name will be used instead.)
-18. ios.appIconName (The app icon name to overwrite in info plist. If not set the default app icon name will be used instead. e.g. <appIconName>free-icon.png</appIconName>)
+16. ios.bundleIdentifier     (The bundle identifier to overwrite in info plist. If not set the default bundle identifier will be used instead.)
+17. ios.displayName          (The display name to overwrite in info plist. If not set the default display name will be used instead.)
+18. ios.appIconName          (The app icon name to overwrite in info plist. If not set the default app icon name will be used instead. e.g. <appIconName>free-icon.png</appIconName>)
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
@@ -70,6 +71,8 @@ Also deploys a ios framework. Then the dependency type is "ios-framework". The f
 8. ios.buildId
 9. ios.hockeyAppToken
 10. ios.releaseNotes
+11. ios.deployIpaPath
+12. ios.deployIconPath
 
 ## Getting started with ios-maven-plugin and Jenkins
 
@@ -126,7 +129,7 @@ To sign the package, unlock the keychain on the jenkins node. The two commands b
     <plugin>
 	   <groupId>de.letsdev.maven.plugins</groupId>
 	      <artifactId>maven-ios-plugin</artifactId>
-	      <version>1.1</version>
+	      <version>1.9.3</version>
 	      <extensions>true</extensions>
 	      <configuration>
 	          <codeSignIdentity>iPhone Distribution: let's dev iOS App Development</codeSignIdentity>
@@ -170,7 +173,7 @@ Snippet:
                 <plugin>
                     <groupId>de.letsdev.maven.plugins</groupId>
                     <artifactId>maven-ios-plugin</artifactId>
-                    <version>1.1-SNAPSHOT</version>
+                    <version>1.9.3</version>
                     <extensions>true</extensions>
                     <configuration>
                         <appName>LDMyiOSFramework</appName>

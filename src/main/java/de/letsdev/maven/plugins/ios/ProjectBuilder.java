@@ -26,7 +26,7 @@ import java.util.UUID;
 public class ProjectBuilder {
 
     /**
-     * @param properties Propertiew
+     * @param properties Properties
      * @throws IOSException
      */
     public static void build(final Map<String, String> properties, MavenProject mavenProject) throws IOSException {
@@ -37,24 +37,24 @@ public class ProjectBuilder {
             projectName = properties.get(Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString());
         }
 
-        File workDirectory = new File(mavenProject.getBasedir().toString() + "/"
-                + properties.get(Utils.PLUGIN_PROPERTIES.SOURCE_DIRECTORY.toString()) + "/"
+        File workDirectory = new File(mavenProject.getBasedir().toString() + File.separator
+                + properties.get(Utils.PLUGIN_PROPERTIES.SOURCE_DIRECTORY.toString()) + File.separator
                 + projectName);
 
         if (!workDirectory.exists()) {
             throw new IOSException("Invalid sourceDirectory specified: " + workDirectory.getAbsolutePath());
         }
 
-        File projectDirectory = new File(workDirectory.toString() + "/" + projectName);
+        File projectDirectory = new File(workDirectory.toString() + File.separator + projectName);
         File assetsDirectory = null;
         File assetsTempDirectory = null;
         File newAssetsDirectory = null;
 
         //Rename assets directory
         if (properties.get(Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString()) != null) {
-            assetsDirectory = new File(projectDirectory.toString() + "/assets");
-            assetsTempDirectory = new File(projectDirectory.toString() + "/assets.tmp");
-            newAssetsDirectory = new File(projectDirectory.toString() + "/" + properties.get(Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString()));
+            assetsDirectory = new File(projectDirectory.toString() + File.separator + "assets");
+            assetsTempDirectory = new File(projectDirectory.toString() + File.separator + "assets.tmp");
+            newAssetsDirectory = new File(projectDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString()));
 
             if (assetsDirectory.exists() && !(newAssetsDirectory.toString().equalsIgnoreCase(assetsDirectory.toString()))){
                 ProcessBuilder processBuilder = new ProcessBuilder("mv", assetsDirectory.toString(), assetsTempDirectory.toString());
@@ -194,7 +194,7 @@ public class ProjectBuilder {
         // Zip Frameworks
         if (mavenProject.getPackaging().equals(Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString())) {
 
-            File targetWorkDirectory = new File(targetDirectory.toString() + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-iphoneos/");
+            File targetWorkDirectory = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-iphoneos" + File.separator);
 
             processBuilder = new ProcessBuilder("zip", "-r", "../" + projectName + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString(), projectName + ".framework");
 
@@ -207,19 +207,19 @@ public class ProjectBuilder {
                 projectVersion += "-b" + properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString());
             }
 
-            File appTargetPath = new File(targetDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+            File appTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
                     + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()) + "." + Utils.PLUGIN_SUFFIX.APP);
 
-            File newAppTargetPath = new File(targetDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+            File newAppTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
                     + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.APP);
 
-            File ipaTargetPath = new File(targetDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+            File ipaTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
                     + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "-" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA);
 
-            File dsymTargetPath = new File(targetDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+            File dsymTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
                     + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()) + "." + Utils.PLUGIN_SUFFIX.APP_DSYM);
 
-            File newDsymTargetPath = new File(targetDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+            File newDsymTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
                     + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.APP_DSYM);
 
             if (appTargetPath.exists() && !(appTargetPath.toString().equalsIgnoreCase(newAppTargetPath.toString()))) {
@@ -289,11 +289,10 @@ public class ProjectBuilder {
     }
 
     private static void executePlistScript(String scriptName, String value, File workDirectory, String projectName, final Map<String, String> properties, ProcessBuilder processBuilder) throws IOSException {
-        String infoPlistFile = workDirectory + "/" + projectName
-                + "/" + projectName + "-Info.plist";
+        String infoPlistFile = workDirectory + File.separator + projectName + File.separator + projectName + "-Info.plist";
 
         if (properties.get(Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString()) != null) {
-            infoPlistFile = workDirectory + "/" + properties.get(Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString());
+            infoPlistFile = workDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString());
         }
 
         // Run shell-script from resource-folder.
@@ -331,8 +330,8 @@ public class ProjectBuilder {
         try {
             final String scriptName = "write-deploy-plist";
 
-            final String ipaLocation = properties.get(Utils.PLUGIN_PROPERTIES.IPA_LOCATION.toString());
-            final String iconLocation = properties.get(Utils.PLUGIN_PROPERTIES.ICON_LOCATION.toString());
+            final String ipaLocation = properties.get(Utils.PLUGIN_PROPERTIES.DEPLOY_IPA_PATH.toString());
+            final String iconLocation = properties.get(Utils.PLUGIN_PROPERTIES.DEPLOY_ICON_PATH.toString());
             final String displayName = properties.get(Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString());
             final String bundleIdentifier = properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString());
             final String bundleVersion = properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString());
@@ -366,4 +365,6 @@ public class ProjectBuilder {
             e.printStackTrace();
         }
     }
+
+
 }

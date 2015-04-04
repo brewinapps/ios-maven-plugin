@@ -40,9 +40,7 @@ public class Utils {
         PROJECT_NAME("projectName"),
         PROVISIONING_PROFILE_UUID("provisioningProfileUUID"),
         TARGET("target"),
-        TARGET_DIR("targetDir"),
-        IPA_LOCATION("ipaLocation"),
-        ICON_LOCATION("iconLocation");
+        TARGET_DIR("targetDir");
 
         private PLUGIN_PROPERTIES(String name) {
             this.name = name;
