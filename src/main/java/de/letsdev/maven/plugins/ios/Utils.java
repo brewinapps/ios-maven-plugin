@@ -18,6 +18,8 @@ import java.util.Map;
 
 public class Utils {
 
+    public static String BUNDLE_VERSION_SNAPSHOT_ID = "-SNAPSHOT";
+
     public enum PLUGIN_PROPERTIES {
 
         APP_DIR("appDir"),
