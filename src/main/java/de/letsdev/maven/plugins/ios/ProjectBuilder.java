@@ -77,7 +77,10 @@ public class ProjectBuilder {
         if (properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString()) != null) {
             projectVersion = properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString());
         }
-        projectVersion = projectVersion.replace(Utils.BUNDLE_VERSION_SNAPSHOT_ID, "");
+        //remove -SNAPSHOT in version number in order to prevent malformed version numbers in framework builds
+        if (Utils.isiOSFramework(mavenProject, properties)) {
+            projectVersion = projectVersion.replace(Utils.BUNDLE_VERSION_SNAPSHOT_ID, "");
+        }
 
         ProcessBuilder processBuilder = new ProcessBuilder("agvtool", "new-marketing-version", projectVersion);
         processBuilder.directory(workDirectory);
