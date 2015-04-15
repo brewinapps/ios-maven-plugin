@@ -99,6 +99,21 @@ public class IOSBuildMojo extends AbstractMojo {
 	 * 		default-value="iphoneos"
 	 */
 	private String sdk;
+
+    /**
+     * flag for iOS framework builds
+     * @parameter
+     * 		property="ios.iOSFrameworkBuild"
+     * 		default-value="false"
+     */
+    private boolean iOSFrameworkBuild;
+
+    /**
+     * flag for iOS code signing enabled
+     * @parameter
+     * 		property="ios.codeSigningEnabled"
+     */
+    private boolean codeSigningEnabled;
 	
 	/**
 	 * iOS code sign identity
@@ -190,6 +205,8 @@ public class IOSBuildMojo extends AbstractMojo {
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.APP_NAME.toString(), this.appName);
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.APP_ICON_NAME.toString(), this.appIconName);
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString(), this.projectName);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IOS_FRAMEWORK_BUILD.toString(), Boolean.toString(this.iOSFrameworkBuild));
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGNING_ENABLED.toString(), Boolean.toString(this.codeSigningEnabled));
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString(), this.codeSignIdentity);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SDK.toString(), this.sdk);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SOURCE_DIRECTORY.toString(), this.sourceDir);
