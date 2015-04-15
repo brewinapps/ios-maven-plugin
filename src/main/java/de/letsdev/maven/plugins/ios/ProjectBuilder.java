@@ -132,10 +132,12 @@ public class ProjectBuilder {
         buildParameters.add("-configuration");
         buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()));
         buildParameters.add("SYMROOT=" + targetDirectory.getAbsolutePath());
-        buildParameters.add("CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist"); //since xcode 6.1 is necessary, if not set, app is not able to be signed with a key.
 
-        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString())) {
-            buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()));
+        if (Utils.shouldCodeSign(mavenProject, properties)) {
+            buildParameters.add("CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist"); //since xcode 6.1 is necessary, if not set, app is not able to be signed with a key.
+            if (properties.containsKey(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString())) {
+                buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()));
+            }
         }
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.SCHEME.toString())) {
@@ -143,7 +145,7 @@ public class ProjectBuilder {
             buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString()));
         }
 
-        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString())) {
+        if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString())) {
             buildParameters.add("PROVISIONING_PROFILE=" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()));
         }
 
@@ -154,14 +156,8 @@ public class ProjectBuilder {
         // Add target. Uses target 'framework' to build Frameworks.
         buildParameters.add("-target");
 
-        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.TARGET.toString()) || (mavenProject.getPackaging().equals(Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString()))) {
-
-            if (mavenProject.getPackaging().equals(Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString())) {
-                buildParameters.add(Utils.PLUGIN_SUFFIX.FRAMEWORK.toString());
-
-            } else {
-                buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()));
-            }
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.TARGET.toString()) || (Utils.isiOSFramework(mavenProject, properties))) {
+            buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()));
 
         } else {
             buildParameters.add(projectName);
@@ -169,13 +165,12 @@ public class ProjectBuilder {
 
         buildParameters.add("SHARED_PRECOMPS_DIR=" + precompiledHeadersDir.getAbsolutePath());   //this is really important to avoid collisions, if not set /var/folders will be used here
 
-        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString())) {
+        if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString())) {
             buildParameters.add("OTHER_CODE_SIGN_FLAGS=--keychain " + properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
         }
 
         //unlock keychain
-        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString())) {
-
+        if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString())) {
             List<String> keychainParameters = new ArrayList<String>();
             keychainParameters.add("security");
             keychainParameters.add("unlock-keychain");
@@ -192,17 +187,16 @@ public class ProjectBuilder {
         CommandHelper.performCommand(processBuilder);
 
         // Zip Frameworks
-        if (mavenProject.getPackaging().equals(Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString())) {
-
+        if (Utils.isiOSFramework(mavenProject, properties)) {
             File targetWorkDirectory = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-iphoneos" + File.separator);
 
-            processBuilder = new ProcessBuilder("zip", "-r", "../" + projectName + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString(), projectName + ".framework");
+            processBuilder = new ProcessBuilder("zip", "-r", "../" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString(), properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + ".framework");
 
             processBuilder.directory(targetWorkDirectory);
             CommandHelper.performCommand(processBuilder);
-
-            // Generate IPA
-        } else {
+        }
+        // Generate IPA
+        else {
             if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
                 projectVersion += "-b" + properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString());
             }
@@ -266,7 +260,6 @@ public class ProjectBuilder {
 
         //Rename assets directory to origin
         if (properties.get(Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString()) != null) {
-
             if ((assetsTempDirectory != null) && (assetsDirectory.exists())) {
                 processBuilder = new ProcessBuilder("mv", assetsDirectory.toString(), newAssetsDirectory.toString());
                 processBuilder.directory(projectDirectory);

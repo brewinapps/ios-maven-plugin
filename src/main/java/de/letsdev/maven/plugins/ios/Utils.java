@@ -1,5 +1,9 @@
 package de.letsdev.maven.plugins.ios;
 
+import org.apache.maven.project.MavenProject;
+
+import java.util.Map;
+
 /**
  * Maven iOS Plugin
  *
@@ -26,6 +30,8 @@ public class Utils {
         DEPLOY_IPA_PATH("deployIpaPath"),
         DEPLOY_ICON_PATH("deployIconPath"),
         CLASSIFIER("classifier"),
+        IOS_FRAMEWORK_BUILD("iOSFrameworkBuild"),
+        CODE_SIGNING_ENABLED("codeSigningEnabled"),
         CODE_SIGN_IDENTITY("codeSignIdentity"),
         CONFIGURATION("configuration"),
         HOCKEY_APP_TOKEN("hockeyAppToken"),
@@ -73,7 +79,6 @@ public class Utils {
     }
 
     public enum PLUGIN_PACKAGING {
-
         IPA("ipa"),
         IOS_FRAMEWORK("ios-framework");
 
@@ -86,5 +91,17 @@ public class Utils {
         public String toString() {
             return name;
         }
+    }
+
+    public static boolean isiOSFramework(MavenProject mavenProject, Map<String, String> properties) {
+        return isiOSFramework(mavenProject, properties.get(PLUGIN_PROPERTIES.IOS_FRAMEWORK_BUILD.toString()).equals("true"));
+    }
+
+    public static boolean isiOSFramework(MavenProject mavenProject, boolean isFrameworkBuild) {
+        return mavenProject.getPackaging().equals(Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString()) || isFrameworkBuild;
+    }
+
+    public static boolean shouldCodeSign(MavenProject mavenProject, Map<String, String> properties) {
+        return !isiOSFramework(mavenProject, properties);
     }
 }

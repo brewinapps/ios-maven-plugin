@@ -68,6 +68,14 @@ public class IOSPackageMojo extends AbstractMojo {
     private String ipaVersion;
 
     /**
+     * flag for iOS framework builds
+     * @parameter
+     * 		property="ios.iOSFrameworkBuild"
+     * 		default-value="false"
+     */
+    private boolean iOSFrameworkBuild;
+
+    /**
      * The maven project.
      *
      * @parameter property="project"
@@ -94,6 +102,9 @@ public class IOSPackageMojo extends AbstractMojo {
         String classifierString = (this.classifier != null? "-" + this.classifier + "-" : "-");
 
         String artifactType = (currentArtifact.getType() == null || "pom".equals(currentArtifact.getType() ) ? Utils.PLUGIN_PACKAGING.IPA.toString() : currentArtifact.getType());
+        if (iOSFrameworkBuild) {
+            artifactType = Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString();
+        }
 
         if (ipaVersion != null) {
             projectVersion = ipaVersion;
@@ -102,7 +113,7 @@ public class IOSPackageMojo extends AbstractMojo {
             projectVersion += "-b" + buildId;
         }
 
-        if (mavenProject.getPackaging().equals(Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString())) {
+        if (Utils.isiOSFramework(mavenProject, iOSFrameworkBuild)) {
             artifactName = appName + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP;
             destinationDirectory = targetDir;
 //            this.projectHelper.attachArtifact( mavenProject, Utils.PLUGIN_SUFFIX.IOS_FRAMEWORK.toString(), null, new File(destinationDirectory + File.separator + artifactName));
@@ -115,7 +126,7 @@ public class IOSPackageMojo extends AbstractMojo {
 
         File destinationFile = new File(destinationDirectory + File.separator + artifactName);
 
-        File artifactFile =  new File(targetDir + File.separator + appName + classifierString + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA);
+        File artifactFile =  new File(targetDir + File.separator + appName + classifierString + projectVersion + "." + (Utils.isiOSFramework(mavenProject, iOSFrameworkBuild) ? Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP : Utils.PLUGIN_SUFFIX.IPA));
 
         InputStream in = null;
         OutputStream out = null;
@@ -135,8 +146,8 @@ public class IOSPackageMojo extends AbstractMojo {
 
         currentArtifact.setFile(artifactFile);
 
-        if(this.classifier != null ){
+//        if(this.classifier != null ){
             projectHelper.attachArtifact(mavenProject, artifactType, this.classifier, artifactFile);
-        }
+//        }
     }
 }
