@@ -77,6 +77,7 @@ public class ProjectBuilder {
         if (properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString()) != null) {
             projectVersion = properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString());
         }
+        projectVersion = projectVersion.replace(Utils.BUNDLE_VERSION_SNAPSHOT_ID, "");
 
         ProcessBuilder processBuilder = new ProcessBuilder("agvtool", "new-marketing-version", projectVersion);
         processBuilder.directory(workDirectory);
@@ -164,7 +165,6 @@ public class ProjectBuilder {
         }
 
         buildParameters.add("SHARED_PRECOMPS_DIR=" + precompiledHeadersDir.getAbsolutePath());   //this is really important to avoid collisions, if not set /var/folders will be used here
-
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString())) {
             buildParameters.add("OTHER_CODE_SIGN_FLAGS=--keychain " + properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
         }
