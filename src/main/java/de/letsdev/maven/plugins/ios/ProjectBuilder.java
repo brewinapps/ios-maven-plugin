@@ -30,7 +30,6 @@ public class ProjectBuilder {
      * @throws IOSException
      */
     public static void build(final Map<String, String> properties, MavenProject mavenProject) throws IOSException {
-
         // Make sure the source directory exists
         String projectName = mavenProject.getArtifactId();
         if (properties.get(Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString()) != null) {
@@ -153,9 +152,7 @@ public class ProjectBuilder {
             processBuilder = new ProcessBuilder(buildParameters);
             processBuilder.directory(workDirectory);
             CommandHelper.performCommand(processBuilder);
-        }
 
-        if (Utils.isiOSFramework(mavenProject, properties)) {
             String appName = properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString());
             String frameworkName = appName + ".framework";
             File targetWorkDirectoryIphone = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_OS + File.separator);
@@ -263,11 +260,13 @@ public class ProjectBuilder {
 
         if (shouldUseIphoneSimulatorSDK) {
             buildParameters.add(Utils.SDK_IPHONE_SIMULATOR);
-            buildParameters.add("ARCHS=" + Utils.ARCHITECTURES_IPHONE_SIMULATOR);
-            buildParameters.add("VALID_ARCHS=" + Utils.ARCHITECTURES_IPHONE_SIMULATOR);
+            buildParameters.add("ARCHS=" + properties.get(Utils.PLUGIN_PROPERTIES.IPHONESIMULATOR_ARCHITECTURES.toString()));
+            buildParameters.add("VALID_ARCHS=" + properties.get(Utils.PLUGIN_PROPERTIES.IPHONESIMULATOR_ARCHITECTURES.toString()));
         }
         else {
             buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString()));
+            buildParameters.add("ARCHS=" + properties.get(Utils.PLUGIN_PROPERTIES.IPHONEOS_ARCHITECTURES.toString()));
+            buildParameters.add("VALID_ARCHS=" + properties.get(Utils.PLUGIN_PROPERTIES.IPHONEOS_ARCHITECTURES.toString()));
         }
 
         buildParameters.add("-configuration");

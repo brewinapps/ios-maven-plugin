@@ -39,6 +39,8 @@ public class Utils {
         DEPLOY_ICON_PATH("deployIconPath"),
         CLASSIFIER("classifier"),
         IOS_FRAMEWORK_BUILD("iOSFrameworkBuild"),
+        IPHONEOS_ARCHITECTURES("iphoneosArchitectures"),
+        IPHONESIMULATOR_ARCHITECTURES("iphonesimulatorArchitectures"),
         CODE_SIGNING_ENABLED("codeSigningEnabled"),
         CODE_SIGN_IDENTITY("codeSignIdentity"),
         CONFIGURATION("configuration"),

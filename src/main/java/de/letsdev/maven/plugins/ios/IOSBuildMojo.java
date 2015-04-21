@@ -101,6 +101,22 @@ public class IOSBuildMojo extends AbstractMojo {
 	private String sdk;
 
     /**
+     * iphoneos SDK build architectures
+     * @parameter
+     * 		property="ios.iphoneosArchitectures"
+     * 		default-value="arm64 armv7 armv7s"
+     */
+    private String iphoneosArchitectures;
+
+    /**
+     * iphonesimulator SDK build architectures
+     * @parameter
+     * 		property="ios.iphonesimulatorArchitectures"
+     * 		default-value="i386 x86_64"
+     */
+    private String iphonesimulatorArchitectures;
+
+    /**
      * flag for iOS framework builds
      * @parameter
      * 		property="ios.iOSFrameworkBuild"
@@ -205,6 +221,8 @@ public class IOSBuildMojo extends AbstractMojo {
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.APP_NAME.toString(), this.appName);
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.APP_ICON_NAME.toString(), this.appIconName);
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString(), this.projectName);
+			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPHONESIMULATOR_ARCHITECTURES.toString(), this.iphonesimulatorArchitectures);
+			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPHONEOS_ARCHITECTURES.toString(), this.iphoneosArchitectures);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IOS_FRAMEWORK_BUILD.toString(), Boolean.toString(this.iOSFrameworkBuild));
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGNING_ENABLED.toString(), Boolean.toString(this.codeSigningEnabled));
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString(), this.codeSignIdentity);
