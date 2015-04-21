@@ -18,6 +18,7 @@
         <maven.version>2.2.1</maven.version>
         <commons.io.version>2.1</commons.io.version>
         <junit.version>3.8.1</junit.version>
+        <maven-release-plugin.version>2.5</maven-release-plugin.version>
     </properties>
 
     <scm>
