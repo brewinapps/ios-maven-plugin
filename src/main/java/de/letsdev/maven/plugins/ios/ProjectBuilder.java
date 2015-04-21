@@ -128,50 +128,6 @@ public class ProjectBuilder {
         CommandHelper.performCommand(processBuilder);
         //END clean the application
 
-        // Build the application
-        List<String> buildParameters = new ArrayList<String>();
-        buildParameters.add("xcodebuild");
-        buildParameters.add("-sdk");
-        buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString()));
-        buildParameters.add("-configuration");
-        buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()));
-        buildParameters.add("SYMROOT=" + targetDirectory.getAbsolutePath());
-
-        if (Utils.shouldCodeSign(mavenProject, properties)) {
-            buildParameters.add("CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist"); //since xcode 6.1 is necessary, if not set, app is not able to be signed with a key.
-            if (properties.containsKey(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString())) {
-                buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()));
-            }
-        }
-
-        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.SCHEME.toString())) {
-            buildParameters.add("-scheme");
-            buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString()));
-        }
-
-        if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString())) {
-            buildParameters.add("PROVISIONING_PROFILE=" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()));
-        }
-
-        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.APP_NAME.toString())) {
-            buildParameters.add("PRODUCT_NAME=" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()));
-        }
-
-        // Add target. Uses target 'framework' to build Frameworks.
-        buildParameters.add("-target");
-
-        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.TARGET.toString()) || (Utils.isiOSFramework(mavenProject, properties))) {
-            buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()));
-
-        } else {
-            buildParameters.add(projectName);
-        }
-
-        buildParameters.add("SHARED_PRECOMPS_DIR=" + precompiledHeadersDir.getAbsolutePath());   //this is really important to avoid collisions, if not set /var/folders will be used here
-        if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString())) {
-            buildParameters.add("OTHER_CODE_SIGN_FLAGS=--keychain " + properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
-        }
-
         //unlock keychain
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString())) {
             List<String> keychainParameters = new ArrayList<String>();
@@ -185,17 +141,33 @@ public class ProjectBuilder {
             CommandHelper.performCommand(processBuilder);
         }
 
+        // Build the application
+        List<String> buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, false);
         processBuilder = new ProcessBuilder(buildParameters);
         processBuilder.directory(workDirectory);
         CommandHelper.performCommand(processBuilder);
 
-        // Zip Frameworks
         if (Utils.isiOSFramework(mavenProject, properties)) {
-            File targetWorkDirectory = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-iphoneos" + File.separator);
+            //generate framework product also for iphonesimulator sdk
+            buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, true);
+            processBuilder = new ProcessBuilder(buildParameters);
+            processBuilder.directory(workDirectory);
+            CommandHelper.performCommand(processBuilder);
+        }
 
-            processBuilder = new ProcessBuilder("zip", "-r", "../" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString(), properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + ".framework");
+        if (Utils.isiOSFramework(mavenProject, properties)) {
+            String appName = properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString());
+            String frameworkName = appName + ".framework";
+            File targetWorkDirectoryIphone = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_OS + File.separator);
+            File targetWorkDirectoryIphoneSimulator = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR + File.separator);
 
-            processBuilder.directory(targetWorkDirectory);
+            // use lipo to merge framework binarys
+            mergeFrameworkProducts(targetWorkDirectoryIphone, targetWorkDirectoryIphoneSimulator, appName, frameworkName);
+
+            // Zip Frameworks
+            processBuilder = new ProcessBuilder("zip", "-r", "../" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString(), frameworkName);
+
+            processBuilder.directory(targetWorkDirectoryIphone);
             CommandHelper.performCommand(processBuilder);
         }
         // Generate IPA
@@ -205,19 +177,19 @@ public class ProjectBuilder {
             }
 
             File appTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
-                    + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()) + "." + Utils.PLUGIN_SUFFIX.APP);
+                    + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()) + "." + Utils.PLUGIN_SUFFIX.APP);
 
             File newAppTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
-                    + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.APP);
+                    + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.APP);
 
             File ipaTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
-                    + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "-" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA);
+                    + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "-" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA);
 
             File dsymTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
-                    + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()) + "." + Utils.PLUGIN_SUFFIX.APP_DSYM);
+                    + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()) + "." + Utils.PLUGIN_SUFFIX.APP_DSYM);
 
             File newDsymTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
-                    + "-iphoneos/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.APP_DSYM);
+                    + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.APP_DSYM);
 
             if (appTargetPath.exists() && !(appTargetPath.toString().equalsIgnoreCase(newAppTargetPath.toString()))) {
                 processBuilder = new ProcessBuilder("mv", appTargetPath.toString(), newAppTargetPath.toString());
@@ -284,6 +256,103 @@ public class ProjectBuilder {
         }
     }
 
+    private static List<String> generateBuildParameters(MavenProject mavenProject, Map<String, String> properties, File targetDirectory, String projectName, File precompiledHeadersDir, boolean shouldUseIphoneSimulatorSDK) {
+        List<String> buildParameters = new ArrayList<String>();
+        buildParameters.add("xcodebuild");
+        buildParameters.add("-sdk");
+
+        if (shouldUseIphoneSimulatorSDK) {
+            buildParameters.add(Utils.SDK_IPHONE_SIMULATOR);
+            buildParameters.add("ARCHS=" + Utils.ARCHITECTURES_IPHONE_SIMULATOR);
+            buildParameters.add("VALID_ARCHS=" + Utils.ARCHITECTURES_IPHONE_SIMULATOR);
+        }
+        else {
+            buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString()));
+        }
+
+        buildParameters.add("-configuration");
+        buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()));
+        buildParameters.add("SYMROOT=" + targetDirectory.getAbsolutePath());
+
+        //if product should be code signed, we add flags for code signing
+        if (Utils.shouldCodeSign(mavenProject, properties)) {
+            buildParameters.add("CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist"); //since xcode 6.1 is necessary, if not set, app is not able to be signed with a key.
+            if (properties.containsKey(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString())) {
+                buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()));
+            }
+        }
+        else {
+            //otherwise we skip code signing
+            buildParameters.add("CODE_SIGN_IDENTITY=");
+            buildParameters.add("CODE_SIGNING_REQUIRED=NO");
+        }
+
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.SCHEME.toString())) {
+            buildParameters.add("-scheme");
+            buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString()));
+        }
+
+        if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString())) {
+            buildParameters.add("PROVISIONING_PROFILE=" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()));
+        }
+
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.APP_NAME.toString())) {
+            buildParameters.add("PRODUCT_NAME=" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()));
+        }
+
+        // Add target. Uses target 'framework' to build Frameworks.
+        buildParameters.add("-target");
+
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.TARGET.toString()) || (Utils.isiOSFramework(mavenProject, properties))) {
+            buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()));
+
+        } else {
+            buildParameters.add(projectName);
+        }
+
+        buildParameters.add("SHARED_PRECOMPS_DIR=" + precompiledHeadersDir.getAbsolutePath());   //this is really important to avoid collisions, if not set /var/folders will be used here
+        if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString())) {
+            buildParameters.add("OTHER_CODE_SIGN_FLAGS=--keychain " + properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
+        }
+
+        return buildParameters;
+    }
+
+    private static void mergeFrameworkProducts(File targetWorkDirectoryIphone, File targetWorkDirectoryIphoneSimulator, String appName, String frameworkName) {
+        // Run shell-script from resource-folder.
+        try {
+            final String scriptName = "merge-framework-products";
+
+            final String iphoneosFrameworkProductPath = targetWorkDirectoryIphone.toString() + "/" + frameworkName + "/" + appName;
+            final String iphoneSimulatorFrameworkProductPath = targetWorkDirectoryIphoneSimulator.toString() + "/" + frameworkName + "/" + appName;
+            final String mergedFrameworkPath = targetWorkDirectoryIphone.toString() + "/" + frameworkName + "/" + appName;
+
+            File tempFile = File.createTempFile(scriptName, "sh");
+            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName + ".sh");
+            OutputStream outputStream = new FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+
+            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
+                    iphoneosFrameworkProductPath,
+                    iphoneSimulatorFrameworkProductPath,
+                    mergedFrameworkPath);
+
+            processBuilder.directory(targetWorkDirectoryIphone);
+            CommandHelper.performCommand(processBuilder);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void executePlistScript(String scriptName, String value, File workDirectory, String projectName, final Map<String, String> properties, ProcessBuilder processBuilder) throws IOSException {
         String infoPlistFile = workDirectory + File.separator + projectName + File.separator + projectName + "-Info.plist";
 
@@ -320,8 +389,6 @@ public class ProjectBuilder {
     }
 
     private static void writeDeployPlistFile(File targetDirectory, String projectName, String deployPlistName, final Map<String, String> properties, ProcessBuilder processBuilder) throws IOSException {
-        String infoPlistFile = targetDirectory + File.separator + projectName + File.separator + deployPlistName;
-
         // Run shell-script from resource-folder.
         try {
             final String scriptName = "write-deploy-plist";

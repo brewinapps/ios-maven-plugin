@@ -20,6 +20,12 @@ public class Utils {
 
     public static String BUNDLE_VERSION_SNAPSHOT_ID = "-SNAPSHOT";
 
+    public static String SDK_IPHONE_OS = "iphoneos";
+    public static String SDK_IPHONE_SIMULATOR = "iphonesimulator";
+
+    public static String ARCHITECTURES_IPHONE_OS = "arm64 armv7 armv7s";
+    public static String ARCHITECTURES_IPHONE_SIMULATOR = "i386 x86_64";
+
     public enum PLUGIN_PROPERTIES {
 
         APP_DIR("appDir"),
