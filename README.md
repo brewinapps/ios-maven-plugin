@@ -10,11 +10,12 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
-2015-04-04 - Added auto generation of deploy plist file
-2014-11-02 - Release version 1.9.3
-2014-11-02 - Adjusted to xcode 6.1 and iOS8 build, some issues occurred here
-2014-11-02 - Prepared build with an clean step
-2014-11-ß2 - Fixed issue with precompiled headers path in /var/folders/...
+2015-04-21 - Added support for building universal frameworks (architectures arm64, armv7, armv7s, i386, x86_64 supported)
+2015-04-04 - Added auto generation of deploy plist file<br />
+2014-11-02 - Release version 1.9.3<br />
+2014-11-02 - Adjusted to xcode 6.1 and iOS8 build, some issues occurred here<br />
+2014-11-02 - Prepared build with an clean step<br />
+2014-11-02 - Fixed issue with precompiled headers path in /var/folders/...<br />
 
 
 ## Features
@@ -23,8 +24,9 @@ http://www.letsdev.de - professional mobile solutions
 3. Versioning of iOS applications
 4. One-step HockeyApp deployment
 5. Packaging of iOS applications (.ipa & .dSYM) incl. unlock/lock keychain for deployment to Nexus/Artifactory
-6. Packaging of iOS frameworks for deployment to Nexus/Artifactory
-7. Use Multiple executions e.g for branding or customizing of apps. (Different app icon names, different display names etc.)
+6. Compilation of universal iOS frameworks
+7. Packaging of iOS frameworks for deployment to Nexus/Artifactory
+8. Use Multiple executions e.g for branding or customizing of apps. (Different app icon names, different display names etc.)
 
 ## Requirements
 1. The plugin relies on several tools that are only available on Mac OS X: xcodebuild, xcrun and agvtool.  Install the Xcode Command Line Tools (Xcode -> Preferences... -> Downloads).  
@@ -37,24 +39,27 @@ Compiles the application and generates an IPA package
 
 **Parameters**
 
-1. ios.sourceDir			 (default: src/ios)
-2. ios.appName				 (required)  is also the name of the bundle identifier
+1. ios.sourceDir			    (default: src/ios)
+2. ios.appName     		        (required)  is also the name of the bundle identifier
 3. ios.scheme
-4. ios.sdk					 (default: iphoneos)
+4. ios.sdk					    (default: iphoneos)
 5. ios.codeSignIdentity
-6. ios.configuration		 (default: Release)  Release or Debug
-7. ios.buildId               (The build number. e.g. 1234) For using jenkins as build server use ${env.BUILD_NUMBER} here
-8. ios.target                (The Xcode build target)
-9. ios.keychainPath          (The file system path to the keychain file) e.g. /Users/lestdev/Library/Keychains/letsdev.keychain
-10. ios.keychainPassword     (The keychain password to use for unlock keychain) Before the build the keychain will be unlocked and locked again after the build.
-11. ios.infoPlist            (default: projectName/projectName-Info.plist) The path to the Info.plist, relative to the project directory.
-12. ios.ipaVersion           (The version number for the IPA, different to the maven project version.)
-13. ios.assetsDirectory      (The name of the assets folder. The assets folder in your project has to be "assets".)
-14. ios.projectName          (The name of the project.)
+6. ios.configuration		    (default: Release)  Release or Debug
+7. ios.buildId                  (The build number. e.g. 1234) For using jenkins as build server use ${env.BUILD_NUMBER} here
+8. ios.target                   (The Xcode build target)
+9. ios.keychainPath             (The file system path to the keychain file) e.g. /Users/lestdev/Library/Keychains/letsdev.keychain
+10. ios.keychainPassword        (The keychain password to use for unlock keychain) Before the build the keychain will be unlocked and locked again after the build.
+11. ios.infoPlist               (default: projectName/projectName-Info.plist) The path to the Info.plist, relative to the project directory.
+12. ios.ipaVersion              (The version number for the IPA, different to the maven project version.)
+13. ios.assetsDirectory         (The name of the assets folder. The assets folder in your project has to be "assets".)
+14. ios.projectName             (The name of the project.)
 15. ios.provisioningProfileUUID (The UUID of the provisioning profile to be used. If not set the default provisioning profile will be used instead.)
-16. ios.bundleIdentifier     (The bundle identifier to overwrite in info plist. If not set the default bundle identifier will be used instead.)
-17. ios.displayName          (The display name to overwrite in info plist. If not set the default display name will be used instead.)
-18. ios.appIconName          (The app icon name to overwrite in info plist. If not set the default app icon name will be used instead. e.g. <appIconName>free-icon.png</appIconName>)
+16. ios.bundleIdentifier        (The bundle identifier to overwrite in info plist. If not set the default bundle identifier will be used instead.)
+17. ios.displayName             (The display name to overwrite in info plist. If not set the default display name will be used instead.)
+18. ios.appIconName             (The app icon name to overwrite in info plist. If not set the default app icon name will be used instead. e.g. <appIconName>free-icon.png</appIconName>)
+19. ios.iOSFrameworkBuild       (flag for building iOS frameworks in multi execution environment)
+20. ios.iphoneosArchitectures   (default: arm64 armv7 armv7s) architectures build with iphoneos sdk
+21. ios.iphonesimulatorArchitectures (default: i386 x86_64) architectures build with iphonesimulator sdk (only used for framework builds)
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
@@ -68,11 +73,11 @@ Also deploys a ios framework. Then the dependency type is "ios-framework". The f
 4. ios.sdk
 5. ios.codeSignIdentity
 6. ios.configuration
-8. ios.buildId
-9. ios.hockeyAppToken
-10. ios.releaseNotes
-11. ios.deployIpaPath
-12. ios.deployIconPath
+7. ios.buildId
+8. ios.hockeyAppToken
+9. ios.releaseNotes
+10. ios.deployIpaPath
+11. ios.deployIconPath
 
 ## Getting started with ios-maven-plugin and Jenkins
 
@@ -227,6 +232,46 @@ Add the dependency in the pom.xml of your project into dependencies section.
         </dependency>
 ...
 ```
+
+**Build universal iOS Framework in multi execution environment**
+
+Configure the maven plugin to build an universal framework in one execution block.
+
+```
+...
+
+<plugin>
+    <groupId>de.letsdev.maven.plugins</groupId>
+    <artifactId>maven-ios-plugin</artifactId>
+    <extensions>true</extensions>
+    <executions>
+        ...
+        <execution>
+            <id>my-framework</id>
+            <goals>
+                <goal>build</goal>
+                <goal>package</goal>
+                <goal>deploy</goal>
+            </goals>
+            <configuration>
+                <appName>LDMyiOSFramework</appName>
+                <projectName>LDMyiOSFramework</projectName>
+                <target>LDMyiOSFramework</target>
+                <infoPlist>Info.plist</infoPlist>
+                <buildId>${env.BUILD_NUMBER}</buildId>
+                <ipaVersion>${project.version}</ipaVersion>
+                <configuration>Release</configuration>
+                <iOSFrameworkBuild>true</iOSFrameworkBuild>
+                <iphoneosArchitectures>arm64 armv7 armv7s</iphoneosArchitectures>
+                <iphonesimulatorArchitectures>i386 x86_64</iphonesimulatorArchitectures>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+
+...
+```
+
 
 **Deploy to HockeyApp**
 
