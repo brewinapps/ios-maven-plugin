@@ -10,7 +10,8 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
-2015-04-21 - Added support for building universal frameworks (architectures arm64, armv7, armv7s, i386, x86_64 supported)
+2015-04-21 - Release version 1.10.0<br />
+2015-04-21 - Added support for building universal frameworks (architectures arm64, armv7, armv7s, i386, x86_64 supported)<br />
 2015-04-04 - Added auto generation of deploy plist file<br />
 2014-11-02 - Release version 1.9.3<br />
 2014-11-02 - Adjusted to xcode 6.1 and iOS8 build, some issues occurred here<br />
