@@ -314,6 +314,10 @@ public class ProjectBuilder {
             buildParameters.add("OTHER_CODE_SIGN_FLAGS=--keychain " + properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
         }
 
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString())) {
+            buildParameters.add("GCC_PREPROCESSOR_DEFINITIONS=" + properties.get(Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString()));
+        }
+
         return buildParameters;
     }
 

@@ -189,6 +189,13 @@ public class IOSBuildMojo extends AbstractMojo {
     private String appIconName;
 
     /**
+     * gccPreprocessorDefinitions, added to xcodebuild command
+     * @parameter
+     * 		property="ios.gccPreprocessorDefinitions"
+     */
+    private String gccPreprocessorDefinitions;
+
+    /**
      * ipaVersion
      * @parameter
      * 		property="ios.ipaVersion"
@@ -221,6 +228,7 @@ public class IOSBuildMojo extends AbstractMojo {
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.APP_NAME.toString(), this.appName);
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.APP_ICON_NAME.toString(), this.appIconName);
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString(), this.projectName);
+			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString(), this.gccPreprocessorDefinitions);
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPHONESIMULATOR_ARCHITECTURES.toString(), this.iphonesimulatorArchitectures);
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPHONEOS_ARCHITECTURES.toString(), this.iphoneosArchitectures);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IOS_FRAMEWORK_BUILD.toString(), Boolean.toString(this.iOSFrameworkBuild));

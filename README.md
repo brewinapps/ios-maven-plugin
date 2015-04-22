@@ -61,6 +61,7 @@ Compiles the application and generates an IPA package
 19. ios.iOSFrameworkBuild       (flag for building iOS frameworks in multi execution environment)
 20. ios.iphoneosArchitectures   (default: arm64 armv7 armv7s) architectures build with iphoneos sdk
 21. ios.iphonesimulatorArchitectures (default: i386 x86_64) architectures build with iphonesimulator sdk (only used for framework builds)
+22. ios.gccPreprocessorDefinitions (optional) properties delivered to xcodebuild via GCC_PREPROCESSOR_DEFINITIONS
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
