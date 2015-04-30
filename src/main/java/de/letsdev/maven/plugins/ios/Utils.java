@@ -75,7 +75,7 @@ public class Utils {
         IPA("ipa"),
         APP_DSYM("app.dSYM"),
         FRAMEWORK("framework"),
-        FRAMEWORK_ZIP("framework.zip"),
+        FRAMEWORK_ZIP("zip"),
         PLIST("plist");
 
         private PLUGIN_SUFFIX(String name) {
