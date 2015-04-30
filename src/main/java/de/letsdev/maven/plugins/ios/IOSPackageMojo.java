@@ -103,7 +103,7 @@ public class IOSPackageMojo extends AbstractMojo {
 
         String artifactType = (currentArtifact.getType() == null || "pom".equals(currentArtifact.getType() ) ? Utils.PLUGIN_PACKAGING.IPA.toString() : currentArtifact.getType());
         if (iOSFrameworkBuild) {
-            artifactType = Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString();
+            artifactType = Utils.PLUGIN_PACKAGING.FRAMEWORK_ZIP.toString();
         }
 
         if (ipaVersion != null) {
@@ -146,8 +146,6 @@ public class IOSPackageMojo extends AbstractMojo {
 
         currentArtifact.setFile(artifactFile);
 
-//        if(this.classifier != null ){
-            projectHelper.attachArtifact(mavenProject, artifactType, this.classifier, artifactFile);
-//        }
+        projectHelper.attachArtifact(mavenProject, artifactType, this.classifier, artifactFile);
     }
 }

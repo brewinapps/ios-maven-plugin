@@ -91,7 +91,8 @@ public class Utils {
 
     public enum PLUGIN_PACKAGING {
         IPA("ipa"),
-        IOS_FRAMEWORK("ios-framework");
+        IOS_FRAMEWORK("ios-framework"),
+        FRAMEWORK_ZIP("zip");
 
         private PLUGIN_PACKAGING(String name) {
             this.name = name;
