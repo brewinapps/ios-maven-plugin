@@ -125,6 +125,14 @@ public class IOSBuildMojo extends AbstractMojo {
     private boolean iOSFrameworkBuild;
 
     /**
+     * flag for macosx framework builds
+     * @parameter
+     * 		property="ios.macOSFrameworkBuild"
+     * 		default-value="false"
+     */
+    private boolean macOSFrameworkBuild;
+
+    /**
      * flag for iOS code signing enabled
      * @parameter
      * 		property="ios.codeSigningEnabled"
@@ -232,6 +240,7 @@ public class IOSBuildMojo extends AbstractMojo {
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPHONESIMULATOR_ARCHITECTURES.toString(), this.iphonesimulatorArchitectures);
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPHONEOS_ARCHITECTURES.toString(), this.iphoneosArchitectures);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IOS_FRAMEWORK_BUILD.toString(), Boolean.toString(this.iOSFrameworkBuild));
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.MACOSX_FRAMEWORK_BUILD.toString(), Boolean.toString(this.macOSFrameworkBuild));
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGNING_ENABLED.toString(), Boolean.toString(this.codeSigningEnabled));
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString(), this.codeSignIdentity);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SDK.toString(), this.sdk);

@@ -76,6 +76,14 @@ public class IOSPackageMojo extends AbstractMojo {
     private boolean iOSFrameworkBuild;
 
     /**
+     * flag for macosx framework builds
+     * @parameter
+     * 		property="ios.macOSFrameworkBuild"
+     * 		default-value="false"
+     */
+    private boolean macOSFrameworkBuild;
+
+    /**
      * The maven project.
      *
      * @parameter property="project"
@@ -102,7 +110,7 @@ public class IOSPackageMojo extends AbstractMojo {
         String classifierString = (this.classifier != null? "-" + this.classifier + "-" : "-");
 
         String artifactType = (currentArtifact.getType() == null || "pom".equals(currentArtifact.getType() ) ? Utils.PLUGIN_PACKAGING.IPA.toString() : currentArtifact.getType());
-        if (iOSFrameworkBuild) {
+        if (iOSFrameworkBuild || macOSFrameworkBuild) {
             artifactType = Utils.PLUGIN_PACKAGING.FRAMEWORK_ZIP.toString();
         }
 
@@ -113,7 +121,7 @@ public class IOSPackageMojo extends AbstractMojo {
             projectVersion += "-b" + buildId;
         }
 
-        if (Utils.isiOSFramework(mavenProject, iOSFrameworkBuild)) {
+        if (Utils.isiOSFramework(mavenProject, iOSFrameworkBuild) || macOSFrameworkBuild) {
             artifactName = appName + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP;
             destinationDirectory = targetDir;
 //            this.projectHelper.attachArtifact( mavenProject, Utils.PLUGIN_SUFFIX.IOS_FRAMEWORK.toString(), null, new File(destinationDirectory + File.separator + artifactName));

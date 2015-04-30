@@ -39,6 +39,7 @@ public class Utils {
         DEPLOY_ICON_PATH("deployIconPath"),
         CLASSIFIER("classifier"),
         IOS_FRAMEWORK_BUILD("iOSFrameworkBuild"),
+        MACOSX_FRAMEWORK_BUILD("macOSFrameworkBuild"),
         IPHONEOS_ARCHITECTURES("iphoneosArchitectures"),
         IPHONESIMULATOR_ARCHITECTURES("iphonesimulatorArchitectures"),
         CODE_SIGNING_ENABLED("codeSigningEnabled"),
@@ -105,6 +106,10 @@ public class Utils {
         }
     }
 
+    public static boolean isMacOSFramework(Map<String, String> properties) {
+        return properties.get(PLUGIN_PROPERTIES.MACOSX_FRAMEWORK_BUILD.toString()).equals("true");
+    }
+
     public static boolean isiOSFramework(MavenProject mavenProject, Map<String, String> properties) {
         return isiOSFramework(mavenProject, properties.get(PLUGIN_PROPERTIES.IOS_FRAMEWORK_BUILD.toString()).equals("true"));
     }
@@ -114,6 +119,6 @@ public class Utils {
     }
 
     public static boolean shouldCodeSign(MavenProject mavenProject, Map<String, String> properties) {
-        return !isiOSFramework(mavenProject, properties);
+        return !isiOSFramework(mavenProject, properties) && !isMacOSFramework(properties);
     }
 }

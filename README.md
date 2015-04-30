@@ -10,6 +10,8 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2015-04-30 - Release version 1.11.0<br />
+2015-04-30 - Added support for building macosx frameworks<br />
 2015-04-21 - Release version 1.10.0<br />
 2015-04-21 - Added support for building universal frameworks (architectures arm64, armv7, armv7s, i386, x86_64 supported)<br />
 2015-04-04 - Added auto generation of deploy plist file<br />
@@ -28,6 +30,7 @@ http://www.letsdev.de - professional mobile solutions
 6. Compilation of universal iOS frameworks
 7. Packaging of iOS frameworks for deployment to Nexus/Artifactory
 8. Use Multiple executions e.g for branding or customizing of apps. (Different app icon names, different display names etc.)
+9. Compilation of macosx frameworks
 
 ## Requirements
 1. The plugin relies on several tools that are only available on Mac OS X: xcodebuild, xcrun and agvtool.  Install the Xcode Command Line Tools (Xcode -> Preferences... -> Downloads).  
@@ -62,6 +65,7 @@ Compiles the application and generates an IPA package
 20. ios.iphoneosArchitectures   (default: arm64 armv7 armv7s) architectures build with iphoneos sdk
 21. ios.iphonesimulatorArchitectures (default: i386 x86_64) architectures build with iphonesimulator sdk (only used for framework builds)
 22. ios.gccPreprocessorDefinitions (optional) properties delivered to xcodebuild via GCC_PREPROCESSOR_DEFINITIONS
+23. ios.macOSFrameworkBuild       (flag for building macosx frameworks)
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp

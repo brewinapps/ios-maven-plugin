@@ -77,7 +77,7 @@ public class ProjectBuilder {
             projectVersion = properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString());
         }
         //remove -SNAPSHOT in version number in order to prevent malformed version numbers in framework builds
-        if (Utils.isiOSFramework(mavenProject, properties)) {
+        if (Utils.isiOSFramework(mavenProject, properties) || Utils.isMacOSFramework(properties)) {
             projectVersion = projectVersion.replace(Utils.BUNDLE_VERSION_SNAPSHOT_ID, "");
         }
 
@@ -146,25 +146,36 @@ public class ProjectBuilder {
         processBuilder.directory(workDirectory);
         CommandHelper.performCommand(processBuilder);
 
-        if (Utils.isiOSFramework(mavenProject, properties)) {
-            //generate framework product also for iphonesimulator sdk
-            buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, true);
-            processBuilder = new ProcessBuilder(buildParameters);
-            processBuilder.directory(workDirectory);
-            CommandHelper.performCommand(processBuilder);
+        if (Utils.isiOSFramework(mavenProject, properties) || Utils.isMacOSFramework(properties)) {
+            if (!Utils.isMacOSFramework(properties)) {
+                //generate framework product also for iphonesimulator sdk
+                buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, true);
+                processBuilder = new ProcessBuilder(buildParameters);
+                processBuilder.directory(workDirectory);
+                CommandHelper.performCommand(processBuilder);
+            }
 
             String appName = properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString());
             String frameworkName = appName + ".framework";
-            File targetWorkDirectoryIphone = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_OS + File.separator);
-            File targetWorkDirectoryIphoneSimulator = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR + File.separator);
 
-            // use lipo to merge framework binarys
-            mergeFrameworkProducts(targetWorkDirectoryIphone, targetWorkDirectoryIphoneSimulator, appName, frameworkName);
+            File targetWorkDirectory;
+            if (Utils.isMacOSFramework(properties)) {
+                targetWorkDirectory = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + File.separator);
+            }
+            else {
+                File targetWorkDirectoryIphone = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_OS + File.separator);
+                File targetWorkDirectoryIphoneSimulator = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR + File.separator);
+
+                // use lipo to merge framework binarys
+                mergeFrameworkProducts(targetWorkDirectoryIphone, targetWorkDirectoryIphoneSimulator, appName, frameworkName);
+
+                targetWorkDirectory = targetWorkDirectoryIphone;
+            }
 
             // Zip Frameworks
             processBuilder = new ProcessBuilder("zip", "-r", "../" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString(), frameworkName);
 
-            processBuilder.directory(targetWorkDirectoryIphone);
+            processBuilder.directory(targetWorkDirectory);
             CommandHelper.performCommand(processBuilder);
         }
         // Generate IPA
