@@ -110,7 +110,7 @@ public class IOSPackageMojo extends AbstractMojo {
         String classifierString = (this.classifier != null? "-" + this.classifier + "-" : "-");
 
         String artifactType = (currentArtifact.getType() == null || "pom".equals(currentArtifact.getType() ) ? Utils.PLUGIN_PACKAGING.IPA.toString() : currentArtifact.getType());
-        if (iOSFrameworkBuild || macOSFrameworkBuild) {
+        if (iOSFrameworkBuild || macOSFrameworkBuild || artifactType.equals(Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString())) {
             artifactType = Utils.PLUGIN_PACKAGING.FRAMEWORK_ZIP.toString();
         }
 
@@ -133,7 +133,6 @@ public class IOSPackageMojo extends AbstractMojo {
         }
 
         File destinationFile = new File(destinationDirectory + File.separator + artifactName);
-
         File artifactFile =  new File(targetDir + File.separator + appName + classifierString + projectVersion + "." + (Utils.isiOSFramework(mavenProject, iOSFrameworkBuild) ? Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP : Utils.PLUGIN_SUFFIX.IPA));
 
         InputStream in = null;
