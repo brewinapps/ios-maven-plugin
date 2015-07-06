@@ -127,21 +127,6 @@ public class ProjectBuilder {
         CommandHelper.performCommand(processBuilder);
         //END clean the application
 
-        //unlock keychain
-        if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString())) {
-//            List<String> keychainParameters = new ArrayList<String>();
-//            keychainParameters.add("security");
-//            keychainParameters.add("unlock-keychain");
-//            keychainParameters.add("-p");
-//            keychainParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()));
-//            keychainParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
-
-            executeshellScript("unlock-keychain.sh", properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()), properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()), null, workDirectory, projectName, properties, processBuilder);
-
-//            processBuilder = new ProcessBuilder(keychainParameters);
-//            CommandHelper.performCommand(processBuilder);
-        }
-
         // Build the application
         List<String> buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, false);
         processBuilder = new ProcessBuilder(buildParameters);
@@ -182,6 +167,22 @@ public class ProjectBuilder {
         }
         // Generate IPA
         else {
+
+            //unlock keychain
+            if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString())) {
+//            List<String> keychainParameters = new ArrayList<String>();
+//            keychainParameters.add("security");
+//            keychainParameters.add("unlock-keychain");
+//            keychainParameters.add("-p");
+//            keychainParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()));
+//            keychainParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
+
+                executeshellScript("unlock-keychain.sh", properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()), properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()), null, workDirectory, projectName, properties, processBuilder);
+
+//            processBuilder = new ProcessBuilder(keychainParameters);
+//            CommandHelper.performCommand(processBuilder);
+            }
+
             if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
                 projectVersion += "-b" + properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString());
             }
