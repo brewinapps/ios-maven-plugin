@@ -127,6 +127,9 @@ public class ProjectBuilder {
         CommandHelper.performCommand(processBuilder);
         //END clean the application
 
+        //unlock keychain
+        unlockKeychain(properties, mavenProject, projectName, workDirectory, processBuilder);
+
         // Build the application
         List<String> buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, false);
         processBuilder = new ProcessBuilder(buildParameters);
@@ -169,19 +172,7 @@ public class ProjectBuilder {
         else {
 
             //unlock keychain
-            if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString())) {
-//            List<String> keychainParameters = new ArrayList<String>();
-//            keychainParameters.add("security");
-//            keychainParameters.add("unlock-keychain");
-//            keychainParameters.add("-p");
-//            keychainParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()));
-//            keychainParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
-
-                executeshellScript("unlock-keychain.sh", properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()), properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()), null, workDirectory, projectName, properties, processBuilder);
-
-//            processBuilder = new ProcessBuilder(keychainParameters);
-//            CommandHelper.performCommand(processBuilder);
-            }
+            unlockKeychain(properties, mavenProject, projectName, workDirectory, processBuilder); //unlock it again, if during xcrun keychain is closed automatically again.
 
             if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
                 projectVersion += "-b" + properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString());
@@ -267,6 +258,22 @@ public class ProjectBuilder {
         }
     }
 
+    private static void unlockKeychain(Map<String, String> properties, MavenProject mavenProject, String projectName, File workDirectory, ProcessBuilder processBuilder) throws IOSException {
+        if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString())) {
+//            List<String> keychainParameters = new ArrayList<String>();
+//            keychainParameters.add("security");
+//            keychainParameters.add("unlock-keychain");
+//            keychainParameters.add("-p");
+//            keychainParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()));
+//            keychainParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
+
+            executeshellScript("unlock-keychain.sh", properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()), properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()), null, workDirectory, projectName, properties, processBuilder);
+
+//            processBuilder = new ProcessBuilder(keychainParameters);
+//            CommandHelper.performCommand(processBuilder);
+        }
+    }
+
     private static List<String> generateBuildParameters(MavenProject mavenProject, Map<String, String> properties, File targetDirectory, String projectName, File precompiledHeadersDir, boolean shouldUseIphoneSimulatorSDK) {
         List<String> buildParameters = new ArrayList<String>();
         buildParameters.add("xcodebuild");
@@ -324,9 +331,9 @@ public class ProjectBuilder {
         }
 
         buildParameters.add("SHARED_PRECOMPS_DIR=" + precompiledHeadersDir.getAbsolutePath());   //this is really important to avoid collisions, if not set /var/folders will be used here
-        if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString())) {
+        /*if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString())) {
             buildParameters.add("OTHER_CODE_SIGN_FLAGS=--keychain " + properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
-        }
+        }*/
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString())) {
             buildParameters.add("GCC_PREPROCESSOR_DEFINITIONS=" + properties.get(Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString()));
