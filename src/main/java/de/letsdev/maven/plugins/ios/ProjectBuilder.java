@@ -129,15 +129,17 @@ public class ProjectBuilder {
 
         //unlock keychain
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString())) {
-            List<String> keychainParameters = new ArrayList<String>();
-            keychainParameters.add("security");
-            keychainParameters.add("unlock-keychain");
-            keychainParameters.add("-p");
-            keychainParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()));
-            keychainParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
+//            List<String> keychainParameters = new ArrayList<String>();
+//            keychainParameters.add("security");
+//            keychainParameters.add("unlock-keychain");
+//            keychainParameters.add("-p");
+//            keychainParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()));
+//            keychainParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
 
-            processBuilder = new ProcessBuilder(keychainParameters);
-            CommandHelper.performCommand(processBuilder);
+            executeshellScript("unlock-keychain.sh", properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()), properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()), null, workDirectory, projectName, properties, processBuilder);
+
+//            processBuilder = new ProcessBuilder(keychainParameters);
+//            CommandHelper.performCommand(processBuilder);
         }
 
         // Build the application
@@ -393,6 +395,48 @@ public class ProjectBuilder {
             outputStream.close();
 
             processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), infoPlistFile, value);
+
+            processBuilder.directory(workDirectory);
+            CommandHelper.performCommand(processBuilder);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void executeshellScript(String scriptName, String value1, String value2, String value3, File workDirectory, String projectName, final Map<String, String> properties, ProcessBuilder processBuilder) throws IOSException {
+
+        // Run shell-script from resource-folder.
+        try {
+            File tempFile = File.createTempFile(scriptName, "sh");
+
+            InputStream inputStream = ProjectBuilder.class
+                    .getResourceAsStream("/META-INF/" + scriptName);
+            OutputStream outputStream = new FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+
+            if(value1 == null){
+                value1 = "";
+            }
+
+            if(value2 == null){
+                value2 = "";
+            }
+
+            if(value3 == null){
+                value3 = "";
+            }
+
+            processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), value1, value2, value3);
 
             processBuilder.directory(workDirectory);
             CommandHelper.performCommand(processBuilder);
