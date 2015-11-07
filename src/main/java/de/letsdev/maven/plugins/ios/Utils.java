@@ -43,6 +43,7 @@ public class Utils {
         IPHONEOS_ARCHITECTURES("iphoneosArchitectures"),
         IPHONESIMULATOR_ARCHITECTURES("iphonesimulatorArchitectures"),
         CODE_SIGNING_ENABLED("codeSigningEnabled"),
+        CODE_SIGN_WITH_RESOURCE_RULES_ENABLED("codeSignWithResourceRulesEnabled"),
         CODE_SIGN_IDENTITY("codeSignIdentity"),
         CONFIGURATION("configuration"),
         HOCKEY_APP_TOKEN("hockeyAppToken"),
@@ -120,5 +121,9 @@ public class Utils {
 
     public static boolean shouldCodeSign(MavenProject mavenProject, Map<String, String> properties) {
         return !isiOSFramework(mavenProject, properties) && !isMacOSFramework(properties);
+    }
+
+    public static boolean shouldCodeSignWithResourceRules(MavenProject mavenProject, Map<String, String> properties){
+        return properties.get(PLUGIN_PROPERTIES.CODE_SIGN_WITH_RESOURCE_RULES_ENABLED.toString()).equals("true");
     }
 }

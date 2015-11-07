@@ -296,7 +296,11 @@ public class ProjectBuilder {
 
         //if product should be code signed, we add flags for code signing
         if (Utils.shouldCodeSign(mavenProject, properties)) {
-            buildParameters.add("CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist"); //since xcode 6.1 is necessary, if not set, app is not able to be signed with a key.
+
+            if(Utils.shouldCodeSignWithResourceRules(mavenProject, properties)){
+                buildParameters.add("CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist"); //since xcode 6.1 is necessary, if not set, app is not able to be signed with a key.
+            }
+
             if (properties.containsKey(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString())) {
                 buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()));
             }
