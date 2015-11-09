@@ -225,10 +225,16 @@ public class IOSBuildMojo extends AbstractMojo {
     private String ipaVersion;
 
     /**
-     * assetsDirectory
+     * assetsDirectory, directory for assets (existing one will be renamed to assets-tmp)
      * @parameter
      */
     private String assetsDirectory;
+
+    /**
+     * appIcons, directory for appIcons (existing one will be renamed to appIcons-tmp)
+     * @parameter
+     */
+    private String appIconsDirectory;
 
     /**
 	* The maven project.

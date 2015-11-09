@@ -31,6 +31,7 @@ public class Utils {
         APP_DIR("appDir"),
         APP_NAME("appName"),
         APP_ICON_NAME("appIconName"),
+        APP_ICONS_DIRECTORY("appIconsDirectory"),
         ASSETS_DIRECTORY("assetsDirectory"),
         BUILD_ID("buildId"),
         BUNDLE_IDENTIFIER("bundleIdentifier"),

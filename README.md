@@ -54,18 +54,19 @@ Compiles the application and generates an IPA package
 9. ios.keychainPath             (The file system path to the keychain file) e.g. /Users/lestdev/Library/Keychains/letsdev.keychain
 10. ios.keychainPassword        (The keychain password to use for unlock keychain) Before the build the keychain will be unlocked and locked again after the build.
 11. ios.infoPlist               (default: projectName/projectName-Info.plist) The path to the Info.plist, relative to the project directory.
-12. ios.ipaVersion              (The version number for the IPA, different to the maven project version.)
-13. ios.assetsDirectory         (The name of the assets folder. The assets folder in your project has to be "assets".)
-14. ios.projectName             (The name of the project.)
-15. ios.provisioningProfileUUID (The UUID of the provisioning profile to be used. If not set the default provisioning profile will be used instead.)
-16. ios.bundleIdentifier        (The bundle identifier to overwrite in info plist. If not set the default bundle identifier will be used instead.)
-17. ios.displayName             (The display name to overwrite in info plist. If not set the default display name will be used instead.)
-18. ios.appIconName             (The app icon name to overwrite in info plist. If not set the default app icon name will be used instead. e.g. <appIconName>free-icon.png</appIconName>)
-19. ios.iOSFrameworkBuild       (flag for building iOS frameworks in multi execution environment)
-20. ios.iphoneosArchitectures   (default: arm64 armv7 armv7s) architectures build with iphoneos sdk
-21. ios.iphonesimulatorArchitectures (default: i386 x86_64) architectures build with iphonesimulator sdk (only used for framework builds)
-22. ios.gccPreprocessorDefinitions (optional) properties delivered to xcodebuild via GCC_PREPROCESSOR_DEFINITIONS
-23. ios.macOSFrameworkBuild       (flag for building macosx frameworks)
+12. ios.ipaVersion              (The version number for the IPA, different to the maven project version)
+13. ios.assetsDirectory         (The name of the assets folder. The assets folder in your project has to be "assets")
+14. ios.appIconsDirectory       (The name of the appIcons folder)
+15. ios.projectName             (The name of the project.)
+16. ios.provisioningProfileUUID (The UUID of the provisioning profile to be used. If not set the default provisioning profile will be used instead)
+17. ios.bundleIdentifier        (The bundle identifier to overwrite in info plist. If not set the default bundle identifier will be used instead)
+18. ios.displayName             (The display name to overwrite in info plist. If not set the default display name will be used instead)
+19. ios.appIconName             (The app icon name to overwrite in info plist. If not set the default app icon name will be used instead. e.g. <appIconName>free-icon.png</appIconName>)
+20. ios.iOSFrameworkBuild       (flag for building iOS frameworks in multi execution environment)
+21. ios.iphoneosArchitectures   (default: arm64 armv7 armv7s) architectures build with iphoneos sdk
+22. ios.iphonesimulatorArchitectures (default: i386 x86_64) architectures build with iphonesimulator sdk (only used for framework builds)
+23. ios.gccPreprocessorDefinitions (optional) properties delivered to xcodebuild via GCC_PREPROCESSOR_DEFINITIONS
+24. ios.macOSFrameworkBuild       (flag for building macosx frameworks)
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp

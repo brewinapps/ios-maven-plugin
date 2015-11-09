@@ -68,6 +68,29 @@ public class ProjectBuilder {
             }
         }
 
+        File appIconsDirectory = null;
+        File appIconsTempDirectory = null;
+        File newAppIconsDirectory = null;
+
+        //Rename appIcons directory
+        if (properties.get(Utils.PLUGIN_PROPERTIES.APP_ICONS_DIRECTORY.toString()) != null) {
+            appIconsDirectory = new File(projectDirectory.toString() + File.separator + "appIcons");
+            appIconsTempDirectory = new File(projectDirectory.toString() + File.separator + "appIcons.tmp");
+            newAppIconsDirectory = new File(projectDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.APP_ICONS_DIRECTORY.toString()));
+
+            if (appIconsDirectory.exists() && !(newAppIconsDirectory.toString().equalsIgnoreCase(appIconsDirectory.toString()))){
+                ProcessBuilder processBuilder = new ProcessBuilder("mv", appIconsDirectory.toString(), appIconsTempDirectory.toString());
+                processBuilder.directory(projectDirectory);
+                CommandHelper.performCommand(processBuilder);
+            }
+
+            if (newAppIconsDirectory.exists() && !(newAppIconsDirectory.toString().equalsIgnoreCase(appIconsDirectory.toString()))) {
+                ProcessBuilder processBuilder = new ProcessBuilder("mv", newAppIconsDirectory.toString(), appIconsDirectory.toString());
+                processBuilder.directory(projectDirectory);
+                CommandHelper.performCommand(processBuilder);
+            }
+        }
+
         File targetDirectory = new File(mavenProject.getBuild().getDirectory());
 
         // Run agvtool to stamp marketing version
@@ -247,6 +270,21 @@ public class ProjectBuilder {
                     processBuilder = new ProcessBuilder("mv", assetsTempDirectory.toString(), assetsDirectory.toString());
                     processBuilder.directory(projectDirectory);
                     CommandHelper.performCommand(processBuilder);
+            }
+        }
+
+        //Rename appIcons directory to origin
+        if (properties.get(Utils.PLUGIN_PROPERTIES.APP_ICONS_DIRECTORY.toString()) != null) {
+            if ((appIconsTempDirectory != null) && (appIconsDirectory.exists())) {
+                processBuilder = new ProcessBuilder("mv", appIconsDirectory.toString(), newAppIconsDirectory.toString());
+                processBuilder.directory(projectDirectory);
+                CommandHelper.performCommand(processBuilder);
+            }
+
+            if ((appIconsTempDirectory != null) && (appIconsTempDirectory.exists())) {
+                processBuilder = new ProcessBuilder("mv", appIconsTempDirectory.toString(), appIconsDirectory.toString());
+                processBuilder.directory(projectDirectory);
+                CommandHelper.performCommand(processBuilder);
             }
         }
 
