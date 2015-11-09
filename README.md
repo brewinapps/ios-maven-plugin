@@ -10,7 +10,15 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
-2015-04-30 - Release version 1.11.0<br />
+2015-11-09 - Release version 1.11.4<br />
+2015-11-09 - Added possibility for exchanging appIcons directory<br />
+2015-07-06 - Release version 1.11.3<br />
+2015-07-06 - Fixed unlocking of keychains<br />
+2015-07-06 - Release version 1.11.2<br />
+2015-07-06 - Fixed unlocking of keychains<br />
+2015-05-22 - Release version 1.11.1<br />
+2015-05-22 - Fixed packaging for iOS frameworks<br />
+2015-04-30 - Release version 1.11<br />
 2015-04-30 - Added support for building macosx frameworks<br />
 2015-04-21 - Release version 1.10.0<br />
 2015-04-21 - Added support for building universal frameworks (architectures arm64, armv7, armv7s, i386, x86_64 supported)<br />
