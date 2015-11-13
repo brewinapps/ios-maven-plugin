@@ -10,6 +10,8 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2015-11-13 - Release version 1.11.5<br />
+2015-11-13 - Added possibility for configuring CODE_SIGN_RESOURCE_RULES_PATH<br />
 2015-11-09 - Release version 1.11.4<br />
 2015-11-09 - Added possibility for exchanging appIcons directory<br />
 2015-07-06 - Release version 1.11.3<br />
@@ -56,25 +58,26 @@ Compiles the application and generates an IPA package
 3. ios.scheme
 4. ios.sdk					    (default: iphoneos)
 5. ios.codeSignIdentity
-6. ios.configuration		    (default: Release)  Release or Debug
-7. ios.buildId                  (The build number. e.g. 1234) For using jenkins as build server use ${env.BUILD_NUMBER} here
-8. ios.target                   (The Xcode build target)
-9. ios.keychainPath             (The file system path to the keychain file) e.g. /Users/lestdev/Library/Keychains/letsdev.keychain
-10. ios.keychainPassword        (The keychain password to use for unlock keychain) Before the build the keychain will be unlocked and locked again after the build.
-11. ios.infoPlist               (default: projectName/projectName-Info.plist) The path to the Info.plist, relative to the project directory.
-12. ios.ipaVersion              (The version number for the IPA, different to the maven project version)
-13. ios.assetsDirectory         (The name of the assets folder. The assets folder in your project has to be "assets")
-14. ios.appIconsDirectory       (The name of the appIcons folder)
-15. ios.projectName             (The name of the project.)
-16. ios.provisioningProfileUUID (The UUID of the provisioning profile to be used. If not set the default provisioning profile will be used instead)
-17. ios.bundleIdentifier        (The bundle identifier to overwrite in info plist. If not set the default bundle identifier will be used instead)
-18. ios.displayName             (The display name to overwrite in info plist. If not set the default display name will be used instead)
-19. ios.appIconName             (The app icon name to overwrite in info plist. If not set the default app icon name will be used instead. e.g. <appIconName>free-icon.png</appIconName>)
-20. ios.iOSFrameworkBuild       (flag for building iOS frameworks in multi execution environment)
-21. ios.iphoneosArchitectures   (default: arm64 armv7 armv7s) architectures build with iphoneos sdk
-22. ios.iphonesimulatorArchitectures (default: i386 x86_64) architectures build with iphonesimulator sdk (only used for framework builds)
-23. ios.gccPreprocessorDefinitions (optional) properties delivered to xcodebuild via GCC_PREPROCESSOR_DEFINITIONS
-24. ios.macOSFrameworkBuild       (flag for building macosx frameworks)
+6. ios.codeSigningWithResourceRulesEnabled  (default: false) if true, build will be run with xcode argument CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist
+7. ios.configuration		    (default: Release)  Release or Debug
+8. ios.buildId                  (The build number. e.g. 1234) For using jenkins as build server use ${env.BUILD_NUMBER} here
+9. ios.target                   (The Xcode build target)
+10. ios.keychainPath             (The file system path to the keychain file) e.g. /Users/lestdev/Library/Keychains/letsdev.keychain
+11. ios.keychainPassword        (The keychain password to use for unlock keychain) Before the build the keychain will be unlocked and locked again after the build.
+12. ios.infoPlist               (default: projectName/projectName-Info.plist) The path to the Info.plist, relative to the project directory.
+13. ios.ipaVersion              (The version number for the IPA, different to the maven project version)
+14. ios.assetsDirectory         (The name of the assets folder. The assets folder in your project has to be "assets")
+15. ios.appIconsDirectory       (The name of the appIcons folder)
+16. ios.projectName             (The name of the project.)
+17. ios.provisioningProfileUUID (The UUID of the provisioning profile to be used. If not set the default provisioning profile will be used instead)
+18. ios.bundleIdentifier        (The bundle identifier to overwrite in info plist. If not set the default bundle identifier will be used instead)
+19. ios.displayName             (The display name to overwrite in info plist. If not set the default display name will be used instead)
+20. ios.appIconName             (The app icon name to overwrite in info plist. If not set the default app icon name will be used instead. e.g. <appIconName>free-icon.png</appIconName>)
+21. ios.iOSFrameworkBuild       (flag for building iOS frameworks in multi execution environment)
+22. ios.iphoneosArchitectures   (default: arm64 armv7 armv7s) architectures build with iphoneos sdk
+23. ios.iphonesimulatorArchitectures (default: i386 x86_64) architectures build with iphonesimulator sdk (only used for framework builds)
+24. ios.gccPreprocessorDefinitions (optional) properties delivered to xcodebuild via GCC_PREPROCESSOR_DEFINITIONS
+25. ios.macOSFrameworkBuild       (flag for building macosx frameworks)
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
