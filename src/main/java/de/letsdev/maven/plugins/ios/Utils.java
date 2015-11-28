@@ -2,6 +2,7 @@ package de.letsdev.maven.plugins.ios;
 
 import org.apache.maven.project.MavenProject;
 
+import java.io.File;
 import java.util.Map;
 
 /**
@@ -23,7 +24,7 @@ public class Utils {
     public static String SDK_IPHONE_OS = "iphoneos";
     public static String SDK_IPHONE_SIMULATOR = "iphonesimulator";
 
-    public static String ARCHITECTURES_IPHONE_OS = "arm64 armv7 armv7s";
+    public static String ARCHITECTURES_IPHONE_OS = "arm64 armv7";
     public static String ARCHITECTURES_IPHONE_SIMULATOR = "i386 x86_64";
 
     public enum PLUGIN_PROPERTIES {
@@ -60,7 +61,8 @@ public class Utils {
         GCC_PREPROCESSOR_DEFINITIONS("gccPreprocessorDefinitions"),
         PROVISIONING_PROFILE_UUID("provisioningProfileUUID"),
         TARGET("target"),
-        TARGET_DIR("targetDir");
+        TARGET_DIR("targetDir"),
+        BUILD_TO_XCARCHIVE_ENABLED("build-xcarchive");
 
         private PLUGIN_PROPERTIES(String name) {
             this.name = name;
@@ -75,6 +77,7 @@ public class Utils {
 
     public enum PLUGIN_SUFFIX {
         APP("app"),
+        XCARCHIVE("xcarchive"),
         IPA("ipa"),
         APP_DSYM("app.dSYM"),
         FRAMEWORK("framework"),
@@ -126,5 +129,25 @@ public class Utils {
 
     public static boolean shouldCodeSignWithResourceRules(MavenProject mavenProject, Map<String, String> properties){
         return properties.get(PLUGIN_PROPERTIES.CODE_SIGN_WITH_RESOURCE_RULES_ENABLED.toString()).equals("true");
+    }
+
+    public static boolean shouldBuildXCArchive(MavenProject mavenProject, Map<String, String> properties){
+        return properties.get(PLUGIN_PROPERTIES.BUILD_TO_XCARCHIVE_ENABLED.toString()).equals("true");
+    }
+
+    public static String getArchiveName(final String projectName, MavenProject mavenProject){
+        return getTargetDirectory(mavenProject).getAbsolutePath() + File.separator + projectName + "." + PLUGIN_SUFFIX.XCARCHIVE;
+    }
+
+    protected static File getTargetDirectory(MavenProject mavenProject) {
+        return new File(mavenProject.getBuild().getDirectory());
+    }
+
+    protected static String buildProjectName(Map<String, String> buildProperties, MavenProject mavenProject) {
+        String projectName = mavenProject.getArtifactId();
+        if (buildProperties.get(Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString()) != null) {
+            projectName = buildProperties.get(Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString());
+        }
+        return projectName;
     }
 }

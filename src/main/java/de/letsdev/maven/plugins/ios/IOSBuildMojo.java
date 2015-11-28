@@ -86,7 +86,10 @@ public class IOSBuildMojo extends AbstractMojo {
 
 	
 	/**
-	 * iOS scheme
+	 * iOS scheme. This is necessary for xcarchive builds.
+     *
+     * Scheme must be set to "share" into the xcode project!
+     *
 	 * @parameter
 	 * 		property="ios.scheme"
 	 */
@@ -104,7 +107,7 @@ public class IOSBuildMojo extends AbstractMojo {
      * iphoneos SDK build architectures
      * @parameter
      * 		property="ios.iphoneosArchitectures"
-     * 		default-value="arm64 armv7 armv7s"
+     * 		default-value="arm64 armv7"
      */
     private String iphoneosArchitectures;
 
@@ -139,6 +142,19 @@ public class IOSBuildMojo extends AbstractMojo {
     private boolean codeSigningEnabled;
 
     /**
+     * flag for iOS export to xcarchive enabled.
+     *
+     * If false the .app will be generated instead of xcarchive.
+     *
+     * You must set the xcode "scheme" value. Also the XCode scheme must be shared in the xcode project!
+     *
+     * Default: true
+     *
+     * @parameter property="ios.buildXCArchiveEnabled"
+     */
+    private boolean buildXCArchiveEnabled = true;
+
+    /**
      * flag for iOS code signing with resources rules enabled
      *
      * Following will be added to code sign execution:
@@ -154,7 +170,7 @@ public class IOSBuildMojo extends AbstractMojo {
     private boolean codeSigningWithResourceRulesEnabled = false;
 	
 	/**
-	 * iOS code sign identity
+	 * iOS code sign identity. The Code Sign identity, see distribution certficates common name.
 	 * @parameter
 	 * 		property="ios.codeSignIdentity"
 	 */
@@ -175,7 +191,7 @@ public class IOSBuildMojo extends AbstractMojo {
     private String keychainPassword;
 	
 	/**
-	 * iOS configuration
+	 * iOS configuration, Release or Debug
 	 * @parameter
 	 * 		property="ios.configuration"
 	 * 		default-value="Release"
@@ -183,14 +199,17 @@ public class IOSBuildMojo extends AbstractMojo {
 	private String configuration;
 	
 	/**
-	 * build id
+	 * build id, will be set into info.plist
 	 * @parameter
 	 * 		property="ios.buildId"
 	 */
 	private String buildId;	
 	
 	/**
-	 * target
+	 * target. The XCode target. See also "scheme".
+     *
+     * If building apps with xcarchive, you must use "scheme" instead of target, then given target will be ignored.
+     *
 	 * @parameter
 	 * 		property="ios.target"
 	 */
@@ -262,6 +281,7 @@ public class IOSBuildMojo extends AbstractMojo {
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IOS_FRAMEWORK_BUILD.toString(), Boolean.toString(this.iOSFrameworkBuild));
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.MACOSX_FRAMEWORK_BUILD.toString(), Boolean.toString(this.macOSFrameworkBuild));
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGNING_ENABLED.toString(), Boolean.toString(this.codeSigningEnabled));
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.BUILD_TO_XCARCHIVE_ENABLED.toString(), Boolean.toString(this.buildXCArchiveEnabled));
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_WITH_RESOURCE_RULES_ENABLED.toString(), Boolean.toString(this.codeSigningWithResourceRulesEnabled));
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString(), this.codeSignIdentity);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SDK.toString(), this.sdk);

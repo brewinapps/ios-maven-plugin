@@ -10,6 +10,8 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2015-11-28 - Release version 1.12<br />
+2015-11-28 - Added Support to build Apps (.ipa) with new XCode xcarchive process and code signing @see buildXCArchiveEnabled<br />
 2015-11-13 - Release version 1.11.5<br />
 2015-11-13 - Added possibility for configuring CODE_SIGN_RESOURCE_RULES_PATH<br />
 2015-11-09 - Release version 1.11.4<br />
@@ -23,7 +25,7 @@ http://www.letsdev.de - professional mobile solutions
 2015-04-30 - Release version 1.11<br />
 2015-04-30 - Added support for building macosx frameworks<br />
 2015-04-21 - Release version 1.10.0<br />
-2015-04-21 - Added support for building universal frameworks (architectures arm64, armv7, armv7s, i386, x86_64 supported)<br />
+2015-04-21 - Added support for building universal frameworks (architectures arm64, armv7, i386, x86_64 supported)<br />
 2015-04-04 - Added auto generation of deploy plist file<br />
 2014-11-02 - Release version 1.9.3<br />
 2014-11-02 - Adjusted to xcode 6.1 and iOS8 build, some issues occurred here<br />
@@ -32,7 +34,7 @@ http://www.letsdev.de - professional mobile solutions
 
 
 ## Features
-1. Compilation of iOS applications
+1. Compilation and siging of iOS applications
 2. Distribution of iOS applications
 3. Versioning of iOS applications
 4. One-step HockeyApp deployment
@@ -41,6 +43,11 @@ http://www.letsdev.de - professional mobile solutions
 7. Packaging of iOS frameworks for deployment to Nexus/Artifactory
 8. Use Multiple executions e.g for branding or customizing of apps. (Different app icon names, different display names etc.)
 9. Compilation of macosx frameworks
+10. Customizing / flaovouring of apps replacing assets folders
+11. Change app displayname without XCode Project changes
+12. Change Version without XCode Project changes
+13. Change App Icons without XCode Project changes
+
 
 ## Requirements
 1. The plugin relies on several tools that are only available on Mac OS X: xcodebuild, xcrun and agvtool.  Install the Xcode Command Line Tools (Xcode -> Preferences... -> Downloads).  
@@ -55,29 +62,32 @@ Compiles the application and generates an IPA package
 
 1. ios.sourceDir			    (default: src/ios)
 2. ios.appName     		        (required)  is also the name of the bundle identifier
-3. ios.scheme
-4. ios.sdk					    (default: iphoneos)
-5. ios.codeSignIdentity
-6. ios.codeSigningWithResourceRulesEnabled  (default: false) if true, build will be run with xcode argument CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist
-7. ios.configuration		    (default: Release)  Release or Debug
-8. ios.buildId                  (The build number. e.g. 1234) For using jenkins as build server use ${env.BUILD_NUMBER} here
-9. ios.target                   (The Xcode build target)
-10. ios.keychainPath             (The file system path to the keychain file) e.g. /Users/lestdev/Library/Keychains/letsdev.keychain
-11. ios.keychainPassword        (The keychain password to use for unlock keychain) Before the build the keychain will be unlocked and locked again after the build.
-12. ios.infoPlist               (default: projectName/projectName-Info.plist) The path to the Info.plist, relative to the project directory.
-13. ios.ipaVersion              (The version number for the IPA, different to the maven project version)
-14. ios.assetsDirectory         (The name of the assets folder. The assets folder in your project has to be "assets")
-15. ios.appIconsDirectory       (The name of the appIcons folder)
-16. ios.projectName             (The name of the project.)
-17. ios.provisioningProfileUUID (The UUID of the provisioning profile to be used. If not set the default provisioning profile will be used instead)
-18. ios.bundleIdentifier        (The bundle identifier to overwrite in info plist. If not set the default bundle identifier will be used instead)
-19. ios.displayName             (The display name to overwrite in info plist. If not set the default display name will be used instead)
-20. ios.appIconName             (The app icon name to overwrite in info plist. If not set the default app icon name will be used instead. e.g. <appIconName>free-icon.png</appIconName>)
-21. ios.iOSFrameworkBuild       (flag for building iOS frameworks in multi execution environment)
-22. ios.iphoneosArchitectures   (default: arm64 armv7 armv7s) architectures build with iphoneos sdk
-23. ios.iphonesimulatorArchitectures (default: i386 x86_64) architectures build with iphonesimulator sdk (only used for framework builds)
-24. ios.gccPreprocessorDefinitions (optional) properties delivered to xcodebuild via GCC_PREPROCESSOR_DEFINITIONS
-25. ios.macOSFrameworkBuild       (flag for building macosx frameworks)
+3. ios.classifier     		    will be added to the .ipa file name
+4. ios.buildXCArchiveEnabled       (default: true) flag for iOS export to xcarchive enabled. If false the .app will be generated instead of xcarchive. You must set the xcode "scheme" value. Also the XCode scheme must be shared in the xcode project!
+5. ios.scheme                   Is necessary for xcarchive builds. XCode Version > 6. The scheme must be "shared" within the xcode project!
+6. ios.sdk					    (default: iphoneos)
+7. ios.codeSignIdentity
+8. ios.configuration		    (default: Release)  Release or Debug
+9. ios.buildId                  (The build number. e.g. 1234) For using jenkins as build server use ${env.BUILD_NUMBER} here
+10. ios.target                   (The Xcode build target)
+11. ios.keychainPath             (The file system path to the keychain file) e.g. /Users/lestdev/Library/Keychains/letsdev.keychain
+12. ios.keychainPassword        (The keychain password to use for unlock keychain) Before the build the keychain will be unlocked and locked again after the build.
+13. ios.infoPlist               (default: projectName/projectName-Info.plist) The path to the Info.plist, relative to the project directory.
+14. ios.ipaVersion              (The version number for the IPA, different to the maven project version)
+15. ios.assetsDirectory         (The name of the assets folder. The assets folder in your project has to be "assets")
+16. ios.appIconsDirectory       (The name of the appIcons folder)
+17. ios.projectName             (The name of the project.)
+18. ios.provisioningProfileUUID (The UUID of the provisioning profile to be used. If not set the default provisioning profile will be used instead)
+19. ios.bundleIdentifier        (The bundle identifier to overwrite in info plist. If not set the default bundle identifier will be used instead)
+20. ios.displayName             (The display name to overwrite in info plist. If not set the default display name will be used instead)
+21. ios.appIconName             (The app icon name to overwrite in info plist. If not set the default app icon name will be used instead. e.g. <appIconName>free-icon.png</appIconName>)
+22. ios.iOSFrameworkBuild       (flag for building iOS frameworks in multi execution environment)
+23. ios.iphoneosArchitectures   (default: arm64 armv7) architectures build with iphoneos sdk
+24. ios.iphonesimulatorArchitectures (default: i386 x86_64) architectures build with iphonesimulator sdk (only used for framework builds)
+25. ios.gccPreprocessorDefinitions (optional) properties delivered to xcodebuild via GCC_PREPROCESSOR_DEFINITIONS
+26. ios.macOSFrameworkBuild       (flag for building macosx frameworks)
+27. ios.codeSigningEnabled           (default: true) Enabled or disable code signing for the app
+28. ios.codeSigningWithResourceRulesEnabled   (default: false) flag for iOS code signing with resources rules enabled. Following will be added to code sign execution: <pre>CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist</pre> . This was necessary from iOS SDK 6.1 until 8.0
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
@@ -152,12 +162,12 @@ To sign the package, unlock the keychain on the jenkins node. The two commands b
     <plugin>
 	   <groupId>de.letsdev.maven.plugins</groupId>
 	      <artifactId>maven-ios-plugin</artifactId>
-	      <version>1.9.3</version>
+	      <version>1.12</version>
 	      <extensions>true</extensions>
 	      <configuration>
 	          <codeSignIdentity>iPhone Distribution: let's dev iOS App Development</codeSignIdentity>
 	          <appName>MaveniOSApp</appName>
-		      <target>letsdev</target>
+		      <scheme>letsdev</scheme>
 			  <buildId>${env.BUILD_NUMBER}</buildId>
 			  <configuration>Release</configuration>
               <keychainPath>/Users/letsdev/Library/Keychains/letsdev.keychain</keychainPath>
@@ -280,7 +290,7 @@ Configure the maven plugin to build an universal framework in one execution bloc
                 <ipaVersion>${project.version}</ipaVersion>
                 <configuration>Release</configuration>
                 <iOSFrameworkBuild>true</iOSFrameworkBuild>
-                <iphoneosArchitectures>arm64 armv7 armv7s</iphoneosArchitectures>
+                <iphoneosArchitectures>arm64 armv7</iphoneosArchitectures>
                 <iphonesimulatorArchitectures>i386 x86_64</iphonesimulatorArchitectures>
             </configuration>
         </execution>
