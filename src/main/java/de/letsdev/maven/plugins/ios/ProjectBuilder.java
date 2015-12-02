@@ -121,6 +121,12 @@ public class ProjectBuilder {
                 File targetWorkDirectoryIphone = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_OS + File.separator);
                 File targetWorkDirectoryIphoneSimulator = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR + File.separator);
 
+                //if we'd build the framework with xcodebuild archive command, we have to export the framework from archive
+                if (Utils.shouldBuildXCArchive(mavenProject, properties)) {
+                    File archiveFile = new File(Utils.getArchiveName(projectName, mavenProject));
+                    exportFrameworkArchive(archiveFile, targetWorkDirectoryIphone, appName, frameworkName);
+                }
+
                 // use lipo to merge framework binarys
                 mergeFrameworkProducts(targetWorkDirectoryIphone, targetWorkDirectoryIphoneSimulator, appName, frameworkName);
 
@@ -401,15 +407,13 @@ public class ProjectBuilder {
         buildParameters.add("-configuration");
         buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()));
 
-        if(!Utils.shouldBuildXCArchive(mavenProject, properties)){
-            buildParameters.add("SYMROOT=" + targetDirectory.getAbsolutePath());   //only possible without xcarchive
+        if (Utils.shouldBuildXCArchive(mavenProject, properties) && !shouldUseIphoneSimulatorSDK) {
+            buildParameters.add("archive");
+            buildParameters.add("-archivePath");
+            buildParameters.add(Utils.getArchiveName(projectName, mavenProject));
         }
-
-        if(Utils.shouldBuildXCArchive(mavenProject, properties)){
-          buildParameters.add("archive");
-          buildParameters.add("-archivePath");
-          buildParameters.add(Utils.getArchiveName(projectName, mavenProject));
-          //buildParameters.add("./build/myApp-1.xcarchive");
+        else {
+            buildParameters.add("SYMROOT=" + targetDirectory.getAbsolutePath());   //only possible without xcarchive
         }
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.SCHEME.toString())) {
@@ -442,7 +446,7 @@ public class ProjectBuilder {
             buildParameters.add("PRODUCT_NAME=" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()));
         }
 
-        if(!Utils.shouldBuildXCArchive(mavenProject, properties)){ //from XCode > Version 7 target should not be used any more. Use scheme instead!
+        if(!Utils.shouldBuildXCArchive(mavenProject, properties) || shouldUseIphoneSimulatorSDK){ //from XCode > Version 7 target should not be used any more. Use scheme instead!
             // Add target. Uses target 'framework' to build Frameworks.
             buildParameters.add("-target");
 
@@ -494,6 +498,43 @@ public class ProjectBuilder {
                     mergedFrameworkPath);
 
             processBuilder.directory(targetWorkDirectoryIphone);
+            CommandHelper.performCommand(processBuilder);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void exportFrameworkArchive(File archiveFile, File targetFrameworkPath, String appName, String frameworkName) {
+        // Run shell-script from resource-folder.
+        try {
+            final String scriptName = "export-framework-archive";
+
+            targetFrameworkPath.mkdir();
+            final String iphoneosFrameworkPath = targetFrameworkPath.toString() + "/" + frameworkName;
+            final String iphoneosFrameworkProductPath = targetFrameworkPath.toString() + "/" + frameworkName + "/" + appName;
+
+            File tempFile = File.createTempFile(scriptName, "sh");
+            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName + ".sh");
+            OutputStream outputStream = new FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+
+            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
+                    archiveFile.toString(),
+                    frameworkName,
+                    targetFrameworkPath.toString(),
+                    iphoneosFrameworkPath,
+                    iphoneosFrameworkProductPath);
+
+            processBuilder.directory(targetFrameworkPath);
             CommandHelper.performCommand(processBuilder);
 
         } catch (Exception e) {

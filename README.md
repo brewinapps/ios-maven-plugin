@@ -10,6 +10,8 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2015-12-02 - Release version 1.13<br />
+2015-12-02 - Added Support to build frameworks (.framework) with new XCode xcarchive process and code signing @see buildXCArchiveEnabled<br />
 2015-11-28 - Release version 1.12<br />
 2015-11-28 - Added Support to build Apps (.ipa) with new XCode xcarchive process and code signing @see buildXCArchiveEnabled<br />
 2015-11-13 - Release version 1.11.5<br />
