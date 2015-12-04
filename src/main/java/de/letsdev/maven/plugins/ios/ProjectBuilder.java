@@ -453,6 +453,10 @@ public class ProjectBuilder {
             buildParameters.add("PROVISIONING_PROFILE=" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()));
         }
 
+        if (properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()) != null) {
+            buildParameters.add("PRODUCT_BUNDLE_IDENTIFIER=" + properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()));
+        }
+
         if (!Utils.cocoaPodsEnabled(properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.APP_NAME.toString())) {
             buildParameters.add("PRODUCT_NAME=" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()));
         }
