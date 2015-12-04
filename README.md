@@ -11,7 +11,7 @@ http://www.letsdev.de - professional mobile solutions
 ## Last-Changes
 
 2015-12-04 - Release version 1.14<br />
-2015-12-04 - Added support for Cocoapods dependencies @see buildXCArchiveEnabled<br />
+2015-12-04 - Added support for Cocoapods dependencies @see cocoaPodsEnabled<br />
 2015-12-02 - Release version 1.13<br />
 2015-12-02 - Added support to build frameworks (.framework) with new XCode xcarchive process and code signing @see buildXCArchiveEnabled<br />
 2015-11-28 - Release version 1.12<br />
