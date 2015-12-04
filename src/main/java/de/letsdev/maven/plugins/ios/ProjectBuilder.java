@@ -95,6 +95,11 @@ public class ProjectBuilder {
         //unlock keychain
         unlockKeychain(properties, mavenProject, projectName, workDirectory, processBuilder);
 
+        //if project contains cocoaPods dependencies, we install them first
+        if (Utils.cocoaPodsEnabled(properties)) {
+            installCocoaPodsDependencies(projectDirectory);
+        }
+
         // Build the application
         List<String> buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, false);
         processBuilder = new ProcessBuilder(buildParameters);
@@ -391,8 +396,14 @@ public class ProjectBuilder {
     private static List<String> generateBuildParameters(MavenProject mavenProject, Map<String, String> properties, File targetDirectory, String projectName, File precompiledHeadersDir, boolean shouldUseIphoneSimulatorSDK) {
         List<String> buildParameters = new ArrayList<String>();
         buildParameters.add("xcodebuild");
-        buildParameters.add("-sdk");
 
+        //if cocoa pods is enabled, we have to build the .xcworkspace file instead of .xcodeproj
+        if (Utils.cocoaPodsEnabled(properties)) {
+            buildParameters.add("-workspace");
+            buildParameters.add(projectName + ".xcworkspace");
+        }
+
+        buildParameters.add("-sdk");
         if (shouldUseIphoneSimulatorSDK) {
             buildParameters.add(Utils.SDK_IPHONE_SIMULATOR);
             buildParameters.add("ARCHS=" + properties.get(Utils.PLUGIN_PROPERTIES.IPHONESIMULATOR_ARCHITECTURES.toString()));
@@ -442,7 +453,7 @@ public class ProjectBuilder {
             buildParameters.add("PROVISIONING_PROFILE=" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()));
         }
 
-        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.APP_NAME.toString())) {
+        if (!Utils.cocoaPodsEnabled(properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.APP_NAME.toString())) {
             buildParameters.add("PRODUCT_NAME=" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()));
         }
 
@@ -656,6 +667,16 @@ public class ProjectBuilder {
             CommandHelper.performCommand(processBuilder);
 
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void installCocoaPodsDependencies(File projectDirectory) {
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("pod", "install");
+            processBuilder.directory(projectDirectory);
+            CommandHelper.performCommand(processBuilder);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

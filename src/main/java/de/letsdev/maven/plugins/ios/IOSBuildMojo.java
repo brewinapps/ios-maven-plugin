@@ -255,6 +255,12 @@ public class IOSBuildMojo extends AbstractMojo {
      */
     private String appIconsDirectory;
 
+	/**
+	 * determines if project uses cocoapods, dependencies will be installed (via pod install) and .xcworkspace will be built instead of .xcodeproj
+	 * @parameter
+	 */
+	private String cocoaPodsEnabled;
+
     /**
 	* The maven project.
 	*
@@ -301,6 +307,7 @@ public class IOSBuildMojo extends AbstractMojo {
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString(), this.bundleIdentifier);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString(), this.displayName);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CLASSIFIER.toString(), this.classifier);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString(), this.cocoaPodsEnabled);
 
 			ProjectBuilder.build(properties, this.mavenProject);
 		} catch (IOSException e) {

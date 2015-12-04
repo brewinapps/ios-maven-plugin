@@ -62,7 +62,8 @@ public class Utils {
         PROVISIONING_PROFILE_UUID("provisioningProfileUUID"),
         TARGET("target"),
         TARGET_DIR("targetDir"),
-        BUILD_TO_XCARCHIVE_ENABLED("build-xcarchive");
+        BUILD_TO_XCARCHIVE_ENABLED("build-xcarchive"),
+        COCOA_PODS_ENABLED("cocoa-pods-enabled");
 
         private PLUGIN_PROPERTIES(String name) {
             this.name = name;
@@ -112,11 +113,11 @@ public class Utils {
     }
 
     public static boolean isMacOSFramework(Map<String, String> properties) {
-        return properties.get(PLUGIN_PROPERTIES.MACOSX_FRAMEWORK_BUILD.toString()).equals("true");
+        return "true".equals(properties.get(PLUGIN_PROPERTIES.MACOSX_FRAMEWORK_BUILD.toString()));
     }
 
     public static boolean isiOSFramework(MavenProject mavenProject, Map<String, String> properties) {
-        return isiOSFramework(mavenProject, properties.get(PLUGIN_PROPERTIES.IOS_FRAMEWORK_BUILD.toString()).equals("true"));
+        return isiOSFramework(mavenProject, "true".equals(properties.get(PLUGIN_PROPERTIES.IOS_FRAMEWORK_BUILD.toString())));
     }
 
     public static boolean isiOSFramework(MavenProject mavenProject, boolean isFrameworkBuild) {
@@ -128,11 +129,11 @@ public class Utils {
     }
 
     public static boolean shouldCodeSignWithResourceRules(MavenProject mavenProject, Map<String, String> properties){
-        return properties.get(PLUGIN_PROPERTIES.CODE_SIGN_WITH_RESOURCE_RULES_ENABLED.toString()).equals("true");
+        return "true".equals(properties.get(PLUGIN_PROPERTIES.CODE_SIGN_WITH_RESOURCE_RULES_ENABLED.toString()));
     }
 
     public static boolean shouldBuildXCArchive(MavenProject mavenProject, Map<String, String> properties){
-        return properties.get(PLUGIN_PROPERTIES.BUILD_TO_XCARCHIVE_ENABLED.toString()).equals("true");
+        return "true".equals(properties.get(PLUGIN_PROPERTIES.BUILD_TO_XCARCHIVE_ENABLED.toString()));
     }
 
     public static String getArchiveName(final String projectName, MavenProject mavenProject){
@@ -149,5 +150,9 @@ public class Utils {
             projectName = buildProperties.get(Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString());
         }
         return projectName;
+    }
+
+    public static boolean cocoaPodsEnabled(Map<String, String> buildProperties) {
+        return "true".equals(buildProperties.get(PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString()));
     }
 }

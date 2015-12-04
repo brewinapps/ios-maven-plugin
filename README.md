@@ -10,10 +10,12 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2015-12-04 - Release version 1.14<br />
+2015-12-04 - Added support for Cocoapods dependencies @see buildXCArchiveEnabled<br />
 2015-12-02 - Release version 1.13<br />
-2015-12-02 - Added Support to build frameworks (.framework) with new XCode xcarchive process and code signing @see buildXCArchiveEnabled<br />
+2015-12-02 - Added support to build frameworks (.framework) with new XCode xcarchive process and code signing @see buildXCArchiveEnabled<br />
 2015-11-28 - Release version 1.12<br />
-2015-11-28 - Added Support to build Apps (.ipa) with new XCode xcarchive process and code signing @see buildXCArchiveEnabled<br />
+2015-11-28 - Added support to build Apps (.ipa) with new XCode xcarchive process and code signing @see buildXCArchiveEnabled<br />
 2015-11-13 - Release version 1.11.5<br />
 2015-11-13 - Added possibility for configuring CODE_SIGN_RESOURCE_RULES_PATH<br />
 2015-11-09 - Release version 1.11.4<br />
@@ -90,6 +92,7 @@ Compiles the application and generates an IPA package
 26. ios.macOSFrameworkBuild       (flag for building macosx frameworks)
 27. ios.codeSigningEnabled           (default: true) Enabled or disable code signing for the app
 28. ios.codeSigningWithResourceRulesEnabled   (default: false) flag for iOS code signing with resources rules enabled. Following will be added to code sign execution: <pre>CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist</pre> . This was necessary from iOS SDK 6.1 until 8.0
+29. ios.cocoaPodsEnabled        (default: false) Determines if the project contains Cocoapods dependencies. If set, the dependencies will be installed during execution. When Cocoapods is enabled, a given appName will not passed to the xcodebuild command.
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
@@ -302,6 +305,36 @@ Configure the maven plugin to build an universal framework in one execution bloc
 ...
 ```
 
+**Build project containing Cocoapods dependencies**
+
+```
+...
+
+<plugin>
+    <groupId>de.letsdev.maven.plugins</groupId>
+    <artifactId>maven-ios-plugin</artifactId>
+    <extensions>true</extensions>
+    <executions>
+        ...
+        <execution>
+            <id>my-project</id>
+            <goals>
+                <goal>build</goal>
+                <goal>package</goal>
+                <goal>deploy</goal>
+            </goals>
+            <configuration>
+                <appName>LDMyiOSProject</appName>
+                <cocoaPodsEnabled>true</cocoaPodsEnabled>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+
+...
+```
+
+Cocoapods dependencies will be installed via the "pod install" command.
 
 **Deploy to HockeyApp**
 
