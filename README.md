@@ -10,6 +10,8 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2016-01-26 - Release version 1.14.2<br />
+2016-01-26 - Using target switch for xcodebuild only if set<br />
 2015-12-04 - Release version 1.14.1<br />
 2015-12-04 - Passing PRODUCT_BUDNLE_IDENTIFIER with the xcodebuild command if set<br />
 2015-12-04 - Release version 1.14<br />
