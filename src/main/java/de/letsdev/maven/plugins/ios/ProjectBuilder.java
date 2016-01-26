@@ -469,8 +469,8 @@ public class ProjectBuilder {
 
         if(!Utils.shouldBuildXCArchive(mavenProject, properties) && target != null){ //from XCode > Version 7 target should not be used any more. Use scheme instead!
             // Add target. Uses target 'framework' to build Frameworks.
-            buildParameters.add("-target");
-            buildParameters.add(target);
+//            buildParameters.add("-target");
+//            buildParameters.add(target);
         }
 
         //buildParameters.add("SHARED_PRECOMPS_DIR=" + precompiledHeadersDir.getAbsolutePath());   //this is really important to avoid collisions, if not set /var/folders will be used here
