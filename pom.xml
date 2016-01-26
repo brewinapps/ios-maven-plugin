@@ -22,22 +22,21 @@
     </properties>
 
     <scm>
+        <url>scm:git:git@github.com:letsdev/maven-ios-plugin.git</url>
         <connection>scm:git:git@github.com:letsdev/maven-ios-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:letsdev/maven-ios-plugin.git</developerConnection>
-        <url>scm:git:git@github.com:letsdev/maven-ios-plugin.git</url>
-      <tag>version-1.9.3</tag>
-  </scm>
+    </scm>
 
     <distributionManagement>
         <snapshotRepository>
-            <id>snapshots</id>
-            <name>Snapshots</name>
-            <url>${snapshots.url}</url>
+            <id>snapshots-extern</id>
+            <name>Snapshots Extern</name>
+            <url>${ld-public-snapshots.url}</url>
         </snapshotRepository>
         <repository>
-            <id>releases</id>
-            <name>Releases</name>
-            <url>${releases.url}</url>
+            <id>releases-extern</id>
+            <name>Releases Extern</name>
+            <url>${ld-public-releases.url}</url>
         </repository>
     </distributionManagement>
 
