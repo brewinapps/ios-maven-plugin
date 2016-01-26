@@ -461,16 +461,16 @@ public class ProjectBuilder {
             buildParameters.add("PRODUCT_NAME=" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()));
         }
 
-        //only if target tag is present and we are not building via xcArchive, we set the target switch
         String target = null;
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.TARGET.toString())) {
             target = properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString());
         }
 
+        //only if target tag is present and we are not building via xcArchive, we set the target switch
         if(!Utils.shouldBuildXCArchive(mavenProject, properties) && target != null){ //from XCode > Version 7 target should not be used any more. Use scheme instead!
             // Add target. Uses target 'framework' to build Frameworks.
-//            buildParameters.add("-target");
-//            buildParameters.add(target);
+            buildParameters.add("-target");
+            buildParameters.add(target);
         }
 
         //buildParameters.add("SHARED_PRECOMPS_DIR=" + precompiledHeadersDir.getAbsolutePath());   //this is really important to avoid collisions, if not set /var/folders will be used here
