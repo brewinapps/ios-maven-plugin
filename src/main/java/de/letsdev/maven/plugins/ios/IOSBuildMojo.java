@@ -120,6 +120,14 @@ public class IOSBuildMojo extends AbstractMojo {
     private String iphonesimulatorArchitectures;
 
     /**
+     * flag for bitcode enabled option for builds with iphonesimulator sdk
+     * @parameter
+     * 		property="ios.iphonesimulatorBitcodeEnabled"
+     * 		default-value="true"
+     */
+    private boolean iphonesimulatorBitcodeEnabled = true;
+
+    /**
      * flag for iOS framework builds
      * @parameter
      * 		property="ios.iOSFrameworkBuild"
@@ -283,6 +291,7 @@ public class IOSBuildMojo extends AbstractMojo {
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString(), this.projectName);
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString(), this.gccPreprocessorDefinitions);
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPHONESIMULATOR_ARCHITECTURES.toString(), this.iphonesimulatorArchitectures);
+			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPHONESIMULATOR_BITCODE_ENABLED.toString(), Boolean.toString(this.iphonesimulatorBitcodeEnabled));
 			this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPHONEOS_ARCHITECTURES.toString(), this.iphoneosArchitectures);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IOS_FRAMEWORK_BUILD.toString(), Boolean.toString(this.iOSFrameworkBuild));
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.MACOSX_FRAMEWORK_BUILD.toString(), Boolean.toString(this.macOSFrameworkBuild));

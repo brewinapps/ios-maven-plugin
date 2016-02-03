@@ -10,6 +10,8 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2016-02-03 - Release version 1.14.3<br />
+2016-02-03 - Added support to build iphonesimulator sdk builds with bitcode enabled (see iphonesimulatorBitcodeEnabled property)<br />
 2016-01-26 - Release version 1.14.2<br />
 2016-01-26 - Using target switch for xcodebuild only if set<br />
 2015-12-04 - Release version 1.14.1<br />
@@ -92,11 +94,12 @@ Compiles the application and generates an IPA package
 22. ios.iOSFrameworkBuild       (flag for building iOS frameworks in multi execution environment)
 23. ios.iphoneosArchitectures   (default: arm64 armv7) architectures build with iphoneos sdk
 24. ios.iphonesimulatorArchitectures (default: i386 x86_64) architectures build with iphonesimulator sdk (only used for framework builds)
-25. ios.gccPreprocessorDefinitions (optional) properties delivered to xcodebuild via GCC_PREPROCESSOR_DEFINITIONS
-26. ios.macOSFrameworkBuild       (flag for building macosx frameworks)
-27. ios.codeSigningEnabled           (default: true) Enabled or disable code signing for the app
-28. ios.codeSigningWithResourceRulesEnabled   (default: false) flag for iOS code signing with resources rules enabled. Following will be added to code sign execution: <pre>CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist</pre> . This was necessary from iOS SDK 6.1 until 8.0
-29. ios.cocoaPodsEnabled        (default: false) Determines if the project contains Cocoapods dependencies. If set, the dependencies will be installed during execution. When Cocoapods is enabled, a given appName will not passed to the xcodebuild command.
+25. ios.iphonesimulatorBitcodeEnabled (default: true) determines if -fembed-bitcode switch is enabled for iphonesimulator builds
+26. ios.gccPreprocessorDefinitions (optional) properties delivered to xcodebuild via GCC_PREPROCESSOR_DEFINITIONS
+27. ios.macOSFrameworkBuild       (flag for building macosx frameworks)
+28. ios.codeSigningEnabled           (default: true) Enabled or disable code signing for the app
+29. ios.codeSigningWithResourceRulesEnabled   (default: false) flag for iOS code signing with resources rules enabled. Following will be added to code sign execution: <pre>CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist</pre> . This was necessary from iOS SDK 6.1 until 8.0
+30. ios.cocoaPodsEnabled        (default: false) Determines if the project contains Cocoapods dependencies. If set, the dependencies will be installed during execution. When Cocoapods is enabled, a given appName will not passed to the xcodebuild command.
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp

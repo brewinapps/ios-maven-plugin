@@ -44,6 +44,7 @@ public class Utils {
         MACOSX_FRAMEWORK_BUILD("macOSFrameworkBuild"),
         IPHONEOS_ARCHITECTURES("iphoneosArchitectures"),
         IPHONESIMULATOR_ARCHITECTURES("iphonesimulatorArchitectures"),
+        IPHONESIMULATOR_BITCODE_ENABLED("iphonesimulatorBitcodeEnabled"),
         CODE_SIGNING_ENABLED("codeSigningEnabled"),
         CODE_SIGN_WITH_RESOURCE_RULES_ENABLED("codeSignWithResourceRulesEnabled"),
         CODE_SIGN_IDENTITY("codeSignIdentity"),
@@ -154,5 +155,9 @@ public class Utils {
 
     public static boolean cocoaPodsEnabled(Map<String, String> buildProperties) {
         return "true".equals(buildProperties.get(PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString()));
+    }
+
+    public static boolean isIphoneSimulatorBitcodeEnabled(Map<String, String> buildProperties) {
+        return "true".equals(buildProperties.get(PLUGIN_PROPERTIES.IPHONESIMULATOR_BITCODE_ENABLED.toString()));
     }
 }
