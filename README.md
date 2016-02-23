@@ -10,6 +10,8 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2016-02-23 - Release version 1.14.4<br />
+2016-02-23 - Fix for Xcode bug (building iphonesimulator sdk builds in wrong directory)
 2016-02-03 - Release version 1.14.3<br />
 2016-02-03 - Added support to build iphonesimulator sdk builds with bitcode enabled (see iphonesimulatorBitcodeEnabled property)<br />
 2016-01-26 - Release version 1.14.2<br />
@@ -26,22 +28,6 @@ http://www.letsdev.de - professional mobile solutions
 2015-11-13 - Added possibility for configuring CODE_SIGN_RESOURCE_RULES_PATH<br />
 2015-11-09 - Release version 1.11.4<br />
 2015-11-09 - Added possibility for exchanging appIcons directory<br />
-2015-07-06 - Release version 1.11.3<br />
-2015-07-06 - Fixed unlocking of keychains<br />
-2015-07-06 - Release version 1.11.2<br />
-2015-07-06 - Fixed unlocking of keychains<br />
-2015-05-22 - Release version 1.11.1<br />
-2015-05-22 - Fixed packaging for iOS frameworks<br />
-2015-04-30 - Release version 1.11<br />
-2015-04-30 - Added support for building macosx frameworks<br />
-2015-04-21 - Release version 1.10.0<br />
-2015-04-21 - Added support for building universal frameworks (architectures arm64, armv7, i386, x86_64 supported)<br />
-2015-04-04 - Added auto generation of deploy plist file<br />
-2014-11-02 - Release version 1.9.3<br />
-2014-11-02 - Adjusted to xcode 6.1 and iOS8 build, some issues occurred here<br />
-2014-11-02 - Prepared build with an clean step<br />
-2014-11-02 - Fixed issue with precompiled headers path in /var/folders/...<br />
-
 
 ## Features
 1. Compilation and siging of iOS applications

@@ -488,6 +488,10 @@ public class ProjectBuilder {
             buildParameters.add("OTHER_CFLAGS='-fembed-bitcode'");
         }
 
+        if (shouldUseIphoneSimulatorSDK) {
+            buildParameters.add("CONFIGURATION_BUILD_DIR=" + targetDirectory.getAbsolutePath() + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR);
+        }
+
         return buildParameters;
     }
 
