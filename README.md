@@ -10,6 +10,7 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2016-04-29 - Using POM parameter buildId as build number in info.plist (CFBundleversion)
 2016-02-23 - Release version 1.14.4<br />
 2016-02-23 - Fix for Xcode bug (building iphonesimulator sdk builds in wrong directory)
 2016-02-03 - Release version 1.14.3<br />

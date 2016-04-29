@@ -219,12 +219,14 @@ public class ProjectBuilder {
             projectVersion = projectVersion.replace(Utils.BUNDLE_VERSION_SNAPSHOT_ID, "");
         }
 
+        // Run agvtool to stamp version
         ProcessBuilder processBuilderNewMarketingVersion = new ProcessBuilder("agvtool", "new-marketing-version", projectVersion);
         processBuilderNewMarketingVersion.directory(workDirectory);
         CommandHelper.performCommand(processBuilderNewMarketingVersion);
 
-        // Run agvtool to stamp version
-        ProcessBuilder processBuilderNewVersion = new ProcessBuilder("agvtool", "new-version", "-all", projectVersion);
+        // Run agvtool to stamp build number
+        String buildNumber = getBuildNumber(properties);
+        ProcessBuilder processBuilderNewVersion = new ProcessBuilder("agvtool", "new-version", "-all", buildNumber);
         processBuilderNewVersion.directory(workDirectory);
         CommandHelper.performCommand(processBuilderNewVersion);
 
@@ -654,6 +656,7 @@ public class ProjectBuilder {
             final String displayName = properties.get(Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString());
             final String bundleIdentifier = properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString());
             final String bundleVersion = properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString());
+            final String buildNumber = getBuildNumber(properties);
 
             File tempFile = File.createTempFile(scriptName, "sh");
 
@@ -675,7 +678,8 @@ public class ProjectBuilder {
                     iconLocation,
                     displayName,
                     bundleIdentifier,
-                    bundleVersion);
+                    bundleVersion,
+                    buildNumber);
 
             processBuilder.directory(targetDirectory);
             CommandHelper.performCommand(processBuilder);
@@ -683,6 +687,16 @@ public class ProjectBuilder {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static String getBuildNumber(final Map<String, String> properties) {
+        String bundleVersion = properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString());
+        String tmpBuildNumber = properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString());
+        if (tmpBuildNumber == null || tmpBuildNumber.equals("") || tmpBuildNumber.equals("n/a")) {
+            tmpBuildNumber = bundleVersion;
+        }
+
+        return tmpBuildNumber;
     }
 
     private static void installCocoaPodsDependencies(File projectDirectory) {
