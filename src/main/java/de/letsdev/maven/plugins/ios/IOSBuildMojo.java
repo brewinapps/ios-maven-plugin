@@ -185,6 +185,13 @@ public class IOSBuildMojo extends AbstractMojo {
 	private String codeSignIdentity;
 
     /**
+     * path to code signing entitlements file
+     * @parameter
+     * 		property="ios.codeSignEntitlements"
+     */
+    private String codeSignEntitlements;
+
+    /**
      * Path to keychain to sign with
      * @parameter
      * 		property="ios.keychainPath"
@@ -270,6 +277,18 @@ public class IOSBuildMojo extends AbstractMojo {
 	private String cocoaPodsEnabled;
 
     /**
+     * defining release task
+     * available options are Release, Testflight & AppStoreUpload
+     *
+     * property can also be set via environment variable RELEASE_TASK
+     *
+     * @parameter
+     * 		property="ios.releaseTask"
+     * 		default-value="Release"
+     */
+    private String releaseTask;
+
+    /**
 	* The maven project.
 	*
 	* @parameter property="project"
@@ -299,6 +318,7 @@ public class IOSBuildMojo extends AbstractMojo {
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.BUILD_TO_XCARCHIVE_ENABLED.toString(), Boolean.toString(this.buildXCArchiveEnabled));
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_WITH_RESOURCE_RULES_ENABLED.toString(), Boolean.toString(this.codeSigningWithResourceRulesEnabled));
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString(), this.codeSignIdentity);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_ENTITLEMENTS.toString(), this.codeSignEntitlements);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SDK.toString(), this.sdk);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SOURCE_DIRECTORY.toString(), this.sourceDir);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.TARGET_DIR.toString(), targetDir);
@@ -317,9 +337,10 @@ public class IOSBuildMojo extends AbstractMojo {
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString(), this.displayName);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CLASSIFIER.toString(), this.classifier);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString(), this.cocoaPodsEnabled);
+            this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RELEASE_TASK.toString(), this.releaseTask);
 
 			ProjectBuilder.build(properties, this.mavenProject);
-		} catch (IOSException e) {
+		} catch (Exception e) {
 			throw new MojoExecutionException(e.getMessage());
 		}
 	}

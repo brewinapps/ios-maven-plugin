@@ -24,8 +24,9 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.util.EntityUtils;
+import org.apache.maven.project.MavenProject;
 
-import java.io.File;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Map;
 
@@ -39,7 +40,86 @@ public class ProjectDeployer {
      * @param properties
      * @throws IOSException
      */
-    public static void deploy(final Map<String, String> properties)
+    public static void deploy(final Map<String, String> properties, MavenProject mavenProject)
+            throws IOSException {
+
+        if (properties.get(Utils.PLUGIN_PROPERTIES.HOCKEY_APP_TOKEN.toString()) != null) {
+            deployHockey(properties);
+        } else {
+            String releaseTask = System.getProperty("RELEASE_TASK");
+            if (releaseTask == null) {
+                releaseTask = properties.get(Utils.PLUGIN_PROPERTIES.RELEASE_TASK.toString());
+            }
+
+            System.out.println("Determining deploying target, parsing environment variable / pom parameter RELEASE_TASK=" + releaseTask);
+            if (Utils.RELEASE_TASK_APP_STORE_UPLOAD.equals(releaseTask)) {
+                deployAppStore(properties, mavenProject);
+            } else if (Utils.RELEASE_TASK_TESTFLIGHT.equals(releaseTask)) {
+                deployTestflight(properties, mavenProject);
+            }
+        }
+    }
+
+    private static void deployAppStore(final Map<String, String> properties, MavenProject mavenProject) {
+        System.out.println("Deploying to AppStore ...");
+
+        uploadToAppStore(properties, mavenProject);
+    }
+
+    private static void deployTestflight(final Map<String, String> properties, MavenProject mavenProject) {
+        System.out.println("Deploying to Testflight ...");
+
+        uploadToAppStore(properties, mavenProject);
+    }
+
+    private static void uploadToAppStore(final Map<String, String> properties, MavenProject mavenProject) {
+        System.out.println("Starting app store upload...");
+
+        // Run shell-script from resource-folder.
+        try {
+            final String scriptName = "upload-app.sh";
+
+            String projectVersion = Utils.getProjectVersion(mavenProject, properties);
+            if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
+                projectVersion += "-b" + properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString());
+            }
+
+            File targetDirectory = new File(properties.get(Utils.PLUGIN_PROPERTIES.TARGET_DIR.toString()));
+            final String ipaLocation = targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+                    + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "-" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA;
+            final String iTunesConnectUsername = properties.get(Utils.PLUGIN_PROPERTIES.ITUNES_CONNECT_USERNAME.toString());
+            final String iTunesConnectPassword = properties.get(Utils.PLUGIN_PROPERTIES.ITUNES_CONNECT_PASSWORD.toString());
+
+            File tempFile = File.createTempFile(scriptName, "sh");
+
+            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
+            OutputStream outputStream = new FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+
+            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
+                    ipaLocation,
+                    iTunesConnectUsername,
+                    iTunesConnectPassword);
+
+            processBuilder.directory(targetDirectory);
+            CommandHelper.performCommand(processBuilder);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IOSException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void deployHockey(final Map<String, String> properties)
             throws IOSException {
 
         System.out.println("Deploying to HockeyApp ...");

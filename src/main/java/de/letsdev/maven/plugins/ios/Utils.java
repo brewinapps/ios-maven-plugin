@@ -7,11 +7,11 @@ import java.util.Map;
 
 /**
  * Maven iOS Plugin
- *
+ * <p/>
  * User: cwack
  * Date: 09.10.2012
  * Time: 19:54:44
- *
+ * <p/>
  * This code is copyright (c) 2012 let's dev.
  * URL: http://www.letsdev.de
  * e-Mail: contact@letsdev.de
@@ -27,6 +27,9 @@ public class Utils {
     public static String ARCHITECTURES_IPHONE_OS = "arm64 armv7";
     public static String ARCHITECTURES_IPHONE_SIMULATOR = "i386 x86_64";
 
+    public static String RELEASE_TASK_TESTFLIGHT = "Testflight";
+    public static String RELEASE_TASK_APP_STORE_UPLOAD = "AppStoreUpload";
+
     public enum PLUGIN_PROPERTIES {
 
         APP_DIR("appDir"),
@@ -39,6 +42,7 @@ public class Utils {
         DISPLAY_NAME("displayName"),
         DEPLOY_IPA_PATH("deployIpaPath"),
         DEPLOY_ICON_PATH("deployIconPath"),
+        RELEASE_TASK("releaseTask"),
         CLASSIFIER("classifier"),
         IOS_FRAMEWORK_BUILD("iOSFrameworkBuild"),
         MACOSX_FRAMEWORK_BUILD("macOSFrameworkBuild"),
@@ -48,6 +52,7 @@ public class Utils {
         CODE_SIGNING_ENABLED("codeSigningEnabled"),
         CODE_SIGN_WITH_RESOURCE_RULES_ENABLED("codeSignWithResourceRulesEnabled"),
         CODE_SIGN_IDENTITY("codeSignIdentity"),
+        CODE_SIGN_ENTITLEMENTS("codeSignEntitlements"),
         CONFIGURATION("configuration"),
         HOCKEY_APP_TOKEN("hockeyAppToken"),
         INFO_PLIST("infoPlist"),
@@ -64,7 +69,9 @@ public class Utils {
         TARGET("target"),
         TARGET_DIR("targetDir"),
         BUILD_TO_XCARCHIVE_ENABLED("build-xcarchive"),
-        COCOA_PODS_ENABLED("cocoa-pods-enabled");
+        COCOA_PODS_ENABLED("cocoa-pods-enabled"),
+        ITUNES_CONNECT_USERNAME("iTunesConnectUsername"),
+        ITUNES_CONNECT_PASSWORD("iTunesConnectPassword");
 
         private PLUGIN_PROPERTIES(String name) {
             this.name = name;
@@ -129,15 +136,15 @@ public class Utils {
         return !isiOSFramework(mavenProject, properties) && !isMacOSFramework(properties);
     }
 
-    public static boolean shouldCodeSignWithResourceRules(MavenProject mavenProject, Map<String, String> properties){
+    public static boolean shouldCodeSignWithResourceRules(MavenProject mavenProject, Map<String, String> properties) {
         return "true".equals(properties.get(PLUGIN_PROPERTIES.CODE_SIGN_WITH_RESOURCE_RULES_ENABLED.toString()));
     }
 
-    public static boolean shouldBuildXCArchive(MavenProject mavenProject, Map<String, String> properties){
+    public static boolean shouldBuildXCArchive(MavenProject mavenProject, Map<String, String> properties) {
         return "true".equals(properties.get(PLUGIN_PROPERTIES.BUILD_TO_XCARCHIVE_ENABLED.toString()));
     }
 
-    public static String getArchiveName(final String projectName, MavenProject mavenProject){
+    public static String getArchiveName(final String projectName, MavenProject mavenProject) {
         return getTargetDirectory(mavenProject).getAbsolutePath() + File.separator + projectName + "." + PLUGIN_SUFFIX.XCARCHIVE;
     }
 
@@ -159,5 +166,26 @@ public class Utils {
 
     public static boolean isIphoneSimulatorBitcodeEnabled(Map<String, String> buildProperties) {
         return "true".equals(buildProperties.get(PLUGIN_PROPERTIES.IPHONESIMULATOR_BITCODE_ENABLED.toString()));
+    }
+
+    public static File getWorkDirectory(Map<String, String> buildProperties, MavenProject mavenProject, String projectName) throws IOSException {
+        File workDirectory = new File(mavenProject.getBasedir().toString() + File.separator
+                + buildProperties.get(Utils.PLUGIN_PROPERTIES.SOURCE_DIRECTORY.toString()) + File.separator
+                + projectName);
+
+        if (!workDirectory.exists()) {
+            throw new IOSException("Invalid sourceDirectory specified: " + workDirectory.getAbsolutePath());
+        }
+        return workDirectory;
+    }
+
+    public static String getProjectVersion(MavenProject mavenProject, Map<String, String> properties) {
+        String projectVersion = mavenProject.getVersion();
+
+        if (properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString()) != null) {
+            projectVersion = properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString());
+        }
+
+        return projectVersion;
     }
 }

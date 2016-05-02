@@ -26,10 +26,18 @@ import java.util.Map;
  * 
  * @author let's dev
  * @goal deploy
- * @execute phase="compile"
+ * @phase deploy
  */
 public class IOSDeployMojo extends AbstractMojo {
-	
+
+	/**
+	 * iOS Source Directory
+	 * @parameter
+	 * 		property="ios.sourceDir"
+	 * 		default-value="src/ios"
+	 */
+	private String sourceDir;
+
 	/**
 	 * HockeyApp Api Token
 	 * @parameter
@@ -74,6 +82,44 @@ public class IOSDeployMojo extends AbstractMojo {
      * 		default-value="Release"
      */
     private String configuration;
+
+	/**
+	 * build id, will be set into info.plist
+	 * @parameter
+	 * 		property="ios.buildId"
+	 */
+	private String buildId;
+
+	/**
+	 * ipaVersion
+	 * @parameter
+	 * 		property="ios.ipaVersion"
+	 */
+	private String ipaVersion;
+
+	/**
+	 * defining release task
+	 * available options are Release, Testflight & AppStoreUpload
+	 *
+	 * property can also be set via environment variable RELEASE_TASK
+	 *
+	 * @parameter
+	 * 		property="ios.releaseTask"
+	 * 		default-value="Release"
+	 */
+	private String releaseTask;
+
+	/**
+	 * the username for iTunesConnect
+	 * @parameter iTunesConnectUsername
+	 */
+	private String iTunesConnectUsername;
+
+	/**
+	 * the password for iTunesConnect
+	 * @parameter iTunesConnectPassword
+	 */
+	private String iTunesConnectPassword;
 		
 	/**
 	* The maven project.
@@ -93,15 +139,22 @@ public class IOSDeployMojo extends AbstractMojo {
 			final String appDir = mavenProject.getBasedir().getAbsoluteFile() + File.separator + targetDir + File.separator + configuration + "-iphoneos" + File.separator;
 			
 			Map<String, String> properties = new HashMap<String, String>();
+			properties.put(Utils.PLUGIN_PROPERTIES.SOURCE_DIRECTORY.toString(), sourceDir);
+			properties.put(Utils.PLUGIN_PROPERTIES.TARGET_DIR.toString(), targetDir);
 			properties.put(Utils.PLUGIN_PROPERTIES.APP_NAME.toString(), appName);
 			properties.put(Utils.PLUGIN_PROPERTIES.HOCKEY_APP_TOKEN.toString(), hockeyAppToken);
 			properties.put(Utils.PLUGIN_PROPERTIES.RELEASE_NOTES.toString(), releaseNotes);
 			properties.put(Utils.PLUGIN_PROPERTIES.APP_DIR.toString(), appDir);
 			properties.put(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString(), configuration);
+			properties.put(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString(), buildId);
 			properties.put(Utils.PLUGIN_PROPERTIES.DEPLOY_IPA_PATH.toString(), deployIpaPath);
 			properties.put(Utils.PLUGIN_PROPERTIES.DEPLOY_ICON_PATH.toString(), deployIpaPath);
+			properties.put(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString(), ipaVersion);
+			properties.put(Utils.PLUGIN_PROPERTIES.RELEASE_TASK.toString(), releaseTask);
+			properties.put(Utils.PLUGIN_PROPERTIES.ITUNES_CONNECT_USERNAME.toString(), iTunesConnectUsername);
+			properties.put(Utils.PLUGIN_PROPERTIES.ITUNES_CONNECT_PASSWORD.toString(), iTunesConnectPassword);
 
-			ProjectDeployer.deploy(properties);
+			ProjectDeployer.deploy(properties, this.mavenProject);
 		} catch (IOSException e) {
 			System.out.println(e.getMessage());
 			throw new MojoExecutionException(e.getMessage());

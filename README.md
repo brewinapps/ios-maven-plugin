@@ -10,9 +10,11 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
-2016-04-29 - Using POM parameter buildId as build number in info.plist (CFBundleversion)
+2016-04-29 - Release version 1.15<br />
+2016-04-29 - Added support for automatic uploads to iTunesConnect, added support for Testflight builds<br />
+2016-04-29 - Using POM parameter buildId as build number in info.plist (CFBundleversion)<br />
 2016-02-23 - Release version 1.14.4<br />
-2016-02-23 - Fix for Xcode bug (building iphonesimulator sdk builds in wrong directory)
+2016-02-23 - Fix for Xcode bug (building iphonesimulator sdk builds in wrong directory)<br />
 2016-02-03 - Release version 1.14.3<br />
 2016-02-03 - Added support to build iphonesimulator sdk builds with bitcode enabled (see iphonesimulatorBitcodeEnabled property)<br />
 2016-01-26 - Release version 1.14.2<br />
@@ -86,7 +88,10 @@ Compiles the application and generates an IPA package
 27. ios.macOSFrameworkBuild       (flag for building macosx frameworks)
 28. ios.codeSigningEnabled           (default: true) Enabled or disable code signing for the app
 29. ios.codeSigningWithResourceRulesEnabled   (default: false) flag for iOS code signing with resources rules enabled. Following will be added to code sign execution: <pre>CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist</pre> . This was necessary from iOS SDK 6.1 until 8.0
-30. ios.cocoaPodsEnabled        (default: false) Determines if the project contains Cocoapods dependencies. If set, the dependencies will be installed during execution. When Cocoapods is enabled, a given appName will not passed to the xcodebuild command.
+30. ios.codeSignEntitlements    (default {scheme}/{target}.entitlements, in directory of .xcodeproj file)
+31. ios.cocoaPodsEnabled        (default: false) Determines if the project contains Cocoapods dependencies. If set, the dependencies will be installed during execution. When Cocoapods is enabled, a given appName will not passed to the xcodebuild command.
+32. ios.iTunesConnectUsername   username to login to iTunesConnect
+33. ios.iTunesConnectPassword   password to login to iTunesConnect
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
