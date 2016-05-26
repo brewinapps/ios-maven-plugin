@@ -36,8 +36,15 @@ public class ProjectBuilder {
 
         Map<String, String> env = System.getenv();
         for (String envName : env.keySet()) {
+            if (envName.equals("RELEASE_TASK")) {
+                System.out.println("release task in loop is " + env.get(envName));
+            }
             System.out.format("%s=%s%n", envName, env.get(envName));
         }
+        String releaseTask = System.getProperty("RELEASE_TASK");
+        System.out.println("release task is " + releaseTask);
+        releaseTask = System.getenv().get("RELEASE_TASK");
+        System.out.println("release task from env is " + releaseTask);
 
         // Make sure the source directory exists
         String projectName = Utils.buildProjectName(properties, mavenProject);
