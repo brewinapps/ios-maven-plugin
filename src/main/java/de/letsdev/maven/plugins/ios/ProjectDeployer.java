@@ -54,9 +54,9 @@ public class ProjectDeployer {
 
             System.out.println("Determining deploying target, parsing environment variable / pom parameter RELEASE_TASK=" + releaseTask);
             if (Utils.RELEASE_TASK_APP_STORE_UPLOAD.equals(releaseTask)) {
-                //deployAppStore(properties, mavenProject);
+                deployAppStore(properties, mavenProject);
             } else if (Utils.RELEASE_TASK_TESTFLIGHT.equals(releaseTask)) {
-                //deployTestflight(properties, mavenProject);
+                deployTestflight(properties, mavenProject);
             }
         }
     }
