@@ -33,6 +33,12 @@ public class ProjectBuilder {
      * @throws IOSException
      */
     public static void build(final Map<String, String> properties, MavenProject mavenProject) throws IOSException, IOException {
+
+        Map<String, String> env = System.getenv();
+        for (String envName : env.keySet()) {
+            System.out.format("%s=%s%n", envName, env.get(envName));
+        }
+
         // Make sure the source directory exists
         String projectName = Utils.buildProjectName(properties, mavenProject);
 
