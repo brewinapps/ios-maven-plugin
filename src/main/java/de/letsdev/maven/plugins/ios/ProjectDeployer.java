@@ -47,15 +47,16 @@ public class ProjectDeployer {
             deployHockey(properties);
         } else {
             String releaseTask = System.getProperty("RELEASE_TASK");
-            if (releaseTask == null) {
+            System.out.println("release task from environment variable is " + releaseTask);
+            if (releaseTask == null || releaseTask.isEmpty()) {
                 releaseTask = properties.get(Utils.PLUGIN_PROPERTIES.RELEASE_TASK.toString());
             }
 
             System.out.println("Determining deploying target, parsing environment variable / pom parameter RELEASE_TASK=" + releaseTask);
             if (Utils.RELEASE_TASK_APP_STORE_UPLOAD.equals(releaseTask)) {
-                deployAppStore(properties, mavenProject);
+                //deployAppStore(properties, mavenProject);
             } else if (Utils.RELEASE_TASK_TESTFLIGHT.equals(releaseTask)) {
-                deployTestflight(properties, mavenProject);
+                //deployTestflight(properties, mavenProject);
             }
         }
     }
