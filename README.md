@@ -10,6 +10,8 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2016-06-01 - Release version 1.15.1<br />
+2016-06-01 - Fixed support for Testflight builds<br />
 2016-04-29 - Release version 1.15<br />
 2016-04-29 - Added support for automatic uploads to iTunesConnect, added support for Testflight builds<br />
 2016-04-29 - Using POM parameter buildId as build number in info.plist (CFBundleversion)<br />
