@@ -53,9 +53,9 @@ public class ProjectDeployer {
             }
 
             System.out.println("Determining deploying target, parsing environment variable / pom parameter RELEASE_TASK=" + releaseTask);
-            if (Utils.RELEASE_TASK_APP_STORE_UPLOAD.equals(releaseTask)) {
+            if (Utils.isAppStoreBuild(properties)) {
                 deployAppStore(properties, mavenProject);
-            } else if (Utils.RELEASE_TASK_TESTFLIGHT.equals(releaseTask)) {
+            } else if (Utils.isTestflightBuild(properties)) {
                 deployTestflight(properties, mavenProject);
             }
         }
@@ -80,7 +80,7 @@ public class ProjectDeployer {
         try {
             final String scriptName = "upload-app.sh";
 
-            String projectVersion = Utils.getProjectVersion(mavenProject, properties);
+            String projectVersion = Utils.getAdjustedVersion(mavenProject, properties);
             if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
                 projectVersion += "-b" + properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString());
             }

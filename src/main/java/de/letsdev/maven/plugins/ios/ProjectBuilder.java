@@ -207,17 +207,12 @@ public class ProjectBuilder {
         renameAppIconsDirectoryToOrigin(properties, projectDirectory, appIconsDirectory, appIconsTempDirectory, newAppIconsDirectory);
 
         // Generate the the deploy plist file
-        generateDeployPlistFile(properties, projectName, targetDirectory, projectVersion, processBuilder);
+        generateDeployPlistFile(mavenProject, properties, projectName, targetDirectory, projectVersion, processBuilder);
     }
 
     protected static String updateXcodeProjectInfoPlist(Map<String, String> properties, MavenProject mavenProject, String projectName, File workDirectory) throws IOSException {
         // Run agvtool to stamp marketing version
-        String projectVersion = Utils.getProjectVersion(mavenProject, properties);
-
-        //remove -SNAPSHOT in version number in order to prevent malformed version numbers in framework builds
-        if (Utils.isiOSFramework(mavenProject, properties) || Utils.isMacOSFramework(properties)) {
-            projectVersion = projectVersion.replace(Utils.BUNDLE_VERSION_SNAPSHOT_ID, "");
-        }
+        String projectVersion = Utils.getAdjustedVersion(mavenProject, properties);
 
         // Run agvtool to stamp version
         ProcessBuilder processBuilderNewMarketingVersion = new ProcessBuilder("agvtool", "new-marketing-version", projectVersion);
@@ -225,7 +220,7 @@ public class ProjectBuilder {
         CommandHelper.performCommand(processBuilderNewMarketingVersion);
 
         // Run agvtool to stamp build number
-        String buildNumber = getBuildNumber(properties);
+        String buildNumber = getBuildNumber(mavenProject, properties);
         ProcessBuilder processBuilderNewVersion = new ProcessBuilder("agvtool", "new-version", "-all", buildNumber);
         processBuilderNewVersion.directory(workDirectory);
         CommandHelper.performCommand(processBuilderNewVersion);
@@ -273,10 +268,10 @@ public class ProjectBuilder {
         return precompiledHeadersDir;
     }
 
-    protected static void generateDeployPlistFile(Map<String, String> properties, String projectName, File targetDirectory, String projectVersion, ProcessBuilder processBuilder) throws IOSException {
+    protected static void generateDeployPlistFile(MavenProject mavenProject, Map<String, String> properties, String projectName, File targetDirectory, String projectVersion, ProcessBuilder processBuilder) throws IOSException {
         if ((properties.get(Utils.PLUGIN_PROPERTIES.DEPLOY_IPA_PATH.toString()) != null) && (properties.get(Utils.PLUGIN_PROPERTIES.DEPLOY_ICON_PATH.toString()) != null)) {
             final String deployPlistName = properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "-" + projectVersion + "." + Utils.PLUGIN_SUFFIX.PLIST;
-            writeDeployPlistFile(targetDirectory, projectName, deployPlistName, properties, processBuilder);
+            writeDeployPlistFile(mavenProject, targetDirectory, projectName, deployPlistName, properties, processBuilder);
 
         }
     }
@@ -569,7 +564,7 @@ public class ProjectBuilder {
             byte[] encoded = Files.readAllBytes(Paths.get(entitlementsFilePath));
             String entitlementsFileContents = new String(encoded, Charset.defaultCharset());
 
-            boolean isTestflightBuild = (Utils.RELEASE_TASK_TESTFLIGHT.equals(properties.get(Utils.RELEASE_TASK_TESTFLIGHT)));
+            boolean isTestflightBuild = Utils.isTestflightBuild(properties);
             if (isTestflightBuild) {
                 if (!entitlementsFileContents.contains("<key>beta-reports-active</key>")) {
                     entitlementsFileContents = entitlementsFileContents.replace("</dict>", "<key>beta-reports-active</key><true/></dict>");
@@ -662,7 +657,7 @@ public class ProjectBuilder {
         }
     }
 
-    private static void writeDeployPlistFile(File targetDirectory, String projectName, String deployPlistName, final Map<String, String> properties, ProcessBuilder processBuilder) throws IOSException {
+    private static void writeDeployPlistFile(MavenProject mavenProject, File targetDirectory, String projectName, String deployPlistName, final Map<String, String> properties, ProcessBuilder processBuilder) throws IOSException {
         // Run shell-script from resource-folder.
         try {
             final String scriptName = "write-deploy-plist";
@@ -671,14 +666,8 @@ public class ProjectBuilder {
             final String iconLocation = properties.get(Utils.PLUGIN_PROPERTIES.DEPLOY_ICON_PATH.toString());
             final String displayName = properties.get(Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString());
             final String bundleIdentifier = properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString());
-            final String bundleVersion = properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString());
-            String bundleShortVersion = properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString());
-            final String buildNumber = getBuildNumber(properties);
-
-            if(bundleShortVersion.endsWith("-SNAPSHOT")){
-               //we must convert to a shortversion
-                bundleShortVersion = bundleShortVersion.split("-")[0];
-            }
+            String bundleVersion = Utils.getAdjustedVersion(mavenProject, properties);
+            final String buildNumber = getBuildNumber(mavenProject, properties);
 
             File tempFile = File.createTempFile(scriptName, "sh");
 
@@ -701,7 +690,6 @@ public class ProjectBuilder {
                     displayName,
                     bundleIdentifier,
                     bundleVersion,
-                    bundleShortVersion,
                     buildNumber);
 
             processBuilder.directory(targetDirectory);
@@ -712,8 +700,8 @@ public class ProjectBuilder {
         }
     }
 
-    private static String getBuildNumber(final Map<String, String> properties) {
-        String bundleVersion = properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString());
+    private static String getBuildNumber(MavenProject mavenProject, final Map<String, String> properties) {
+        String bundleVersion = Utils.getAdjustedVersion(mavenProject, properties);
         String tmpBuildNumber = properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString());
         if (tmpBuildNumber == null || tmpBuildNumber.equals("") || tmpBuildNumber.equals("n/a")) {
             tmpBuildNumber = bundleVersion;

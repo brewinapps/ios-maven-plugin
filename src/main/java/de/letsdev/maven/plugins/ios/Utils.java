@@ -27,8 +27,11 @@ public class Utils {
     public static String ARCHITECTURES_IPHONE_OS = "arm64 armv7";
     public static String ARCHITECTURES_IPHONE_SIMULATOR = "i386 x86_64";
 
+    public static String RELEASE_TASK = "releaseTask";
     public static String RELEASE_TASK_TESTFLIGHT = "Testflight";
     public static String RELEASE_TASK_APP_STORE_UPLOAD = "AppStoreUpload";
+
+    private static String _adjustedVersion = null;
 
     public enum PLUGIN_PROPERTIES {
 
@@ -188,4 +191,47 @@ public class Utils {
 
         return projectVersion;
     }
+
+    public static boolean isTestflightBuild(Map<String, String> buildProperties) {
+
+        String valueReleaseTask = buildProperties.get(Utils.RELEASE_TASK);
+        boolean result = Utils.RELEASE_TASK_TESTFLIGHT.equalsIgnoreCase(valueReleaseTask);
+        return result;
+    }
+
+    public static boolean isAppStoreBuild(Map<String, String> buildProperties) {
+
+        String valueReleaseTask = buildProperties.get(Utils.RELEASE_TASK);
+        boolean result = Utils.RELEASE_TASK_APP_STORE_UPLOAD.equalsIgnoreCase(valueReleaseTask);
+        return result;
+    }
+
+    public static String getAdjustedVersion() {
+        String result = getAdjustedVersion(null, null);
+
+        if (result == null || result.isEmpty()) {
+            throw new IllegalArgumentException("The adjusted version must be called at least once with all parameters to be filled!");
+        }
+
+        return result;
+    }
+
+    public static String getAdjustedVersion(MavenProject mavenProject, Map<String, String> properties) {
+
+        if (_adjustedVersion != null) {
+            return _adjustedVersion;
+        }
+
+        String result = getProjectVersion(mavenProject, properties);
+
+        //remove -SNAPSHOT in version number in order to prevent malformed version numbers in framework builds
+        if (Utils.isiOSFramework(mavenProject, properties) || Utils.isMacOSFramework(properties) || Utils.isTestflightBuild(properties) || Utils.isAppStoreBuild(properties)) {
+            result = result.replace(Utils.BUNDLE_VERSION_SNAPSHOT_ID, "");
+        }
+
+        _adjustedVersion = result;
+
+        return _adjustedVersion;
+    }
+
 }

@@ -105,6 +105,7 @@ public class IOSPackageMojo extends AbstractMojo {
         final String targetDir = mavenProject.getBuild().getDirectory();
         String destinationDirectory = null;
         String artifactName = null;
+        String adjustedVersion = Utils.getAdjustedVersion();
         String projectVersion = mavenProject.getVersion();
 
         String classifierString = (this.classifier != null? "-" + this.classifier + "-" : "-");
@@ -114,11 +115,8 @@ public class IOSPackageMojo extends AbstractMojo {
             artifactType = Utils.PLUGIN_PACKAGING.FRAMEWORK_ZIP.toString();
         }
 
-        if (ipaVersion != null) {
-            projectVersion = ipaVersion;
-        }
         if (buildId != null) {
-            projectVersion += "-b" + buildId;
+            adjustedVersion += "-b" + buildId;
         }
 
         if (Utils.isiOSFramework(mavenProject, iOSFrameworkBuild) || macOSFrameworkBuild) {
@@ -128,7 +126,7 @@ public class IOSPackageMojo extends AbstractMojo {
         }
         else {
             mavenProject.setPackaging(Utils.PLUGIN_PACKAGING.IPA.toString());
-            artifactName = appName + "-" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA;
+            artifactName = appName + "-" + adjustedVersion + "." + Utils.PLUGIN_SUFFIX.IPA;
             destinationDirectory = targetDir + File.separator + configuration + "-iphoneos" + File.separator;
         }
 
