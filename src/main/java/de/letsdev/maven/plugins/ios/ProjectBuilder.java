@@ -672,7 +672,13 @@ public class ProjectBuilder {
             final String displayName = properties.get(Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString());
             final String bundleIdentifier = properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString());
             final String bundleVersion = properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString());
+            String bundleShortVersion = properties.get(Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString());
             final String buildNumber = getBuildNumber(properties);
+
+            if(bundleShortVersion.endsWith("-SNAPSHOT")){
+               //we must convert to a shortversion
+                bundleShortVersion = bundleShortVersion.split("-")[0];
+            }
 
             File tempFile = File.createTempFile(scriptName, "sh");
 
@@ -695,6 +701,7 @@ public class ProjectBuilder {
                     displayName,
                     bundleIdentifier,
                     bundleVersion,
+                    bundleShortVersion,
                     buildNumber);
 
             processBuilder.directory(targetDirectory);
