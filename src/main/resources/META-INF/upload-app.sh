@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export PATH=$PATH:/Applications/Xcode.app/Contents/Applications/Application\ Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Versions/Current/Support/
+export PATH=$PATH:/Applications/Xcode.app/Contents/Applications/Application\ Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Versions/Current/Support/:/Applications/Xcode.app/Contents/Applications/Application\ Loader.app/Contents/itms/:/Applications/Xcode.app/Contents/Applications/Application\ Loader.app/Contents/itms/bin
 
 SCRIPT_LOCATION=$(cd "$(dirname "$0")"; pwd)
 
