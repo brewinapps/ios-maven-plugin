@@ -31,8 +31,6 @@ public class Utils {
     public static String RELEASE_TASK_TESTFLIGHT = "Testflight";
     public static String RELEASE_TASK_APP_STORE_UPLOAD = "AppStoreUpload";
 
-    private static String _adjustedVersion = null;
-
     public enum PLUGIN_PROPERTIES {
 
         APP_DIR("appDir"),
@@ -206,21 +204,7 @@ public class Utils {
         return result;
     }
 
-    public static String getAdjustedVersion() {
-        String result = getAdjustedVersion(null, null);
-
-        if (result == null || result.isEmpty()) {
-            throw new IllegalArgumentException("The adjusted version must be called at least once with all parameters to be filled!");
-        }
-
-        return result;
-    }
-
     public static String getAdjustedVersion(MavenProject mavenProject, Map<String, String> properties) {
-
-        if (_adjustedVersion != null) {
-            return _adjustedVersion;
-        }
 
         String result = getProjectVersion(mavenProject, properties);
 
@@ -229,9 +213,7 @@ public class Utils {
             result = result.replace(Utils.BUNDLE_VERSION_SNAPSHOT_ID, "");
         }
 
-        _adjustedVersion = result;
-
-        return _adjustedVersion;
+        return result;
     }
 
 }

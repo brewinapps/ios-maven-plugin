@@ -105,7 +105,7 @@ public class IOSPackageMojo extends AbstractMojo {
         final String targetDir = mavenProject.getBuild().getDirectory();
         String destinationDirectory = null;
         String artifactName = null;
-        String adjustedVersion = Utils.getAdjustedVersion();
+        String adjustedVersion = Utils.getAdjustedVersion(mavenProject, ProjectBuilder.sBuildProperties);
         String projectVersion = mavenProject.getVersion();
 
         String classifierString = (this.classifier != null? "-" + this.classifier + "-" : "-");

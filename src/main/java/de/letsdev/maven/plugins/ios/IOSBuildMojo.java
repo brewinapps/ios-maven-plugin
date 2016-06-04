@@ -339,6 +339,8 @@ public class IOSBuildMojo extends AbstractMojo {
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString(), this.cocoaPodsEnabled);
             this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RELEASE_TASK.toString(), this.releaseTask);
 
+			ProjectBuilder.sBuildProperties = properties; //hold the properties to be avaiable in other maven lifecycle steps i.e. deploy and package lifecycle
+
 			ProjectBuilder.build(properties, this.mavenProject);
 		} catch (Exception e) {
 			throw new MojoExecutionException(e.getMessage());
