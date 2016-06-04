@@ -216,4 +216,28 @@ public class Utils {
         return result;
     }
 
+    public static String getAppName(MavenProject mavenProject, Map<String, String> properties){
+
+        String result =  properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString());
+        return result;
+    }
+
+    public static String getConfiguration(MavenProject mavenProject, Map<String, String> properties){
+
+        String result =  properties.get(PLUGIN_PROPERTIES.CONFIGURATION.toString());
+        return result;
+    }
+
+    public static String getClassifier(MavenProject mavenProject, Map<String, String> properties){
+
+        String result =  properties.get(PLUGIN_PROPERTIES.CLASSIFIER.toString());
+        return result;
+    }
+
+    public static String getBuildId(MavenProject mavenProject, Map<String, String> properties){
+
+        String result =  properties.get(PLUGIN_PROPERTIES.BUILD_ID.toString());
+        return result;
+    }
+
 }

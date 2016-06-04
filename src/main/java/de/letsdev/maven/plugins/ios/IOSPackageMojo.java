@@ -21,6 +21,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 
 import java.io.*;
+import java.util.Map;
 
 
 /**
@@ -105,33 +106,46 @@ public class IOSPackageMojo extends AbstractMojo {
         final String targetDir = mavenProject.getBuild().getDirectory();
         String destinationDirectory = null;
         String artifactName = null;
-        String adjustedVersion = Utils.getAdjustedVersion(mavenProject, ProjectBuilder.sBuildProperties);
+
+        Map<String, String> properties = ProjectBuilder.sBuildProperties;
+
         String projectVersion = mavenProject.getVersion();
 
-        String classifierString = (this.classifier != null? "-" + this.classifier + "-" : "-");
+        //CW: it's important to get all the following properties from the build execution step not from the member variables of this class, because here are lifecycle problems when using several maven execution steps.
+        //BEG fetch properties from central place
+        String adjustedVersion = Utils.getAdjustedVersion(mavenProject, properties);
+        String appNameOfExecution = Utils.getAppName(mavenProject, properties);
+        String configurationOfExecution = Utils.getConfiguration(mavenProject, properties);
+        String classifierOfExecution = Utils.getClassifier(mavenProject, properties);
+        String buildIdOfExecution = Utils.getBuildId(mavenProject, properties);
+        boolean isMacOsFrameworkBuildOfExecution = Utils.isMacOSFramework(properties);
+        boolean isIosFrameworkBuildOfExecution = Utils.isiOSFramework(mavenProject, properties);
+        //END fetch properties from central place
+
+        String classifierString = (classifierOfExecution != null? "-" + classifierOfExecution + "-" : "-");
 
         String artifactType = (currentArtifact.getType() == null || "pom".equals(currentArtifact.getType() ) ? Utils.PLUGIN_PACKAGING.IPA.toString() : currentArtifact.getType());
-        if (iOSFrameworkBuild || macOSFrameworkBuild || artifactType.equals(Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString())) {
+        if (isIosFrameworkBuildOfExecution || isMacOsFrameworkBuildOfExecution || artifactType.equals(Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString())) {
             artifactType = Utils.PLUGIN_PACKAGING.FRAMEWORK_ZIP.toString();
         }
 
-        if (buildId != null) {
-            adjustedVersion += "-b" + buildId;
+        if (buildIdOfExecution != null) {
+            adjustedVersion += "-b" + buildIdOfExecution;
         }
 
-        if (Utils.isiOSFramework(mavenProject, iOSFrameworkBuild) || macOSFrameworkBuild) {
-            artifactName = appName + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP;
+        if (Utils.isiOSFramework(mavenProject, isIosFrameworkBuildOfExecution) || isMacOsFrameworkBuildOfExecution) {
+            artifactName = appNameOfExecution + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP;
             destinationDirectory = targetDir;
 //            this.projectHelper.attachArtifact( mavenProject, Utils.PLUGIN_SUFFIX.IOS_FRAMEWORK.toString(), null, new File(destinationDirectory + File.separator + artifactName));
         }
         else {
             mavenProject.setPackaging(Utils.PLUGIN_PACKAGING.IPA.toString());
-            artifactName = appName + "-" + adjustedVersion + "." + Utils.PLUGIN_SUFFIX.IPA;
-            destinationDirectory = targetDir + File.separator + configuration + "-iphoneos" + File.separator;
+            artifactName = appNameOfExecution + "-" + adjustedVersion + "." + Utils.PLUGIN_SUFFIX.IPA;
+            destinationDirectory = targetDir + File.separator + configurationOfExecution + "-iphoneos" + File.separator;
         }
 
         File destinationFile = new File(destinationDirectory + File.separator + artifactName);
-        File artifactFile =  new File(targetDir + File.separator + appName + classifierString + projectVersion + "." + (Utils.isiOSFramework(mavenProject, iOSFrameworkBuild) ? Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP : Utils.PLUGIN_SUFFIX.IPA));
+        File artifactFile =  new File(targetDir + File.separator + appNameOfExecution + classifierString + projectVersion + "." + (Utils.isiOSFramework(mavenProject, isIosFrameworkBuildOfExecution) ? Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP : Utils.PLUGIN_SUFFIX.IPA));
 
         InputStream in = null;
         OutputStream out = null;
@@ -150,6 +164,6 @@ public class IOSPackageMojo extends AbstractMojo {
         }
 
         currentArtifact.setFile(artifactFile);
-        projectHelper.attachArtifact(mavenProject, artifactType, this.classifier, artifactFile);
+        projectHelper.attachArtifact(mavenProject, artifactType, classifierOfExecution, artifactFile);
     }
 }
