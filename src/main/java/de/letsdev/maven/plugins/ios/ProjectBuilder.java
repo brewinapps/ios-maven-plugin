@@ -28,8 +28,6 @@ import java.util.UUID;
  */
 public class ProjectBuilder {
 
-    public static Map<String, String> sBuildProperties = null;
-
     /**
      * @param properties Properties
      * @throws IOSException

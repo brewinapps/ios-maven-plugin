@@ -29,98 +29,31 @@ import java.util.Map;
  * @goal package
  * @phase package
  */
-public class IOSPackageMojo extends AbstractMojo {
-
-    /**
-     * iOS app name
-     *
-     * @parameter property="ios.appName"
-     * @required
-     */
-    private String appName;
-
-    /**
-     * iOS classifier
-     *
-     * @parameter property="ios.classifier"
-     */
-    private String classifier;
-
-    /**
-     * build id
-     * @parameter
-     * 		property="ios.buildId"
-     */
-    private String buildId;
-
-    /**
-     * iOS configuration
-     *
-     * @parameter property="ios.configuration"
-     * default-value="Release"
-     */
-    private String configuration;
-
-    /**
-     * ipaVersion
-     * @parameter
-     * 		property="ios.ipaVersion"
-     */
-    private String ipaVersion;
-
-    /**
-     * flag for iOS framework builds
-     * @parameter
-     * 		property="ios.iOSFrameworkBuild"
-     * 		default-value="false"
-     */
-    private boolean iOSFrameworkBuild;
-
-    /**
-     * flag for macosx framework builds
-     * @parameter
-     * 		property="ios.macOSFrameworkBuild"
-     * 		default-value="false"
-     */
-    private boolean macOSFrameworkBuild;
-
-    /**
-     * The maven project.
-     *
-     * @parameter property="project"
-     * @required
-     * @readonly
-     */
-    protected MavenProject mavenProject;
+public class IOSPackageMojo extends BaseMojo {
 
     /**
      * @component
      */
     private MavenProjectHelper projectHelper;
 
-    /**
-     *
-     */
+
+    @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        super.execute();
         Artifact currentArtifact = mavenProject.getArtifact();
         final String targetDir = mavenProject.getBuild().getDirectory();
         String destinationDirectory = null;
         String artifactName = null;
 
-        Map<String, String> properties = ProjectBuilder.sBuildProperties;
-
         String projectVersion = mavenProject.getVersion();
 
-        //CW: it's important to get all the following properties from the build execution step not from the member variables of this class, because here are lifecycle problems when using several maven execution steps.
-        //BEG fetch properties from central place
-        String adjustedVersion = Utils.getAdjustedVersion(mavenProject, properties);
-        String appNameOfExecution = Utils.getAppName(mavenProject, properties);
-        String configurationOfExecution = Utils.getConfiguration(mavenProject, properties);
-        String classifierOfExecution = Utils.getClassifier(mavenProject, properties);
-        String buildIdOfExecution = Utils.getBuildId(mavenProject, properties);
-        boolean isMacOsFrameworkBuildOfExecution = Utils.isMacOSFramework(properties);
-        boolean isIosFrameworkBuildOfExecution = Utils.isiOSFramework(mavenProject, properties);
-        //END fetch properties from central place
+        String adjustedVersion = Utils.getAdjustedVersion(mavenProject, this.properties);
+        String appNameOfExecution = Utils.getAppName(mavenProject, this.properties);
+        String configurationOfExecution = Utils.getConfiguration(mavenProject, this.properties);
+        String classifierOfExecution = Utils.getClassifier(mavenProject, this.properties);
+        String buildIdOfExecution = Utils.getBuildId(mavenProject, this.properties);
+        boolean isMacOsFrameworkBuildOfExecution = Utils.isMacOSFramework(this.properties);
+        boolean isIosFrameworkBuildOfExecution = Utils.isiOSFramework(mavenProject, this.properties);
 
         String classifierString = (classifierOfExecution != null? "-" + classifierOfExecution + "-" : "-");
 
