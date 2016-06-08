@@ -10,7 +10,7 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
-2016-06-08 - Fixed packaging with multiple executions (now it's possible, to build a appstore, testflight and enterprise release and upload them togther in one maven build process at the same time) - Release version 1.15.10<br />
+2016-06-08 - Fixed packaging with multiple executions (now it's possible, to build a appstore, testflight and enterprise release and upload them togther in one maven build process at the same time) - Release version 1.15.9<br />
 2016-06-01 - Release version 1.15.1<br />
 2016-06-01 - Fixed support for Testflight builds<br />
 2016-04-29 - Release version 1.15<br />
