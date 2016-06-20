@@ -76,25 +76,24 @@ Compiles the application and generates an IPA package
 12. ios.keychainPassword        (The keychain password to use for unlock keychain) Before the build the keychain will be unlocked and locked again after the build.
 13. ios.infoPlist               (default: projectName/projectName-Info.plist) The path to the Info.plist, relative to the project directory.
 14. ios.ipaVersion              (The version number for the IPA, different to the maven project version)
-15. ios.assetsDirectory         (The name of the assets folder. The assets folder in your project has to be "assets")
-16. ios.appIconsDirectory       (The name of the appIcons folder)
-17. ios.projectName             (The name of the project.)
-18. ios.provisioningProfileUUID (The UUID of the provisioning profile to be used. If not set the default provisioning profile will be used instead)
-19. ios.bundleIdentifier        (The bundle identifier to overwrite in info plist. If not set the default bundle identifier will be used instead)
-20. ios.displayName             (The display name to overwrite in info plist. If not set the default display name will be used instead)
-21. ios.appIconName             (The app icon name to overwrite in info plist. If not set the default app icon name will be used instead. e.g. <appIconName>free-icon.png</appIconName>)
-22. ios.iOSFrameworkBuild       (flag for building iOS frameworks in multi execution environment)
-23. ios.iphoneosArchitectures   (default: arm64 armv7) architectures build with iphoneos sdk
-24. ios.iphonesimulatorArchitectures (default: i386 x86_64) architectures build with iphonesimulator sdk (only used for framework builds)
-25. ios.iphonesimulatorBitcodeEnabled (default: true) determines if -fembed-bitcode switch is enabled for iphonesimulator builds
-26. ios.gccPreprocessorDefinitions (optional) properties delivered to xcodebuild via GCC_PREPROCESSOR_DEFINITIONS
-27. ios.macOSFrameworkBuild       (flag for building macosx frameworks)
-28. ios.codeSigningEnabled           (default: true) Enabled or disable code signing for the app
-29. ios.codeSigningWithResourceRulesEnabled   (default: false) flag for iOS code signing with resources rules enabled. Following will be added to code sign execution: <pre>CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist</pre> . This was necessary from iOS SDK 6.1 until 8.0
-30. ios.codeSignEntitlements    (default {scheme}/{target}.entitlements, in directory of .xcodeproj file)
-31. ios.cocoaPodsEnabled        (default: false) Determines if the project contains Cocoapods dependencies. If set, the dependencies will be installed during execution. When Cocoapods is enabled, a given appName will not passed to the xcodebuild command.
-32. ios.iTunesConnectUsername   username to login to iTunesConnect
-33. ios.iTunesConnectPassword   password to login to iTunesConnect
+15. ios.fileReplacements        (List of files or directories to replace while executing build)
+16. ios.projectName             (The name of the project.)
+17. ios.provisioningProfileUUID (The UUID of the provisioning profile to be used. If not set the default provisioning profile will be used instead)
+18. ios.bundleIdentifier        (The bundle identifier to overwrite in info plist. If not set the default bundle identifier will be used instead)
+19. ios.displayName             (The display name to overwrite in info plist. If not set the default display name will be used instead)
+20. ios.appIconName             (The app icon name to overwrite in info plist. If not set the default app icon name will be used instead. e.g. <appIconName>free-icon.png</appIconName>)
+21. ios.iOSFrameworkBuild       (flag for building iOS frameworks in multi execution environment)
+22. ios.iphoneosArchitectures   (default: arm64 armv7) architectures build with iphoneos sdk
+23. ios.iphonesimulatorArchitectures (default: i386 x86_64) architectures build with iphonesimulator sdk (only used for framework builds)
+24. ios.iphonesimulatorBitcodeEnabled (default: true) determines if -fembed-bitcode switch is enabled for iphonesimulator builds
+25. ios.gccPreprocessorDefinitions (optional) properties delivered to xcodebuild via GCC_PREPROCESSOR_DEFINITIONS
+26. ios.macOSFrameworkBuild       (flag for building macosx frameworks)
+27. ios.codeSigningEnabled           (default: true) Enabled or disable code signing for the app
+28. ios.codeSigningWithResourceRulesEnabled   (default: false) flag for iOS code signing with resources rules enabled. Following will be added to code sign execution: <pre>CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist</pre> . This was necessary from iOS SDK 6.1 until 8.0
+29. ios.codeSignEntitlements    (default {scheme}/{target}.entitlements, in directory of .xcodeproj file)
+30. ios.cocoaPodsEnabled        (default: false) Determines if the project contains Cocoapods dependencies. If set, the dependencies will be installed during execution. When Cocoapods is enabled, a given appName will not passed to the xcodebuild command.
+31. ios.iTunesConnectUsername   username to login to iTunesConnect
+32. ios.iTunesConnectPassword   password to login to iTunesConnect
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp

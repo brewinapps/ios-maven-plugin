@@ -32,57 +32,17 @@ public class ProjectBuilder {
      * @param properties Properties
      * @throws IOSException
      */
-    public static void build(final Map<String, String> properties, MavenProject mavenProject) throws IOSException, IOException {
+    public static void build(final Map<String, String> properties, MavenProject mavenProject, final List<FileReplacement> fileReplacements) throws IOSException, IOException {
         // Make sure the source directory exists
         String projectName = Utils.buildProjectName(properties, mavenProject);
 
         File workDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
 
-        File projectDirectory = new File(workDirectory.toString() + File.separator + projectName);
-        File assetsDirectory = null;
-        File assetsTempDirectory = null;
-        File newAssetsDirectory = null;
+        File projectDirectory = new File(workDirectory.toString() + File.separator + getSchemeOrTarget(properties));
 
-        //Rename assets directory
-        if (properties.get(Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString()) != null) {
-            assetsDirectory = new File(projectDirectory.toString() + File.separator + "assets");
-            assetsTempDirectory = new File(projectDirectory.toString() + File.separator + "assets.tmp");
-            newAssetsDirectory = new File(projectDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString()));
-
-            if (assetsDirectory.exists() && !(newAssetsDirectory.toString().equalsIgnoreCase(assetsDirectory.toString()))) {
-                ProcessBuilder processBuilder = new ProcessBuilder("mv", assetsDirectory.toString(), assetsTempDirectory.toString());
-                processBuilder.directory(projectDirectory);
-                CommandHelper.performCommand(processBuilder);
-            }
-
-            if (newAssetsDirectory.exists() && !(newAssetsDirectory.toString().equalsIgnoreCase(assetsDirectory.toString()))) {
-                ProcessBuilder processBuilder = new ProcessBuilder("mv", newAssetsDirectory.toString(), assetsDirectory.toString());
-                processBuilder.directory(projectDirectory);
-                CommandHelper.performCommand(processBuilder);
-            }
-        }
-
-        File appIconsDirectory = null;
-        File appIconsTempDirectory = null;
-        File newAppIconsDirectory = null;
-
-        //Rename appIcons directory
-        if (properties.get(Utils.PLUGIN_PROPERTIES.APP_ICONS_DIRECTORY.toString()) != null) {
-            appIconsDirectory = new File(projectDirectory.toString() + File.separator + "appIcons");
-            appIconsTempDirectory = new File(projectDirectory.toString() + File.separator + "appIcons.tmp");
-            newAppIconsDirectory = new File(projectDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.APP_ICONS_DIRECTORY.toString()));
-
-            if (appIconsDirectory.exists() && !(newAppIconsDirectory.toString().equalsIgnoreCase(appIconsDirectory.toString()))) {
-                ProcessBuilder processBuilder = new ProcessBuilder("mv", appIconsDirectory.toString(), appIconsTempDirectory.toString());
-                processBuilder.directory(projectDirectory);
-                CommandHelper.performCommand(processBuilder);
-            }
-
-            if (newAppIconsDirectory.exists() && !(newAppIconsDirectory.toString().equalsIgnoreCase(appIconsDirectory.toString()))) {
-                ProcessBuilder processBuilder = new ProcessBuilder("mv", newAppIconsDirectory.toString(), appIconsDirectory.toString());
-                processBuilder.directory(projectDirectory);
-                CommandHelper.performCommand(processBuilder);
-            }
+        //replace all configured files
+        if (fileReplacements != null && fileReplacements.size() > 0) {
+            replaceFiles(fileReplacements, projectDirectory);
         }
 
         File targetDirectory = Utils.getTargetDirectory(mavenProject);
@@ -200,11 +160,10 @@ public class ProjectBuilder {
         //lock keychain
         lockKeychain(properties);
 
-        //Rename assets directory to origin
-        renameAssetsDirectoryToOrigin(properties, projectDirectory, assetsDirectory, assetsTempDirectory, newAssetsDirectory);
-
-        //Rename appIcons directory to origin
-        renameAppIconsDirectoryToOrigin(properties, projectDirectory, appIconsDirectory, appIconsTempDirectory, newAppIconsDirectory);
+        //revert all replace files
+        if (fileReplacements != null && fileReplacements.size() > 0) {
+            revertReplacedFiles(fileReplacements, projectDirectory);
+        }
 
         // Generate the the deploy plist file
         generateDeployPlistFile(mavenProject, properties, projectName, targetDirectory, projectVersion, processBuilder);
@@ -276,35 +235,43 @@ public class ProjectBuilder {
         }
     }
 
-    protected static void renameAppIconsDirectoryToOrigin(Map<String, String> properties, File projectDirectory, File appIconsDirectory, File appIconsTempDirectory, File newAppIconsDirectory) throws IOSException {
-        if (properties.get(Utils.PLUGIN_PROPERTIES.APP_ICONS_DIRECTORY.toString()) != null) {
-            if ((appIconsTempDirectory != null) && (appIconsDirectory.exists())) {
-                ProcessBuilder processBuilderMv = new ProcessBuilder("mv", appIconsDirectory.toString(), newAppIconsDirectory.toString());
-                processBuilderMv.directory(projectDirectory);
-                CommandHelper.performCommand(processBuilderMv);
-            }
-
-            if ((appIconsTempDirectory != null) && (appIconsTempDirectory.exists())) {
-                ProcessBuilder processBuilderMv = new ProcessBuilder("mv", appIconsTempDirectory.toString(), appIconsDirectory.toString());
-                processBuilderMv.directory(projectDirectory);
-                CommandHelper.performCommand(processBuilderMv);
-            }
+    protected static void revertReplacedFiles(final List<FileReplacement> fileReplacements, File projectDirectory) throws IOSException {
+        for (FileReplacement fileReplacement : fileReplacements) {
+            replaceFile(projectDirectory, fileReplacement.targetFile, fileReplacement.sourceFile, true);
         }
     }
 
-    protected static void renameAssetsDirectoryToOrigin(Map<String, String> properties, File projectDirectory, File assetsDirectory, File assetsTempDirectory, File newAssetsDirectory) throws IOSException {
-        if (properties.get(Utils.PLUGIN_PROPERTIES.ASSETS_DIRECTORY.toString()) != null) {
-            if ((assetsTempDirectory != null) && (assetsDirectory.exists())) {
-                ProcessBuilder processBuilderMv = new ProcessBuilder("mv", assetsDirectory.toString(), newAssetsDirectory.toString());
-                processBuilderMv.directory(projectDirectory);
-                CommandHelper.performCommand(processBuilderMv);
+    protected static void replaceFiles(final List<FileReplacement> fileReplacements, File projectDirectory) throws IOSException {
+        for (FileReplacement fileReplacement : fileReplacements) {
+            replaceFile(projectDirectory, fileReplacement.sourceFile, fileReplacement.targetFile, false);
+        }
+    }
+
+    protected static void replaceFile(File projectDirectory, String replaceSource, String replaceTarget, boolean revertTempFile) throws IOSException{
+        File sourceFile = new File(projectDirectory.toString() + File.separator + replaceSource);
+        File tempFile = new File(projectDirectory.toString() + File.separator + ((revertTempFile) ? replaceSource : replaceTarget) + ".tmp");
+        File targetFile = new File(projectDirectory.toString() + File.separator + replaceTarget);
+
+        if (sourceFile.exists()) {
+            //move existing target file to temp
+            if (targetFile.exists()) {
+                ProcessBuilder processBuilder = new ProcessBuilder("mv", targetFile.toString(), tempFile.toString());
+                processBuilder.directory(projectDirectory);
+                CommandHelper.performCommand(processBuilder);
             }
 
-            if ((assetsTempDirectory != null) && (assetsTempDirectory.exists())) {
-                ProcessBuilder processBuilderMv = new ProcessBuilder("mv", assetsTempDirectory.toString(), assetsDirectory.toString());
-                processBuilderMv.directory(projectDirectory);
-                CommandHelper.performCommand(processBuilderMv);
-            }
+            //move source to target
+            ProcessBuilder processBuilder = new ProcessBuilder("mv", sourceFile.toString(), targetFile.toString());
+            processBuilder.directory(projectDirectory);
+            CommandHelper.performCommand(processBuilder);
+        } else {
+            System.err.print("source file doesn't exist at path= " + sourceFile.toString());
+        }
+
+        if (revertTempFile) {
+            ProcessBuilder processBuilder = new ProcessBuilder("mv", tempFile.toString(), sourceFile.toString());
+            processBuilder.directory(projectDirectory);
+            CommandHelper.performCommand(processBuilder);
         }
     }
 
@@ -550,13 +517,19 @@ public class ProjectBuilder {
         }
     }
 
-    private static void prepareEntitlementsFile(final Map<String, String> properties, File workDirectory) throws IOSException, FileNotFoundException, IOException {
+    private static String getSchemeOrTarget(final Map<String, String> properties) {
         String targetName = null;
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.SCHEME.toString())) {
             targetName = properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString());
         } else if (properties.containsKey(Utils.PLUGIN_PROPERTIES.TARGET.toString())) {
             targetName = properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString());
         }
+
+        return targetName;
+    }
+
+    private static void prepareEntitlementsFile(final Map<String, String> properties, File workDirectory) throws IOSException, FileNotFoundException, IOException {
+        String targetName = getSchemeOrTarget(properties);
 
         String entitlementsFilePath = workDirectory + File.separator + targetName + ".entitlements";
         File entitlementsFile = new File(entitlementsFilePath);
