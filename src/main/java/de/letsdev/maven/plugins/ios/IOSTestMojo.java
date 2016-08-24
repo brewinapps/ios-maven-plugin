@@ -1,0 +1,33 @@
+/**
+ * maven-ios-plugin
+ * <p/>
+ * User: fkoebel
+ * Date: 2016-06-23
+ * <p/>
+ * This code is copyright (c) 2016 let's dev.
+ * URL: http://www.letsdev.de
+ * e-Mail: contact@letsdev.de
+ */
+
+package de.letsdev.maven.plugins.ios;
+
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+
+/**
+ *
+ * @author let's dev
+ * @goal test
+ * @phase test
+ */
+public class IOSTestMojo extends BaseMojo {
+    @Override
+    public void execute() throws MojoExecutionException, MojoFailureException {
+        super.execute();
+        try {
+            ProjectTester.test(this.properties, this.mavenProject);
+        } catch (Exception e) {
+            throw new MojoExecutionException(e.getMessage());
+        }
+    }
+}
