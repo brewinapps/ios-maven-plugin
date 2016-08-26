@@ -10,6 +10,8 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2016-08-26 - Release version 1.16.1: added xcodeVersion parameter to define path to Xcode installation<br />
+2016-06-20 - Release version 1.16: added generic file replacement.<br />
 2016-06-08 - Fixed packaging with multiple executions (now it's possible, to build a appstore, testflight and enterprise release and upload them togther in one maven build process at the same time) - Release version 1.15.9<br />
 2016-06-01 - Release version 1.15.1<br />
 2016-06-01 - Fixed support for Testflight builds<br />
@@ -49,6 +51,7 @@ http://www.letsdev.de - professional mobile solutions
 11. Change app displayname without XCode Project changes
 12. Change Version without XCode Project changes
 13. Change App Icons without XCode Project changes
+14. Set the path to Xcode installation for the build (xcodeVersion parameter). The path is set via xcode-select command, which runs under sudo (current user must be added to /etc/sudoers)
 
 
 ## Requirements
