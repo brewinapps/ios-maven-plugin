@@ -42,143 +42,149 @@ public class ProjectBuilder {
         //get current xcode version
         String currentXcodeVersion = getCurrentXcodeVersion(workDirectory);
 
-        //determine if xcode version is set as parameter
-        if (properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()) != null && !properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
-            selectXcodeVersion(properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()), workDirectory);
-        }
-
-        //replace all configured files
-        if (fileReplacements != null && fileReplacements.size() > 0) {
-            replaceFiles(fileReplacements, projectDirectory);
-        }
-
-        File targetDirectory = Utils.getTargetDirectory(mavenProject);
-        String projectVersion = updateXcodeProjectInfoPlist(properties, mavenProject, projectName, workDirectory);
-
-        //update entitlements file
-        prepareEntitlementsFile(properties, workDirectory);
-
-        File precompiledHeadersDir = createPrecompileHeadersDirectory(targetDirectory);
-
-        //BEG clean the application
-        ProcessBuilder processBuilder = cleanXcodeProject(properties, workDirectory);
-        //END clean the application
-
-        //unlock keychain
-        unlockKeychain(properties, mavenProject, projectName, workDirectory, processBuilder);
-
-        //if project contains cocoaPods dependencies, we install them first
-        if (Utils.cocoaPodsEnabled(properties)) {
-            installCocoaPodsDependencies(projectDirectory);
-        }
-
-        // Build the application
-        List<String> buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, false);
-        processBuilder = new ProcessBuilder(buildParameters);
-        processBuilder.directory(workDirectory);
-        CommandHelper.performCommand(processBuilder);
-
-        if (Utils.isiOSFramework(mavenProject, properties) || Utils.isMacOSFramework(properties)) {
-            if (!Utils.isMacOSFramework(properties)) {
-                //generate framework product also for iphonesimulator sdk
-                buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, true);
-                processBuilder = new ProcessBuilder(buildParameters);
-                processBuilder.directory(workDirectory);
-                CommandHelper.performCommand(processBuilder);
+        try {
+            //determine if xcode version is set as parameter
+            if (properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()) != null && !properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
+                selectXcodeVersion(properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()), workDirectory);
             }
 
-            String appName = properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString());
-            String frameworkName = appName + ".framework";
-
-            File targetWorkDirectory;
-            if (Utils.isMacOSFramework(properties)) {
-                targetWorkDirectory = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + File.separator);
-            } else {
-                File targetWorkDirectoryIphone = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_OS + File.separator);
-                File targetWorkDirectoryIphoneSimulator = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR + File.separator);
-
-                //if we'd build the framework with xcodebuild archive command, we have to export the framework from archive
-                if (Utils.shouldBuildXCArchive(mavenProject, properties)) {
-                    File archiveFile = new File(Utils.getArchiveName(projectName, mavenProject));
-                    exportFrameworkArchive(archiveFile, targetWorkDirectoryIphone, appName, frameworkName);
-                }
-
-                // use lipo to merge framework binarys
-                mergeFrameworkProducts(targetWorkDirectoryIphone, targetWorkDirectoryIphoneSimulator, appName, frameworkName);
-
-                targetWorkDirectory = targetWorkDirectoryIphone;
+            //replace all configured files
+            if (fileReplacements != null && fileReplacements.size() > 0) {
+                replaceFiles(fileReplacements, projectDirectory);
             }
 
-            // Zip Frameworks
-            processBuilder = new ProcessBuilder("zip", "-r", "../" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString(), frameworkName);
+            File targetDirectory = Utils.getTargetDirectory(mavenProject);
+            String projectVersion = updateXcodeProjectInfoPlist(properties, mavenProject, projectName, workDirectory);
 
-            processBuilder.directory(targetWorkDirectory);
-            CommandHelper.performCommand(processBuilder);
-        }
-        // Generate IPA
-        else {
+            //update entitlements file
+            prepareEntitlementsFile(properties, workDirectory);
+
+            File precompiledHeadersDir = createPrecompileHeadersDirectory(targetDirectory);
+
+            //BEG clean the application
+            ProcessBuilder processBuilder = cleanXcodeProject(properties, workDirectory);
+            //END clean the application
 
             //unlock keychain
-            unlockKeychain(properties, mavenProject, projectName, workDirectory, processBuilder); //unlock it again, if during xcrun keychain is closed automatically again.
+            unlockKeychain(properties, mavenProject, projectName, workDirectory, processBuilder);
 
-            if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
-                projectVersion += "-b" + properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString());
+            //if project contains cocoaPods dependencies, we install them first
+            if (Utils.cocoaPodsEnabled(properties)) {
+                installCocoaPodsDependencies(projectDirectory);
             }
 
-            File appTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
-                    + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()) + "." + Utils.PLUGIN_SUFFIX.APP);
+            // Build the application
+            List<String> buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, false);
+            processBuilder = new ProcessBuilder(buildParameters);
+            processBuilder.directory(workDirectory);
+            CommandHelper.performCommand(processBuilder);
 
-            File newAppTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
-                    + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.APP);
+            if (Utils.isiOSFramework(mavenProject, properties) || Utils.isMacOSFramework(properties)) {
+                if (!Utils.isMacOSFramework(properties)) {
+                    //generate framework product also for iphonesimulator sdk
+                    buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, true);
+                    processBuilder = new ProcessBuilder(buildParameters);
+                    processBuilder.directory(workDirectory);
+                    CommandHelper.performCommand(processBuilder);
+                }
 
-            File ipaTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
-                    + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "-" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA);
+                String appName = properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString());
+                String frameworkName = appName + ".framework";
 
-            File dsymTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
-                    + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()) + "." + Utils.PLUGIN_SUFFIX.APP_DSYM);
+                File targetWorkDirectory;
+                if (Utils.isMacOSFramework(properties)) {
+                    targetWorkDirectory = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + File.separator);
+                } else {
+                    File targetWorkDirectoryIphone = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_OS + File.separator);
+                    File targetWorkDirectoryIphoneSimulator = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR + File.separator);
 
-            File newDsymTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
-                    + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.APP_DSYM);
+                    //if we'd build the framework with xcodebuild archive command, we have to export the framework from archive
+                    if (Utils.shouldBuildXCArchive(mavenProject, properties)) {
+                        File archiveFile = new File(Utils.getArchiveName(projectName, mavenProject));
+                        exportFrameworkArchive(archiveFile, targetWorkDirectoryIphone, appName, frameworkName);
+                    }
 
-            if (appTargetPath.exists() && !(appTargetPath.toString().equalsIgnoreCase(newAppTargetPath.toString()))) {
-                processBuilder = new ProcessBuilder("mv", appTargetPath.toString(), newAppTargetPath.toString());
-                processBuilder.directory(projectDirectory);
+                    // use lipo to merge framework binarys
+                    mergeFrameworkProducts(targetWorkDirectoryIphone, targetWorkDirectoryIphoneSimulator, appName, frameworkName);
+
+                    targetWorkDirectory = targetWorkDirectoryIphone;
+                }
+
+                // Zip Frameworks
+                processBuilder = new ProcessBuilder("zip", "-r", "../" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString(), frameworkName);
+
+                processBuilder.directory(targetWorkDirectory);
                 CommandHelper.performCommand(processBuilder);
             }
+            // Generate IPA
+            else {
 
-            if (dsymTargetPath.exists() && !(dsymTargetPath.toString().equalsIgnoreCase(newDsymTargetPath.toString()))) {
-                processBuilder = new ProcessBuilder("mv", dsymTargetPath.toString(), newDsymTargetPath.toString());
-                processBuilder.directory(projectDirectory);
-                CommandHelper.performCommand(processBuilder);
+                //unlock keychain
+                unlockKeychain(properties, mavenProject, projectName, workDirectory, processBuilder); //unlock it again, if during xcrun keychain is closed automatically again.
+
+                if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
+                    projectVersion += "-b" + properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString());
+                }
+
+                File appTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+                        + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()) + "." + Utils.PLUGIN_SUFFIX.APP);
+
+                File newAppTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+                        + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.APP);
+
+                File ipaTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+                        + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "-" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA);
+
+                File dsymTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+                        + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()) + "." + Utils.PLUGIN_SUFFIX.APP_DSYM);
+
+                File newDsymTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+                        + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.APP_DSYM);
+
+                if (appTargetPath.exists() && !(appTargetPath.toString().equalsIgnoreCase(newAppTargetPath.toString()))) {
+                    processBuilder = new ProcessBuilder("mv", appTargetPath.toString(), newAppTargetPath.toString());
+                    processBuilder.directory(projectDirectory);
+                    CommandHelper.performCommand(processBuilder);
+                }
+
+                if (dsymTargetPath.exists() && !(dsymTargetPath.toString().equalsIgnoreCase(newDsymTargetPath.toString()))) {
+                    processBuilder = new ProcessBuilder("mv", dsymTargetPath.toString(), newDsymTargetPath.toString());
+                    processBuilder.directory(projectDirectory);
+                    CommandHelper.performCommand(processBuilder);
+                }
+
+                File ipaTmpDir = new File(targetDirectory, "ipa-temp-dir-" + UUID.randomUUID().toString());
+                if (!ipaTmpDir.mkdir()) {
+                    System.err.println("Could not create ipa temp dir at path = " + ipaTmpDir.getAbsolutePath());
+                }
+
+                if (!Utils.shouldBuildXCArchive(mavenProject, properties)) {
+                    codeSignBeforeXcode6(properties, workDirectory, newAppTargetPath, ipaTargetPath, ipaTmpDir);
+                } else {
+                    codeSignAfterXcode6(properties, mavenProject, workDirectory, newAppTargetPath, ipaTargetPath, ipaTmpDir);
+                }
             }
 
-            File ipaTmpDir = new File(targetDirectory, "ipa-temp-dir-" + UUID.randomUUID().toString());
-            if (!ipaTmpDir.mkdir()) {
-                System.err.println("Could not create ipa temp dir at path = " + ipaTmpDir.getAbsolutePath());
+            //lock keychain
+            lockKeychain(properties);
+
+            //revert all replace files
+            if (fileReplacements != null && fileReplacements.size() > 0) {
+                revertReplacedFiles(fileReplacements, projectDirectory);
             }
 
-            if (!Utils.shouldBuildXCArchive(mavenProject, properties)) {
-                codeSignBeforeXcode6(properties, workDirectory, newAppTargetPath, ipaTargetPath, ipaTmpDir);
-            } else {
-                codeSignAfterXcode6(properties, mavenProject, workDirectory, newAppTargetPath, ipaTargetPath, ipaTmpDir);
+            // Generate the the deploy plist file
+            generateDeployPlistFile(mavenProject, properties, projectName, targetDirectory, projectVersion, processBuilder);
+        } catch (Exception e) {
+            System.err.println("exception occurred while building project, e=" + e.getMessage());
+
+            throw new IOSException(e.getMessage());
+        } finally {
+            //determine if xcode version is set as parameter
+            if (!properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
+                //return to previous xcode version
+                selectXcodeVersion(currentXcodeVersion, workDirectory);
             }
-        }
-
-        //lock keychain
-        lockKeychain(properties);
-
-        //revert all replace files
-        if (fileReplacements != null && fileReplacements.size() > 0) {
-            revertReplacedFiles(fileReplacements, projectDirectory);
-        }
-
-        // Generate the the deploy plist file
-        generateDeployPlistFile(mavenProject, properties, projectName, targetDirectory, projectVersion, processBuilder);
-
-        //determine if xcode version is set as parameter
-        if (!properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
-            //return to previous xcode version
-            selectXcodeVersion(currentXcodeVersion, workDirectory);
         }
     }
 
