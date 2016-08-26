@@ -212,7 +212,9 @@ public class ProjectBuilder {
 
             processBuilder.directory(workDirectory);
             xcodeVersion = CommandHelper.performCommand(processBuilder);
-            System.out.println(xcodeVersion + " is current xcode version");
+            System.out.println("############################################################################");
+            System.out.println("################################ " + xcodeVersion + " is current xcode version ############################################");
+            System.out.println("############################################################################");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -245,7 +247,9 @@ public class ProjectBuilder {
 
             processBuilder.directory(workDirectory);
             CommandHelper.performCommand(processBuilder);
-            System.out.println("set " + xcodeVersionPath + " as current xcode version");
+            System.out.println("############################################################################");
+            System.out.println("################################ set " + xcodeVersionPath + " as current xcode version ################################ set ");
+            System.out.println("############################################################################");
 
         } catch (IOException e) {
             e.printStackTrace();
