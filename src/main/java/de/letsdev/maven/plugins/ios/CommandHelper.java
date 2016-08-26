@@ -23,7 +23,7 @@ public class CommandHelper {
      * @param processBuilder
      * @throws IOSException
      */
-    public static void performCommand(final ProcessBuilder processBuilder) throws IOSException {
+    public static String performCommand(final ProcessBuilder processBuilder) throws IOSException {
         processBuilder.redirectErrorStream(true);
 
         StringBuilder joinedCommand = new StringBuilder();
@@ -42,11 +42,19 @@ public class CommandHelper {
         BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
         int rc;
+        String output = "";
+        int readLines = 0;
         try {
             // Display output
             String outLine;
             while ((outLine = input.readLine()) != null) {
+                if (readLines > 0) {
+                    output += "\n";
+                }
+                output += outLine;
                 System.out.println(outLine);
+
+                readLines++;
             }
             input.close();
         } catch (IOException e) {
@@ -62,6 +70,8 @@ public class CommandHelper {
         if (rc != 0) {
             throw new IOSException("The Xcode command was unsuccessful");
         }
+
+        return output;
     }
 
     public static String[] getCommand(String input) {

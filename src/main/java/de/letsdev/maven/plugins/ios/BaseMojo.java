@@ -271,6 +271,14 @@ public class BaseMojo extends AbstractMojo {
     protected String releaseTask;
 
     /**
+     * defines the path to the xcode version, which will be used for the build process. The given path will be used for the xcode-select --switch command
+     * e.g. path looks like that: /Applications/Xcode.app
+     *
+     * @parameter property="ios.xcodeVersion"
+     */
+    protected String xcodeVersion;
+
+    /**
      * defining all files and directories to replace
      *
      * @parameter property="ios.fileReplacements"
@@ -323,6 +331,7 @@ public class BaseMojo extends AbstractMojo {
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CLASSIFIER.toString(), this.classifier);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString(), this.cocoaPodsEnabled);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RELEASE_TASK.toString(), this.releaseTask);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString(), this.xcodeVersion);
 
         return properties;
     }
