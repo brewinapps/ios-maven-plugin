@@ -181,7 +181,7 @@ public class ProjectBuilder {
             throw new IOSException(e.getMessage());
         } finally {
             //determine if xcode version is set as parameter
-            if (!properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
+            if (properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()) != null && !properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
                 //return to previous xcode version
                 selectXcodeVersion(currentXcodeVersion, workDirectory);
             }
