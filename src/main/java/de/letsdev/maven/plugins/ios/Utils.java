@@ -71,7 +71,8 @@ public class Utils {
         COCOA_PODS_ENABLED("cocoa-pods-enabled"),
         ITUNES_CONNECT_USERNAME("iTunesConnectUsername"),
         ITUNES_CONNECT_PASSWORD("iTunesConnectPassword"),
-        XCODE_VERSION("xcodeVersion");
+        XCODE_VERSION("xcodeVersion"),
+        XCTEST_SCHEME("xcTestsScheme"),
 
         private PLUGIN_PROPERTIES(String name) {
             this.name = name;

@@ -105,10 +105,12 @@ public class ProjectDeployer {
 
             outputStream.close();
 
+            String xcodeVersion = properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString());
             ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
                     ipaLocation,
                     iTunesConnectUsername,
-                    iTunesConnectPassword);
+                    iTunesConnectPassword,
+                    xcodeVersion);
 
             processBuilder.directory(targetDirectory);
             CommandHelper.performCommand(processBuilder);

@@ -279,6 +279,13 @@ public class BaseMojo extends AbstractMojo {
     protected String xcodeVersion;
 
     /**
+     * defining the scheme for the xctest execution
+     *
+     * @parameter property="ios.xcTestsScheme"
+     */
+    protected String xcTestsScheme;
+
+    /**
      * defining all files and directories to replace
      *
      * @parameter property="ios.fileReplacements"
@@ -332,6 +339,7 @@ public class BaseMojo extends AbstractMojo {
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString(), this.cocoaPodsEnabled);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RELEASE_TASK.toString(), this.releaseTask);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString(), this.xcodeVersion);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_SCHEME.toString(), this.xcTestsScheme);
 
         return properties;
     }
