@@ -105,7 +105,11 @@ public class ProjectDeployer {
 
             outputStream.close();
 
-            String xcodeVersion = properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString());
+            String xcodeVersion = "";
+            if (properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()) != null && !properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
+                xcodeVersion = properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString());
+            }
+
             ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
                     ipaLocation,
                     iTunesConnectUsername,
