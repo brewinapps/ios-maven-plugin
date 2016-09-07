@@ -41,7 +41,7 @@ public class ProjectDeployer {
      * @throws IOSException
      */
     public static void deploy(final Map<String, String> properties, MavenProject mavenProject)
-            throws IOSException {
+            throws IOSException, IOException {
 
         if (properties.get(Utils.PLUGIN_PROPERTIES.HOCKEY_APP_TOKEN.toString()) != null) {
             deployHockey(properties);
@@ -61,69 +61,62 @@ public class ProjectDeployer {
         }
     }
 
-    private static void deployAppStore(final Map<String, String> properties, MavenProject mavenProject) {
+    private static void deployAppStore(final Map<String, String> properties, MavenProject mavenProject) throws IOException, IOSException {
         System.out.println("Deploying to AppStore ...");
 
         uploadToAppStore(properties, mavenProject);
     }
 
-    private static void deployTestflight(final Map<String, String> properties, MavenProject mavenProject) {
+    private static void deployTestflight(final Map<String, String> properties, MavenProject mavenProject) throws IOException, IOSException {
         System.out.println("Deploying to Testflight ...");
 
         uploadToAppStore(properties, mavenProject);
     }
 
-    private static void uploadToAppStore(final Map<String, String> properties, MavenProject mavenProject) {
+    private static void uploadToAppStore(final Map<String, String> properties, MavenProject mavenProject) throws IOException, IOSException{
         System.out.println("Starting app store upload...");
 
         // Run shell-script from resource-folder.
-        try {
-            final String scriptName = "upload-app.sh";
+        final String scriptName = "upload-app.sh";
 
-            String projectVersion = Utils.getAdjustedVersion(mavenProject, properties);
-            if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
-                projectVersion += "-b" + properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString());
-            }
-
-            File targetDirectory = new File(properties.get(Utils.PLUGIN_PROPERTIES.TARGET_DIR.toString()));
-            final String ipaLocation = targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
-                    + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "-" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA;
-            final String iTunesConnectUsername = properties.get(Utils.PLUGIN_PROPERTIES.ITUNES_CONNECT_USERNAME.toString());
-            final String iTunesConnectPassword = properties.get(Utils.PLUGIN_PROPERTIES.ITUNES_CONNECT_PASSWORD.toString());
-
-            File tempFile = File.createTempFile(scriptName, "sh");
-
-            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
-            OutputStream outputStream = new FileOutputStream(tempFile);
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            outputStream.close();
-
-            String xcodeVersion = "";
-            if (properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()) != null && !properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
-                xcodeVersion = properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString());
-            }
-
-            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
-                    ipaLocation,
-                    iTunesConnectUsername,
-                    iTunesConnectPassword,
-                    xcodeVersion);
-
-            processBuilder.directory(targetDirectory);
-            CommandHelper.performCommand(processBuilder);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (IOSException e) {
-            e.printStackTrace();
+        String projectVersion = Utils.getAdjustedVersion(mavenProject, properties);
+        if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
+            projectVersion += "-b" + properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString());
         }
+
+        File targetDirectory = new File(properties.get(Utils.PLUGIN_PROPERTIES.TARGET_DIR.toString()));
+        final String ipaLocation = targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+                + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "-" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA;
+        final String iTunesConnectUsername = properties.get(Utils.PLUGIN_PROPERTIES.ITUNES_CONNECT_USERNAME.toString());
+        final String iTunesConnectPassword = properties.get(Utils.PLUGIN_PROPERTIES.ITUNES_CONNECT_PASSWORD.toString());
+
+        File tempFile = File.createTempFile(scriptName, "sh");
+
+        InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
+        OutputStream outputStream = new FileOutputStream(tempFile);
+
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, bytesRead);
+        }
+
+        outputStream.close();
+
+        //get current xcode version
+        String projectName = Utils.buildProjectName(properties, mavenProject);
+        File workDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
+        String currentXcodeVersion = Utils.getCurrentXcodeVersion(workDirectory);
+
+        ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
+                ipaLocation,
+                iTunesConnectUsername,
+                iTunesConnectPassword,
+                currentXcodeVersion);
+
+        processBuilder.directory(targetDirectory);
+        CommandHelper.performCommand(processBuilder);
     }
 
     private static void deployHockey(final Map<String, String> properties)

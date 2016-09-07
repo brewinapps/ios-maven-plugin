@@ -2,7 +2,7 @@ package de.letsdev.maven.plugins.ios;
 
 import org.apache.maven.project.MavenProject;
 
-import java.io.File;
+import java.io.*;
 import java.util.Map;
 
 /**
@@ -240,4 +240,40 @@ public class Utils {
         return result;
     }
 
+    public static String getCurrentXcodeVersion(File workDirectory) {
+        String xcodeVersion = "";
+
+        // Run shell-script from resource-folder.
+        try {
+            final String scriptName = "get-xcode-version.sh";
+            File tempFile = File.createTempFile(scriptName, "sh");
+
+            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
+            OutputStream outputStream = new FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+
+            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString());
+
+            processBuilder.directory(workDirectory);
+            xcodeVersion = CommandHelper.performCommand(processBuilder);
+            System.out.println("############################################################################");
+            System.out.println("################################ " + xcodeVersion + " is current xcode version ############################################");
+            System.out.println("############################################################################");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IOSException e) {
+            e.printStackTrace();
+        }
+
+        return xcodeVersion;
+    }
 }

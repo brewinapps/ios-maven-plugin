@@ -155,7 +155,7 @@ public class IOSDeployMojo extends AbstractMojo {
 			properties.put(Utils.PLUGIN_PROPERTIES.ITUNES_CONNECT_PASSWORD.toString(), iTunesConnectPassword);
 
 			ProjectDeployer.deploy(properties, this.mavenProject);
-		} catch (IOSException e) {
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			throw new MojoExecutionException(e.getMessage());
 		}
