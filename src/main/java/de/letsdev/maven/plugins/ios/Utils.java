@@ -65,6 +65,7 @@ public class Utils {
         PROJECT_NAME("projectName"),
         GCC_PREPROCESSOR_DEFINITIONS("gccPreprocessorDefinitions"),
         PROVISIONING_PROFILE_UUID("provisioningProfileUUID"),
+        PROVISIONING_PROFILE_SPECIFIER("provisioningProfileSpecifier"),
         DEVELOPMENT_TEAM("developmentTeam"),
         TARGET("target"),
         TARGET_DIR("targetDir"),
