@@ -14,14 +14,16 @@ package de.letsdev.maven.plugins.ios;
 import org.apache.maven.project.MavenProject;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class ProjectTester {
     public static void test(final Map<String, String> properties, MavenProject mavenProject) throws IOSException, IOException {
         String projectName = Utils.buildProjectName(properties, mavenProject);
         File workDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
+
+        if (Utils.shouldResetIphoneSimulators(properties)) {
+            resetSimulators(workDirectory);
+        }
 
         String scheme = properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_SCHEME.toString());
         String configuration = properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString());
@@ -47,6 +49,27 @@ public class ProjectTester {
                 configuration,
                 sdk);
 
+        processBuilder.directory(workDirectory);
+        CommandHelper.performCommand(processBuilder);
+    }
+
+    private static void resetSimulators(File workDirectory) throws IOSException, IOException {
+        final String scriptName = "reset-simulators.sh";
+
+        File tempFile = File.createTempFile(scriptName, "sh");
+        InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
+        OutputStream outputStream = new FileOutputStream(tempFile);
+
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, bytesRead);
+        }
+
+        outputStream.close();
+
+        ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", tempFile.getAbsoluteFile().toString());
         processBuilder.directory(workDirectory);
         CommandHelper.performCommand(processBuilder);
     }

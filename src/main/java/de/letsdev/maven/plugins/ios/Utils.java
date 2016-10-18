@@ -74,7 +74,8 @@ public class Utils {
         ITUNES_CONNECT_USERNAME("iTunesConnectUsername"),
         ITUNES_CONNECT_PASSWORD("iTunesConnectPassword"),
         XCODE_VERSION("xcodeVersion"),
-        XCTEST_SCHEME("xcTestsScheme");
+        XCTEST_SCHEME("xcTestsScheme"),
+        RESET_SIMULATORS("resetSimulators");
 
         private PLUGIN_PROPERTIES(String name) {
             this.name = name;
@@ -169,6 +170,10 @@ public class Utils {
 
     public static boolean isIphoneSimulatorBitcodeEnabled(Map<String, String> buildProperties) {
         return "true".equals(buildProperties.get(PLUGIN_PROPERTIES.IPHONESIMULATOR_BITCODE_ENABLED.toString()));
+    }
+
+    public static boolean shouldResetIphoneSimulators(Map<String, String> buildProperties) {
+        return "true".equals(buildProperties.get(PLUGIN_PROPERTIES.RESET_SIMULATORS.toString()));
     }
 
     public static File getWorkDirectory(Map<String, String> buildProperties, MavenProject mavenProject, String projectName) throws IOSException {

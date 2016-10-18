@@ -300,6 +300,13 @@ public class BaseMojo extends AbstractMojo {
     protected String xcTestsScheme;
 
     /**
+     * defining if simulators should be resetted
+     *
+     * @parameter property="ios.resetSimulators"
+     */
+    protected boolean resetSimulators = true;
+
+    /**
      * defining all files and directories to replace
      *
      * @parameter property="ios.fileReplacements"
@@ -356,6 +363,7 @@ public class BaseMojo extends AbstractMojo {
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RELEASE_TASK.toString(), this.releaseTask);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString(), this.xcodeVersion);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_SCHEME.toString(), this.xcTestsScheme);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RESET_SIMULATORS.toString(), Boolean.toString(this.resetSimulators));
 
         return properties;
     }
