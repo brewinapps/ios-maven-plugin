@@ -10,6 +10,7 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2016-10-18 - Release version 1.16.8: added provisioningProfileSpecifier and developmentTeam parameter for code signing configuration under xcode 8 and resetSimulators parameter for resetting iphone simulators before testing<br />
 2016-08-26 - Release version 1.16.1: added xcodeVersion parameter to define path to Xcode installation, integrated xctests and ocunit2junit<br />
 2016-06-20 - Release version 1.16: added generic file replacement.<br />
 2016-06-08 - Fixed packaging with multiple executions (now it's possible, to build a appstore, testflight and enterprise release and upload them togther in one maven build process at the same time) - Release version 1.15.9<br />
@@ -100,6 +101,9 @@ Compiles the application and generates an IPA package
 32. ios.iTunesConnectPassword   password to login to iTunesConnect
 33. ios.xcodeVersion            The path to the xcode version, which should be used for the build process
 34. ios.xcTestsScheme           Specifies the scheme, used for the execution of xctests
+35. ios.provisioningProfileSpecifier           Specifies PROVISIONING_PROFILE_SPECIFIER in project file
+36. ios.developmentTeam           Specifies DEVELOPMENT_TEAM in project file
+37. ios.resetSimulators           Specifies if iphone simulators should be resetted before testing
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
