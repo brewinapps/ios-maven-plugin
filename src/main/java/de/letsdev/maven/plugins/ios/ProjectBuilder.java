@@ -455,6 +455,10 @@ public class ProjectBuilder {
             buildParameters.add("PROVISIONING_PROFILE=" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()));
         }
 
+        if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.DEVELOPMENT_TEAM.toString())) {
+            buildParameters.add("DEVELOPMENT_TEAM=" + properties.get(Utils.PLUGIN_PROPERTIES.DEVELOPMENT_TEAM.toString()));
+        }
+
         if (properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()) != null) {
             buildParameters.add("PRODUCT_BUNDLE_IDENTIFIER=" + properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()));
         }

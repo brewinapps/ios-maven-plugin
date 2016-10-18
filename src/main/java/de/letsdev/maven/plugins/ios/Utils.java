@@ -65,6 +65,7 @@ public class Utils {
         PROJECT_NAME("projectName"),
         GCC_PREPROCESSOR_DEFINITIONS("gccPreprocessorDefinitions"),
         PROVISIONING_PROFILE_UUID("provisioningProfileUUID"),
+        DEVELOPMENT_TEAM("developmentTeam"),
         TARGET("target"),
         TARGET_DIR("targetDir"),
         BUILD_TO_XCARCHIVE_ENABLED("build-xcarchive"),
