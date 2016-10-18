@@ -455,8 +455,8 @@ public class ProjectBuilder {
             buildParameters.add("PROVISIONING_PROFILE=" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()));
         }
 
-        if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString())) {
-            buildParameters.add("PROVISIONING_PROFILE_SPECIFIER=" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()));
+        if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString())) {
+            buildParameters.add("PROVISIONING_PROFILE_SPECIFIER=" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString()));
         }   else {
             buildParameters.add("PROVISIONING_PROFILE_SPECIFIER=");
         }
