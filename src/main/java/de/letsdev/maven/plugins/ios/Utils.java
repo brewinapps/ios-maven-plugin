@@ -75,6 +75,7 @@ public class Utils {
         ITUNES_CONNECT_PASSWORD("iTunesConnectPassword"),
         XCODE_VERSION("xcodeVersion"),
         XCTEST_SCHEME("xcTestsScheme"),
+        XCTEST_DESTINATION("xcTestsDestination"),
         RESET_SIMULATORS("resetSimulators");
 
         private PLUGIN_PROPERTIES(String name) {

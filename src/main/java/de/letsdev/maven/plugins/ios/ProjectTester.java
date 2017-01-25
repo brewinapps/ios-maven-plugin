@@ -28,6 +28,7 @@ public class ProjectTester {
         String scheme = properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_SCHEME.toString());
         String configuration = properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString());
         String sdk = Utils.SDK_IPHONE_SIMULATOR;
+        String destination = properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_DESTINATION.toString());
 
         final String scriptName = "run-xctests.sh";
 
@@ -47,7 +48,8 @@ public class ProjectTester {
         ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", tempFile.getAbsoluteFile().toString(),
                 scheme,
                 configuration,
-                sdk);
+                sdk,
+                destination);
 
         processBuilder.directory(workDirectory);
         CommandHelper.performCommand(processBuilder);
