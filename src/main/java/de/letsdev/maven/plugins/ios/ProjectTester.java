@@ -27,7 +27,7 @@ public class ProjectTester {
 
         String scheme = properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_SCHEME.toString());
         String configuration = properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString());
-        String sdk = Utils.SDK_IPHONE_SIMULATOR;
+        String sdk = properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString());
         String destination = properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_DESTINATION.toString());
 
         final String scriptName = "run-xctests.sh";

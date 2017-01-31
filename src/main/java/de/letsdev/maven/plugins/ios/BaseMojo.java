@@ -308,6 +308,14 @@ public class BaseMojo extends AbstractMojo {
     protected String xcTestsDestination;
 
     /**
+     * defining the sdk for xctests execution
+     *
+     * @parameter property="ios.xcTestsSdk"
+     * default-value="iphonesimulator"
+     */
+    protected String xcTestsSdk;
+
+    /**
      * defining if simulators should be resetted
      *
      * @parameter property="ios.resetSimulators"
@@ -372,6 +380,7 @@ public class BaseMojo extends AbstractMojo {
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString(), this.xcodeVersion);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_SCHEME.toString(), this.xcTestsScheme);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_DESTINATION.toString(), this.xcTestsDestination);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_SDK.toString(), this.xcTestsSdk);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RESET_SIMULATORS.toString(), Boolean.toString(this.resetSimulators));
 
         return properties;

@@ -76,6 +76,7 @@ public class Utils {
         XCODE_VERSION("xcodeVersion"),
         XCTEST_SCHEME("xcTestsScheme"),
         XCTEST_DESTINATION("xcTestsDestination"),
+        XCTEST_SDK("xcTestsSdk"),
         RESET_SIMULATORS("resetSimulators");
 
         private PLUGIN_PROPERTIES(String name) {

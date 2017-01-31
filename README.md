@@ -10,6 +10,7 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2017-01-31 - Release version 1.16.10: added xcTestsSdk parameter
 2017-01-25 - Release version 1.16.9: added xcTestsDestination parameter
 2016-10-18 - Release version 1.16.8: added provisioningProfileSpecifier and developmentTeam parameter for code signing configuration under xcode 8 and resetSimulators parameter for resetting iphone simulators before testing<br />
 2016-08-26 - Release version 1.16.1: added xcodeVersion parameter to define path to Xcode installation, integrated xctests and ocunit2junit<br />
@@ -103,9 +104,10 @@ Compiles the application and generates an IPA package
 33. ios.xcodeVersion            The path to the xcode version, which should be used for the build process
 34. ios.xcTestsScheme           Specifies the scheme, used for the execution of xctests
 35. ios.xcTestsDestination      Specifies the destination, used for the execution of xctests
-36. ios.provisioningProfileSpecifier           Specifies PROVISIONING_PROFILE_SPECIFIER in project file
-37. ios.developmentTeam           Specifies DEVELOPMENT_TEAM in project file
-38. ios.resetSimulators           Specifies if iphone simulators should be resetted before testing
+36. ios.xcTestsSdk              Specifies the sdk, used for the execution of xctests
+37. ios.provisioningProfileSpecifier           Specifies PROVISIONING_PROFILE_SPECIFIER in project file
+38. ios.developmentTeam           Specifies DEVELOPMENT_TEAM in project file
+39. ios.resetSimulators           Specifies if iphone simulators should be resetted before testing
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
