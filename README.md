@@ -10,6 +10,7 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2017-02-01 - Release version 1.16.11: fixed xcTestsSdk parameter<br />
 2017-01-31 - Release version 1.16.10: added xcTestsSdk parameter<br />
 2017-01-25 - Release version 1.16.9: added xcTestsDestination parameter<br />
 2016-10-18 - Release version 1.16.8: added provisioningProfileSpecifier and developmentTeam parameter for code signing configuration under xcode 8 and resetSimulators parameter for resetting iphone simulators before testing<br />
