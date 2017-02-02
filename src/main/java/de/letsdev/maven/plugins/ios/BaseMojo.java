@@ -323,6 +323,14 @@ public class BaseMojo extends AbstractMojo {
     protected String xcTestsSdk;
 
     /**
+     * defining further arguments for xctests execution
+     *
+     * @parameter property="ios.xcTestsBuildArguments"
+     * default-value="GCC_SYMBOLS_PRIVATE_EXTERN=NO COPY_PHASE_STRIP=NO"
+     */
+    protected String xcTestsBuildArguments;
+
+    /**
      * defining if simulators should be resetted
      *
      * @parameter property="ios.resetSimulators"
@@ -389,6 +397,7 @@ public class BaseMojo extends AbstractMojo {
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_CONFIGURATION.toString(), this.xcTestsConfiguration);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_DESTINATION.toString(), this.xcTestsDestination);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_SDK.toString(), this.xcTestsSdk);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_BUILD_ARGUMENTS.toString(), this.xcTestsBuildArguments);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RESET_SIMULATORS.toString(), Boolean.toString(this.resetSimulators));
 
         return properties;

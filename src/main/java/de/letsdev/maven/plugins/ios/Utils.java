@@ -78,6 +78,7 @@ public class Utils {
         XCTEST_CONFIGURATION("xcTestsConfiguration"),
         XCTEST_DESTINATION("xcTestsDestination"),
         XCTEST_SDK("xcTestsSdk"),
+        XCTEST_BUILD_ARGUMENTS("xcTestsBuildArguments"),
         RESET_SIMULATORS("resetSimulators");
 
         private PLUGIN_PROPERTIES(String name) {

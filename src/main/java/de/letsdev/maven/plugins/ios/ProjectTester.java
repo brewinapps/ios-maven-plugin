@@ -30,6 +30,7 @@ public class ProjectTester {
         String sdk = properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_SDK.toString());
         String sdkArchs = Utils.getArchitecturesForSdk(properties, sdk);
         String destination = properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_DESTINATION.toString());
+        String otherArguments = properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_BUILD_ARGUMENTS.toString());
 
         final String scriptName = "run-xctests.sh";
 
@@ -51,7 +52,8 @@ public class ProjectTester {
                 configuration,
                 sdk,
                 sdkArchs,
-                destination);
+                destination,
+                otherArguments);
 
         processBuilder.directory(workDirectory);
         CommandHelper.performCommand(processBuilder);
