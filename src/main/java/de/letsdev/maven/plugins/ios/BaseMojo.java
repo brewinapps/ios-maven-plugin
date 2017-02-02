@@ -115,7 +115,6 @@ public class BaseMojo extends AbstractMojo {
      * iphoneos SDK build architectures
      *
      * @parameter property="ios.iphoneosArchitectures"
-     * default-value="arm64 armv7"
      */
     protected String iphoneosArchitectures;
 
@@ -300,6 +299,14 @@ public class BaseMojo extends AbstractMojo {
     protected String xcTestsScheme;
 
     /**
+     * defining the configuration for the xctest execution
+     *
+     * @parameter property="ios.xcTestsConfiguration"
+     * default-value="Debug"
+     */
+    protected String xcTestsConfiguration;
+
+    /**
      * defining the destination for the xctest execution
      * e.g. platform=iOS Simulator,name=iPhone 5,OS=9.1
      *
@@ -379,6 +386,7 @@ public class BaseMojo extends AbstractMojo {
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RELEASE_TASK.toString(), this.releaseTask);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString(), this.xcodeVersion);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_SCHEME.toString(), this.xcTestsScheme);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_CONFIGURATION.toString(), this.xcTestsConfiguration);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_DESTINATION.toString(), this.xcTestsDestination);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_SDK.toString(), this.xcTestsSdk);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RESET_SIMULATORS.toString(), Boolean.toString(this.resetSimulators));

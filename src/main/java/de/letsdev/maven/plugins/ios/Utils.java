@@ -75,6 +75,7 @@ public class Utils {
         ITUNES_CONNECT_PASSWORD("iTunesConnectPassword"),
         XCODE_VERSION("xcodeVersion"),
         XCTEST_SCHEME("xcTestsScheme"),
+        XCTEST_CONFIGURATION("xcTestsConfiguration"),
         XCTEST_DESTINATION("xcTestsDestination"),
         XCTEST_SDK("xcTestsSdk"),
         RESET_SIMULATORS("resetSimulators");
@@ -284,5 +285,15 @@ public class Utils {
         }
 
         return xcodeVersion;
+    }
+
+    public static String getArchitecturesForSdk(Map<String, String> properties, String sdk) {
+        String architectures = properties.get(PLUGIN_PROPERTIES.IPHONEOS_ARCHITECTURES.toString());
+
+        if (SDK_IPHONE_SIMULATOR.equals(sdk)) {
+            architectures = properties.get(Utils.PLUGIN_PROPERTIES.IPHONESIMULATOR_ARCHITECTURES.toString());
+        }
+
+        return architectures;
     }
 }

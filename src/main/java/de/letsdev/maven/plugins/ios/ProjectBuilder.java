@@ -408,15 +408,18 @@ public class ProjectBuilder {
             buildParameters.add(projectName + ".xcworkspace");
         }
 
-        buildParameters.add("-sdk");
+        String sdk = properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString());
         if (shouldUseIphoneSimulatorSDK) {
             buildParameters.add(Utils.SDK_IPHONE_SIMULATOR);
-            buildParameters.add("ARCHS=" + properties.get(Utils.PLUGIN_PROPERTIES.IPHONESIMULATOR_ARCHITECTURES.toString()));
-            buildParameters.add("VALID_ARCHS=" + properties.get(Utils.PLUGIN_PROPERTIES.IPHONESIMULATOR_ARCHITECTURES.toString()));
-        } else {
-            buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString()));
-            buildParameters.add("ARCHS=" + properties.get(Utils.PLUGIN_PROPERTIES.IPHONEOS_ARCHITECTURES.toString()));
-            buildParameters.add("VALID_ARCHS=" + properties.get(Utils.PLUGIN_PROPERTIES.IPHONEOS_ARCHITECTURES.toString()));
+        }
+
+        buildParameters.add("-sdk");
+        buildParameters.add(sdk);
+
+        String archs = Utils.getArchitecturesForSdk(properties, sdk);
+        if (archs != null && !archs.isEmpty()) {
+            buildParameters.add("ARCHS=" + archs);
+            buildParameters.add("VALID_ARCHS=" + archs);
         }
 
         buildParameters.add("-configuration");
