@@ -410,7 +410,7 @@ public class ProjectBuilder {
 
         String sdk = properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString());
         if (shouldUseIphoneSimulatorSDK) {
-            buildParameters.add(Utils.SDK_IPHONE_SIMULATOR);
+            sdk = Utils.SDK_IPHONE_SIMULATOR;
         }
 
         buildParameters.add("-sdk");
