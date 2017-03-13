@@ -32,7 +32,7 @@ public class ProjectBuilder {
      * @param properties Properties
      * @throws IOSException
      */
-    public static void build(final Map<String, String> properties, MavenProject mavenProject, final List<FileReplacement> fileReplacements) throws IOSException, IOException {
+    public static void build(final Map<String, String> properties, MavenProject mavenProject, final List<FileReplacement> fileReplacements, final List<String> xcodeBuildParameters) throws IOSException, IOException {
         // Make sure the source directory exists
         String projectName = Utils.buildProjectName(properties, mavenProject);
         File workDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
@@ -62,7 +62,7 @@ public class ProjectBuilder {
             File precompiledHeadersDir = createPrecompileHeadersDirectory(targetDirectory);
 
             //BEG clean the application
-            ProcessBuilder processBuilder = cleanXcodeProject(properties, workDirectory);
+            ProcessBuilder processBuilder = cleanXcodeProject(properties, workDirectory, xcodeBuildParameters);
             //END clean the application
 
             //unlock keychain
@@ -70,11 +70,11 @@ public class ProjectBuilder {
 
             //if project contains cocoaPods dependencies, we install them first
             if (Utils.cocoaPodsEnabled(properties)) {
-                installCocoaPodsDependencies(projectDirectory);
+                installCocoaPodsDependencies(workDirectory);
             }
 
             // Build the application
-            List<String> buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, false);
+            List<String> buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, false, xcodeBuildParameters);
             processBuilder = new ProcessBuilder(buildParameters);
             processBuilder.directory(workDirectory);
             CommandHelper.performCommand(processBuilder);
@@ -82,7 +82,7 @@ public class ProjectBuilder {
             if (Utils.isiOSFramework(mavenProject, properties) || Utils.isMacOSFramework(properties)) {
                 if (!Utils.isMacOSFramework(properties)) {
                     //generate framework product also for iphonesimulator sdk
-                    buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, true);
+                    buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, true, xcodeBuildParameters);
                     processBuilder = new ProcessBuilder(buildParameters);
                     processBuilder.directory(workDirectory);
                     CommandHelper.performCommand(processBuilder);
@@ -258,13 +258,19 @@ public class ProjectBuilder {
         return projectVersion;
     }
 
-    protected static ProcessBuilder cleanXcodeProject(Map<String, String> properties, File workDirectory) throws IOSException {
+    protected static ProcessBuilder cleanXcodeProject(Map<String, String> properties, File workDirectory, List<String> xcodeBuildParameters) throws IOSException {
         List<String> cleanParameters = new ArrayList<String>();
         cleanParameters.add("xcodebuild");
         cleanParameters.add("-alltargets");
         cleanParameters.add("-configuration");
         cleanParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()));
         cleanParameters.add("clean");
+
+        //add each dynamic parameter from pom
+        for (String param : xcodeBuildParameters) {
+            cleanParameters.add(param);
+        }
+
         ProcessBuilder processBuilder = new ProcessBuilder(cleanParameters);
         processBuilder.directory(workDirectory);
         CommandHelper.performCommand(processBuilder);
@@ -398,7 +404,7 @@ public class ProjectBuilder {
         }
     }
 
-    private static List<String> generateBuildParameters(MavenProject mavenProject, Map<String, String> properties, File targetDirectory, String projectName, File precompiledHeadersDir, boolean shouldUseIphoneSimulatorSDK) {
+    private static List<String> generateBuildParameters(MavenProject mavenProject, Map<String, String> properties, File targetDirectory, String projectName, File precompiledHeadersDir, boolean shouldUseIphoneSimulatorSDK, List<String> xcodeBuildParameters) {
         List<String> buildParameters = new ArrayList<String>();
         buildParameters.add("xcodebuild");
 
@@ -474,9 +480,9 @@ public class ProjectBuilder {
             buildParameters.add("PRODUCT_BUNDLE_IDENTIFIER=" + properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()));
         }
 
-        if (!Utils.cocoaPodsEnabled(properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.APP_NAME.toString())) {
-            buildParameters.add("PRODUCT_NAME=" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()));
-        }
+//        if (!Utils.cocoaPodsEnabled(properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.APP_NAME.toString())) {
+//            buildParameters.add("PRODUCT_NAME=" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()));
+//        }
 
         String target = null;
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.TARGET.toString())) {
@@ -507,6 +513,11 @@ public class ProjectBuilder {
 
         if (shouldUseIphoneSimulatorSDK) {
             buildParameters.add("CONFIGURATION_BUILD_DIR=" + targetDirectory.getAbsolutePath() + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR);
+        }
+
+        //add each dynamic parameter from pom
+        for (String param : xcodeBuildParameters) {
+            buildParameters.add(param);
         }
 
         return buildParameters;

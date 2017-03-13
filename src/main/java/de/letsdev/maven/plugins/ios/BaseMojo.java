@@ -345,6 +345,13 @@ public class BaseMojo extends AbstractMojo {
     protected List<FileReplacement> fileReplacements;
 
     /**
+     * defining parameters passed to the xcodebuild
+     *
+     * @parameter property="ios.xcodeBuildParameters"
+     */
+    protected List<String> xcodeBuildParameters;
+
+    /**
      * The maven project.
      *
      * @parameter property="project"

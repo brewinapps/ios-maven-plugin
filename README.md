@@ -10,6 +10,7 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2017-03-13 - Release version 1.16.13: added xcodebuild parameters<br />
 2017-02-10 - Release version 1.16.12: fixed Xcodebuild<br />
 2017-02-01 - Release version 1.16.11: fixed xcTestsSdk parameter<br />
 2017-01-31 - Release version 1.16.10: added xcTestsSdk parameter<br />
@@ -110,6 +111,7 @@ Compiles the application and generates an IPA package
 37. ios.provisioningProfileSpecifier           Specifies PROVISIONING_PROFILE_SPECIFIER in project file
 38. ios.developmentTeam           Specifies DEVELOPMENT_TEAM in project file
 39. ios.resetSimulators           Specifies if iphone simulators should be resetted before testing
+40. ios.xcodeBuildParameters      Added xcodeBuildParameters parameter
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
