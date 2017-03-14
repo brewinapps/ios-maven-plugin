@@ -19,29 +19,6 @@ http://www.letsdev.de - professional mobile solutions
 2016-08-26 - Release version 1.16.1: added xcodeVersion parameter to define path to Xcode installation, integrated xctests and ocunit2junit<br />
 2016-06-20 - Release version 1.16: added generic file replacement.<br />
 2016-06-08 - Fixed packaging with multiple executions (now it's possible, to build a appstore, testflight and enterprise release and upload them togther in one maven build process at the same time) - Release version 1.15.9<br />
-2016-06-01 - Release version 1.15.1<br />
-2016-06-01 - Fixed support for Testflight builds<br />
-2016-04-29 - Release version 1.15<br />
-2016-04-29 - Added support for automatic uploads to iTunesConnect, added support for Testflight builds<br />
-2016-04-29 - Using POM parameter buildId as build number in info.plist (CFBundleversion)<br />
-2016-02-23 - Release version 1.14.4<br />
-2016-02-23 - Fix for Xcode bug (building iphonesimulator sdk builds in wrong directory)<br />
-2016-02-03 - Release version 1.14.3<br />
-2016-02-03 - Added support to build iphonesimulator sdk builds with bitcode enabled (see iphonesimulatorBitcodeEnabled property)<br />
-2016-01-26 - Release version 1.14.2<br />
-2016-01-26 - Using target switch for xcodebuild only if set<br />
-2015-12-04 - Release version 1.14.1<br />
-2015-12-04 - Passing PRODUCT_BUDNLE_IDENTIFIER with the xcodebuild command if set<br />
-2015-12-04 - Release version 1.14<br />
-2015-12-04 - Added support for Cocoapods dependencies @see cocoaPodsEnabled<br />
-2015-12-02 - Release version 1.13<br />
-2015-12-02 - Added support to build frameworks (.framework) with new XCode xcarchive process and code signing @see buildXCArchiveEnabled<br />
-2015-11-28 - Release version 1.12<br />
-2015-11-28 - Added support to build Apps (.ipa) with new XCode xcarchive process and code signing @see buildXCArchiveEnabled<br />
-2015-11-13 - Release version 1.11.5<br />
-2015-11-13 - Added possibility for configuring CODE_SIGN_RESOURCE_RULES_PATH<br />
-2015-11-09 - Release version 1.11.4<br />
-2015-11-09 - Added possibility for exchanging appIcons directory<br />
 
 ## Features
 1. Compilation and siging of iOS applications
