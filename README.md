@@ -10,15 +10,11 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
-2017-03-13 - Release version 1.16.13: added xcodebuild parameters<br />
+2017-03-13 - Release version 1.16.13: added Xcodebuild parameters<br />
 2017-02-10 - Release version 1.16.12: fixed Xcodebuild<br />
 2017-02-01 - Release version 1.16.11: fixed xcTestsSdk parameter<br />
 2017-01-31 - Release version 1.16.10: added xcTestsSdk parameter<br />
 2017-01-25 - Release version 1.16.9: added xcTestsDestination parameter<br />
-2016-10-18 - Release version 1.16.8: added provisioningProfileSpecifier and developmentTeam parameter for code signing configuration under xcode 8 and resetSimulators parameter for resetting iphone simulators before testing<br />
-2016-08-26 - Release version 1.16.1: added xcodeVersion parameter to define path to Xcode installation, integrated xctests and ocunit2junit<br />
-2016-06-20 - Release version 1.16: added generic file replacement.<br />
-2016-06-08 - Fixed packaging with multiple executions (now it's possible, to build a appstore, testflight and enterprise release and upload them togther in one maven build process at the same time) - Release version 1.15.9<br />
 
 ## Features
 1. Compilation and siging of iOS applications
