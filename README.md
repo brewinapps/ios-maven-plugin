@@ -10,11 +10,8 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2017-05-08 - Release version 1.16.16: Xcode 8.3 compability, added xcodeExportOptions parameter<br />
 2017-03-13 - Release version 1.16.15: added Xcodebuild parameters<br />
-2017-02-10 - Release version 1.16.12: fixed Xcodebuild<br />
-2017-02-01 - Release version 1.16.11: fixed xcTestsSdk parameter<br />
-2017-01-31 - Release version 1.16.10: added xcTestsSdk parameter<br />
-2017-01-25 - Release version 1.16.9: added xcTestsDestination parameter<br />
 
 ## Features
 1. Compilation and siging of iOS applications
@@ -85,6 +82,7 @@ Compiles the application and generates an IPA package
 38. ios.developmentTeam           Specifies DEVELOPMENT_TEAM in project file
 39. ios.resetSimulators           Specifies if iphone simulators should be resetted before testing
 40. ios.xcodeBuildParameters      Added xcodeBuildParameters parameter
+41. ios.xcodeExportOptions      Added xcodeExportOptions parameter (parameter defining values for exportOptionsPlist flag)
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
