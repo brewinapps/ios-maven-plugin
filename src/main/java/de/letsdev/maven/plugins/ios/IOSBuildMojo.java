@@ -15,8 +15,6 @@ package de.letsdev.maven.plugins.ios;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import java.util.Map;
-
 /**
  * 
  * @author let's dev
@@ -29,7 +27,7 @@ public class IOSBuildMojo extends BaseMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
         super.execute();
 		try {
-			ProjectBuilder.build(this.properties, this.mavenProject, this.fileReplacements, this.xcodeBuildParameters);
+			ProjectBuilder.build(this.properties, this.mavenProject, this.fileReplacements, this.xcodeBuildParameters, this.xcodeExportOptions);
 		} catch (Exception e) {
 			throw new MojoExecutionException(e.getMessage());
 		}

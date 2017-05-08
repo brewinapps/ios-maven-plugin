@@ -352,6 +352,14 @@ public class BaseMojo extends AbstractMojo {
     protected List<String> xcodeBuildParameters;
 
     /**
+     * defining parameters passed to the export options plist file
+     *
+     * @parameter property="ios.xcodeExportOptions"
+     * * default-value="null"
+     */
+    protected XcodeExportOptions xcodeExportOptions;
+
+    /**
      * The maven project.
      *
      * @parameter property="project"

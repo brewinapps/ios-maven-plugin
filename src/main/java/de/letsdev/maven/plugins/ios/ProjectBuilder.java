@@ -12,6 +12,7 @@
 
 package de.letsdev.maven.plugins.ios;
 
+import com.google.gson.Gson;
 import org.apache.maven.project.MavenProject;
 
 import java.io.*;
@@ -32,7 +33,7 @@ public class ProjectBuilder {
      * @param properties Properties
      * @throws IOSException
      */
-    public static void build(final Map<String, String> properties, MavenProject mavenProject, final List<FileReplacement> fileReplacements, final List<String> xcodeBuildParameters) throws IOSException, IOException {
+    public static void build(final Map<String, String> properties, MavenProject mavenProject, final List<FileReplacement> fileReplacements, final List<String> xcodeBuildParameters, final XcodeExportOptions xcodeExportOptions) throws IOSException, IOException {
         // Make sure the source directory exists
         String projectName = Utils.buildProjectName(properties, mavenProject);
         File workDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
@@ -132,8 +133,10 @@ public class ProjectBuilder {
                 File newAppTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
                         + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.APP);
 
-                File ipaTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
-                        + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "-" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA);
+                File ipaBasePath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
+                        + "-" + Utils.SDK_IPHONE_OS);
+
+                File ipaTargetPath = new File(ipaBasePath.getAbsolutePath() + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "-" + projectVersion + "." + Utils.PLUGIN_SUFFIX.IPA);
 
                 File dsymTargetPath = new File(targetDirectory + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString())
                         + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.TARGET.toString()) + "." + Utils.PLUGIN_SUFFIX.APP_DSYM);
@@ -158,10 +161,12 @@ public class ProjectBuilder {
                     System.err.println("Could not create ipa temp dir at path = " + ipaTmpDir.getAbsolutePath());
                 }
 
-                if (!Utils.shouldBuildXCArchive(mavenProject, properties)) {
-                    codeSignBeforeXcode6(properties, workDirectory, newAppTargetPath, ipaTargetPath, ipaTmpDir);
+                if (Utils.shouldBuildXCArchiveWithExportOptionsPlist(xcodeExportOptions)) {
+                    codeSignAfterXcode8_3(properties, mavenProject, workDirectory, Utils.getProjectIpaName(projectName), ipaBasePath, ipaTargetPath, ipaTmpDir, xcodeExportOptions);
+                } else if (Utils.shouldBuildXCArchive(mavenProject, properties)) {
+                    codeSignAfterXcode6(properties, mavenProject, workDirectory, ipaTargetPath, ipaTmpDir);
                 } else {
-                    codeSignAfterXcode6(properties, mavenProject, workDirectory, newAppTargetPath, ipaTargetPath, ipaTmpDir);
+                    codeSignBeforeXcode6(properties, workDirectory, newAppTargetPath, ipaTargetPath, ipaTmpDir);
                 }
             }
 
@@ -360,7 +365,7 @@ public class ProjectBuilder {
         CommandHelper.performCommand(processBuilderCodeSign);
     }
 
-    protected static void codeSignAfterXcode6(Map<String, String> properties, MavenProject mavenProject, File workDirectory, File newAppTargetPath, File ipaTargetPath, File ipaTmpDir) throws IOSException {
+    protected static void codeSignAfterXcode6(Map<String, String> properties, MavenProject mavenProject, File workDirectory, File ipaTargetPath, File ipaTmpDir) throws IOSException {
         /*
             xcodebuild -exportArchive -exportFormat format -archivePath xcarchivepath -exportPath destinationpath
                 [-exportProvisioningProfile profilename] [-exportSigningIdentity identityname]
@@ -386,6 +391,45 @@ public class ProjectBuilder {
         processBuilderCodeSign.directory(workDirectory);
         processBuilderCodeSign.environment().put("TMPDIR", ipaTmpDir.getAbsolutePath());  //this is really important to avoid collisions, if not set /var/folders will be used here
         CommandHelper.performCommand(processBuilderCodeSign);
+    }
+
+    protected static void codeSignAfterXcode8_3(Map<String, String> properties, MavenProject mavenProject, File workDirectory, String projectIpaName, File ipaBasePath, File ipaTargetPath, File ipaTmpDir, XcodeExportOptions xcodeExportOptions) throws IOSException {
+        /*
+            xcodebuild -exportArchive -archivePath xcarchivepath -exportPath destinationpath -exportOptionsPlist plistpath
+         */
+
+        if (!ipaTargetPath.getParentFile().exists() && !ipaTargetPath.getParentFile().mkdirs()) {
+            throw new RuntimeException("Could not create directories for ipa target path=" + ipaTargetPath.getAbsolutePath());
+        }
+
+        File plistFilePath = generateExportOptionsPlist(xcodeExportOptions, workDirectory);
+
+        ProcessBuilder processBuilderCodeSign = new ProcessBuilder(
+                "xcodebuild",
+                "-exportArchive",
+                "-archivePath",
+                Utils.getArchiveName(Utils.buildProjectName(properties, mavenProject), mavenProject),
+                "-exportPath",
+                ipaBasePath.toString(),
+                "-exportOptionsPlist",
+                plistFilePath.getAbsolutePath()
+        );
+
+        File ipaPath = new File(ipaBasePath.getAbsolutePath() + "/" + projectIpaName);
+
+        processBuilderCodeSign.directory(workDirectory);
+        processBuilderCodeSign.environment().put("TMPDIR", ipaTmpDir.getAbsolutePath());  //this is really important to avoid collisions, if not set /var/folders will be used here
+        CommandHelper.performCommand(processBuilderCodeSign);
+
+        //move created ipa to final destination
+        ProcessBuilder processBuilder = new ProcessBuilder("mv", ipaPath.toString(), ipaTargetPath.toString());
+        processBuilder.directory(workDirectory);
+        CommandHelper.performCommand(processBuilder);
+
+        //remove export options plist file
+        processBuilder = new ProcessBuilder("rm", plistFilePath.getAbsolutePath());
+        processBuilder.directory(workDirectory);
+        CommandHelper.performCommand(processBuilder);
     }
 
     private static void unlockKeychain(Map<String, String> properties, MavenProject mavenProject, String projectName, File workDirectory, ProcessBuilder processBuilder) throws IOSException {
@@ -769,5 +813,44 @@ public class ProjectBuilder {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static File generateExportOptionsPlist(XcodeExportOptions xcodeExportOptions, File workDirectory) {
+        //create tmp file path
+        String plistFilePath = "/tmp/exportOptions-" + UUID.randomUUID() + ".plist";
+        File plistFile = new File(plistFilePath);
+
+        //generate json from export options
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(xcodeExportOptions);
+
+        //call plutil to generate plist file
+        try {
+            final String scriptName = "create-export-options-plist.sh";
+            File tempFile = File.createTempFile(scriptName, "sh");
+
+            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
+            OutputStream outputStream = new FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+
+            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), jsonString, plistFilePath);
+
+            processBuilder.directory(workDirectory);
+            CommandHelper.performCommand(processBuilder);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IOSException e) {
+            e.printStackTrace();
+        }
+
+        return plistFile;
     }
 }

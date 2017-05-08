@@ -152,8 +152,16 @@ public class Utils {
         return "true".equals(properties.get(PLUGIN_PROPERTIES.BUILD_TO_XCARCHIVE_ENABLED.toString()));
     }
 
+    public static boolean shouldBuildXCArchiveWithExportOptionsPlist(XcodeExportOptions xcodeExportOptions) {
+        return xcodeExportOptions.method != null;
+    }
+
     public static String getArchiveName(final String projectName, MavenProject mavenProject) {
         return getTargetDirectory(mavenProject).getAbsolutePath() + File.separator + projectName + "." + PLUGIN_SUFFIX.XCARCHIVE;
+    }
+
+    public static String getProjectIpaName(final String projectName) {
+        return projectName + "." + PLUGIN_SUFFIX.IPA;
     }
 
     protected static File getTargetDirectory(MavenProject mavenProject) {
