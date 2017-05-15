@@ -10,7 +10,7 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
-2017-05-08 - Release version 1.16.16: Xcode 8.3 compability, added xcodeExportOptions parameter<br />
+2017-05-08 - Release version 1.16.17: Xcode 8.3 compability, added xcodeExportOptions parameter<br />
 2017-03-13 - Release version 1.16.15: added Xcodebuild parameters<br />
 
 ## Features
