@@ -164,6 +164,10 @@ public class Utils {
         return projectName + "." + PLUGIN_SUFFIX.IPA;
     }
 
+    public static String getIpaName(final String schemeName) {
+        return schemeName + "." + PLUGIN_SUFFIX.IPA;
+    }
+
     protected static File getTargetDirectory(MavenProject mavenProject) {
         return new File(mavenProject.getBuild().getDirectory());
     }

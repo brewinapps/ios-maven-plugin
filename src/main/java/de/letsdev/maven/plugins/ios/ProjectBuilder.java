@@ -36,6 +36,7 @@ public class ProjectBuilder {
     public static void build(final Map<String, String> properties, MavenProject mavenProject, final List<FileReplacement> fileReplacements, final List<String> xcodeBuildParameters, final XcodeExportOptions xcodeExportOptions) throws IOSException, IOException {
         // Make sure the source directory exists
         String projectName = Utils.buildProjectName(properties, mavenProject);
+        String schemeName = properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString());
         File workDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
         File projectDirectory = new File(workDirectory.toString() + File.separator + getSchemeOrTarget(properties));
 
@@ -162,7 +163,7 @@ public class ProjectBuilder {
                 }
 
                 if (Utils.shouldBuildXCArchiveWithExportOptionsPlist(xcodeExportOptions)) {
-                    codeSignAfterXcode8_3(properties, mavenProject, workDirectory, Utils.getProjectIpaName(projectName), ipaBasePath, ipaTargetPath, ipaTmpDir, xcodeExportOptions);
+                    codeSignAfterXcode8_3(properties, mavenProject, workDirectory, Utils.getIpaName(schemeName), ipaBasePath, ipaTargetPath, ipaTmpDir, xcodeExportOptions);
                 } else if (Utils.shouldBuildXCArchive(mavenProject, properties)) {
                     codeSignAfterXcode6(properties, mavenProject, workDirectory, ipaTargetPath, ipaTmpDir);
                 } else {
@@ -393,7 +394,7 @@ public class ProjectBuilder {
         CommandHelper.performCommand(processBuilderCodeSign);
     }
 
-    protected static void codeSignAfterXcode8_3(Map<String, String> properties, MavenProject mavenProject, File workDirectory, String projectIpaName, File ipaBasePath, File ipaTargetPath, File ipaTmpDir, XcodeExportOptions xcodeExportOptions) throws IOSException {
+    protected static void codeSignAfterXcode8_3(Map<String, String> properties, MavenProject mavenProject, File workDirectory, String ipaName, File ipaBasePath, File ipaTargetPath, File ipaTmpDir, XcodeExportOptions xcodeExportOptions) throws IOSException {
         /*
             xcodebuild -exportArchive -archivePath xcarchivepath -exportPath destinationpath -exportOptionsPlist plistpath
          */
@@ -415,7 +416,7 @@ public class ProjectBuilder {
                 plistFilePath.getAbsolutePath()
         );
 
-        File ipaPath = new File(ipaBasePath.getAbsolutePath() + "/" + projectIpaName);
+        File ipaPath = new File(ipaBasePath.getAbsolutePath() + "/" + ipaName);
 
         processBuilderCodeSign.directory(workDirectory);
         processBuilderCodeSign.environment().put("TMPDIR", ipaTmpDir.getAbsolutePath());  //this is really important to avoid collisions, if not set /var/folders will be used here
