@@ -102,15 +102,15 @@ public class ProjectBuilder {
                 } else {
                     File targetWorkDirectoryIphone = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_OS + File.separator);
 
+                    File targetWorkDirectoryIphoneSimulator = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR + File.separator);
+
+                    //if we'd build the framework with xcodebuild archive command, we have to export the framework from archive
+                    if (Utils.shouldBuildXCArchive(mavenProject, properties)) {
+                        File archiveFile = new File(Utils.getArchiveName(projectName, mavenProject));
+                        exportFrameworkArchive(archiveFile, targetWorkDirectoryIphone, appName, frameworkName);
+                    }
+
                     if (shouldBuildSimulatorArchitectures) {
-                        File targetWorkDirectoryIphoneSimulator = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR + File.separator);
-
-                        //if we'd build the framework with xcodebuild archive command, we have to export the framework from archive
-                        if (Utils.shouldBuildXCArchive(mavenProject, properties)) {
-                            File archiveFile = new File(Utils.getArchiveName(projectName, mavenProject));
-                            exportFrameworkArchive(archiveFile, targetWorkDirectoryIphone, appName, frameworkName);
-                        }
-
                         // use lipo to merge framework binarys
                         mergeFrameworkProducts(targetWorkDirectoryIphone, targetWorkDirectoryIphoneSimulator, appName, frameworkName);
                     }
@@ -317,7 +317,7 @@ public class ProjectBuilder {
         }
     }
 
-    protected static void replaceFile(File projectDirectory, String replaceSource, String replaceTarget, boolean revertTempFile) throws IOSException{
+    protected static void replaceFile(File projectDirectory, String replaceSource, String replaceTarget, boolean revertTempFile) throws IOSException {
         File sourceFile = new File(projectDirectory.toString() + File.separator + replaceSource);
         File tempFile = new File(projectDirectory.toString() + File.separator + ((revertTempFile) ? replaceSource : replaceTarget) + ".tmp");
         File targetFile = new File(projectDirectory.toString() + File.separator + replaceTarget);
@@ -517,7 +517,7 @@ public class ProjectBuilder {
 
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString())) {
             buildParameters.add("PROVISIONING_PROFILE_SPECIFIER=" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString()));
-        }   else {
+        } else {
             buildParameters.add("PROVISIONING_PROFILE_SPECIFIER=");
         }
 
