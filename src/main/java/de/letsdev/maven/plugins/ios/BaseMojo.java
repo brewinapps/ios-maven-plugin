@@ -120,9 +120,10 @@ public class BaseMojo extends AbstractMojo {
 
     /**
      * iphonesimulator SDK build architectures
+     * available architectures: i386 x86_64
      *
      * @parameter property="ios.iphonesimulatorArchitectures"
-     * default-value="i386 x86_64"
+     * default-value=""
      */
     protected String iphonesimulatorArchitectures;
 
