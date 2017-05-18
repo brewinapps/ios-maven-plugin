@@ -82,7 +82,10 @@ public class ProjectBuilder {
             CommandHelper.performCommand(processBuilder);
 
             if (Utils.isiOSFramework(mavenProject, properties) || Utils.isMacOSFramework(properties)) {
-                if (!Utils.isMacOSFramework(properties)) {
+                String simulatorArchitectures = Utils.getArchitecturesForSdk(properties, Utils.SDK_IPHONE_SIMULATOR);
+                boolean shouldBuildSimulatorArchitectures = simulatorArchitectures != null && !simulatorArchitectures.isEmpty();
+
+                if (!Utils.isMacOSFramework(properties) && shouldBuildSimulatorArchitectures) {
                     //generate framework product also for iphonesimulator sdk
                     buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, true, xcodeBuildParameters);
                     processBuilder = new ProcessBuilder(buildParameters);
@@ -98,16 +101,19 @@ public class ProjectBuilder {
                     targetWorkDirectory = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + File.separator);
                 } else {
                     File targetWorkDirectoryIphone = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_OS + File.separator);
-                    File targetWorkDirectoryIphoneSimulator = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR + File.separator);
 
-                    //if we'd build the framework with xcodebuild archive command, we have to export the framework from archive
-                    if (Utils.shouldBuildXCArchive(mavenProject, properties)) {
-                        File archiveFile = new File(Utils.getArchiveName(projectName, mavenProject));
-                        exportFrameworkArchive(archiveFile, targetWorkDirectoryIphone, appName, frameworkName);
+                    if (shouldBuildSimulatorArchitectures) {
+                        File targetWorkDirectoryIphoneSimulator = new File(targetDirectory.toString() + File.separator + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR + File.separator);
+
+                        //if we'd build the framework with xcodebuild archive command, we have to export the framework from archive
+                        if (Utils.shouldBuildXCArchive(mavenProject, properties)) {
+                            File archiveFile = new File(Utils.getArchiveName(projectName, mavenProject));
+                            exportFrameworkArchive(archiveFile, targetWorkDirectoryIphone, appName, frameworkName);
+                        }
+
+                        // use lipo to merge framework binarys
+                        mergeFrameworkProducts(targetWorkDirectoryIphone, targetWorkDirectoryIphoneSimulator, appName, frameworkName);
                     }
-
-                    // use lipo to merge framework binarys
-                    mergeFrameworkProducts(targetWorkDirectoryIphone, targetWorkDirectoryIphoneSimulator, appName, frameworkName);
 
                     targetWorkDirectory = targetWorkDirectoryIphone;
                 }
