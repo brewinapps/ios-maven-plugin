@@ -814,7 +814,7 @@ public class ProjectBuilder {
 
     private static void installCocoaPodsDependencies(File projectDirectory) {
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder("pod", "install");
+            ProcessBuilder processBuilder = new ProcessBuilder("pod", "install --repo-update");
             processBuilder.directory(projectDirectory);
             CommandHelper.performCommand(processBuilder);
         } catch (Exception e) {
