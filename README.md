@@ -10,7 +10,7 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
-2017-11-23 - Release version 1.16.21: fileReplacements now working from project directory<br />
+2017-11-23 - Release version 1.16.22: fileReplacements now working from project directory<br />
 
 ## Features
 1. Compilation and siging of iOS applications
