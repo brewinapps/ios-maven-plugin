@@ -37,17 +37,15 @@ public class ProjectBuilder {
         // Make sure the source directory exists
         String projectName = Utils.buildProjectName(properties, mavenProject);
         String schemeName = properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString());
-        File workDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
-        File projectDirectory = new File(workDirectory.toString() + File.separator + getSchemeOrTarget(properties));
-
+        File projectDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
 
         //get current xcode version
-        String currentXcodeVersion = Utils.getCurrentXcodeVersion(workDirectory);
+        String currentXcodeVersion = Utils.getCurrentXcodeVersion(projectDirectory);
 
         try {
             //determine if xcode version is set as parameter
             if (properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()) != null && !properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
-                selectXcodeVersion(properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()), workDirectory);
+                selectXcodeVersion(properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()), projectDirectory);
             }
 
             //replace all configured files
@@ -56,29 +54,29 @@ public class ProjectBuilder {
             }
 
             File targetDirectory = Utils.getTargetDirectory(mavenProject);
-            String projectVersion = updateXcodeProjectInfoPlist(properties, mavenProject, projectName, workDirectory);
+            String projectVersion = updateXcodeProjectInfoPlist(properties, mavenProject, projectName, projectDirectory);
 
             //update entitlements file
-            prepareEntitlementsFile(properties, workDirectory);
+            prepareEntitlementsFile(properties, projectDirectory);
 
             File precompiledHeadersDir = createPrecompileHeadersDirectory(targetDirectory);
 
             //BEG clean the application
-            ProcessBuilder processBuilder = cleanXcodeProject(properties, workDirectory, xcodeBuildParameters);
+            ProcessBuilder processBuilder = cleanXcodeProject(properties, projectDirectory, xcodeBuildParameters);
             //END clean the application
 
             //unlock keychain
-            unlockKeychain(properties, mavenProject, projectName, workDirectory, processBuilder);
+            unlockKeychain(properties, mavenProject, projectName, projectDirectory, processBuilder);
 
             //if project contains cocoaPods dependencies, we install them first
             if (Utils.cocoaPodsEnabled(properties)) {
-                installCocoaPodsDependencies(workDirectory);
+                installCocoaPodsDependencies(projectDirectory);
             }
 
             // Build the application
             List<String> buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, false, xcodeBuildParameters);
             processBuilder = new ProcessBuilder(buildParameters);
-            processBuilder.directory(workDirectory);
+            processBuilder.directory(projectDirectory);
             CommandHelper.performCommand(processBuilder);
 
             if (Utils.isiOSFramework(mavenProject, properties) || Utils.isMacOSFramework(properties)) {
@@ -89,7 +87,7 @@ public class ProjectBuilder {
                     //generate framework product also for iphonesimulator sdk
                     buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, true, xcodeBuildParameters);
                     processBuilder = new ProcessBuilder(buildParameters);
-                    processBuilder.directory(workDirectory);
+                    processBuilder.directory(projectDirectory);
                     CommandHelper.performCommand(processBuilder);
                 }
 
@@ -128,7 +126,7 @@ public class ProjectBuilder {
             else {
 
                 //unlock keychain
-                unlockKeychain(properties, mavenProject, projectName, workDirectory, processBuilder); //unlock it again, if during xcrun keychain is closed automatically again.
+                unlockKeychain(properties, mavenProject, projectName, projectDirectory, processBuilder); //unlock it again, if during xcrun keychain is closed automatically again.
 
                 if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
                     projectVersion += "-b" + properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString());
@@ -169,11 +167,11 @@ public class ProjectBuilder {
                 }
 
                 if (Utils.shouldBuildXCArchiveWithExportOptionsPlist(xcodeExportOptions)) {
-                    codeSignAfterXcode8_3(properties, mavenProject, workDirectory, Utils.getIpaName(schemeName), ipaBasePath, ipaTargetPath, ipaTmpDir, xcodeExportOptions);
+                    codeSignAfterXcode8_3(properties, mavenProject, projectDirectory, Utils.getIpaName(schemeName), ipaBasePath, ipaTargetPath, ipaTmpDir, xcodeExportOptions);
                 } else if (Utils.shouldBuildXCArchive(mavenProject, properties)) {
-                    codeSignAfterXcode6(properties, mavenProject, workDirectory, ipaTargetPath, ipaTmpDir);
+                    codeSignAfterXcode6(properties, mavenProject, projectDirectory, ipaTargetPath, ipaTmpDir);
                 } else {
-                    codeSignBeforeXcode6(properties, workDirectory, newAppTargetPath, ipaTargetPath, ipaTmpDir);
+                    codeSignBeforeXcode6(properties, projectDirectory, newAppTargetPath, ipaTargetPath, ipaTmpDir);
                 }
             }
 
@@ -195,7 +193,7 @@ public class ProjectBuilder {
             //determine if xcode version is set as parameter
             if (properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()) != null && !properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
                 //return to previous xcode version
-                selectXcodeVersion(currentXcodeVersion, workDirectory);
+                selectXcodeVersion(currentXcodeVersion, projectDirectory);
             }
         }
     }
