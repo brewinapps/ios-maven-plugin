@@ -10,8 +10,7 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
-2017-05-08 - Release version 1.16.17: Xcode 8.3 compability, added xcodeExportOptions parameter<br />
-2017-03-13 - Release version 1.16.15: added Xcodebuild parameters<br />
+2017-11-23 - Release version 1.16.21: fileReplacements now working from project directory<br />
 
 ## Features
 1. Compilation and siging of iOS applications
