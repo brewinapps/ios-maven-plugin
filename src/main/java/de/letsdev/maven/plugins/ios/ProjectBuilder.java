@@ -333,7 +333,7 @@ public class ProjectBuilder {
             processBuilder.directory(projectDirectory);
             CommandHelper.performCommand(processBuilder);
         } else {
-            System.err.print("source file doesn't exist at path= " + sourceFile.toString());
+            System.err.println("source file doesn't exist at path= " + sourceFile.toString());
         }
 
         if (revertTempFile) {
@@ -676,7 +676,7 @@ public class ProjectBuilder {
             entitlementsFileStream.write(contentBytes);
             entitlementsFileStream.close();
         } else {
-            System.err.print("entitlements file does not exists at path=" + entitlementsFilePath);
+            System.err.println("entitlements file does not exists at path=" + entitlementsFilePath);
         }
     }
 
@@ -812,7 +812,7 @@ public class ProjectBuilder {
 
     private static void installCocoaPodsDependencies(File projectDirectory) {
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder("pod", "install --repo-update");
+            ProcessBuilder processBuilder = new ProcessBuilder("pod", "install", "--repo-update");
             processBuilder.directory(projectDirectory);
             CommandHelper.performCommand(processBuilder);
         } catch (Exception e) {
