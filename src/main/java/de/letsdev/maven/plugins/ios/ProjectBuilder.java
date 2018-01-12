@@ -13,6 +13,7 @@
 package de.letsdev.maven.plugins.ios;
 
 import com.google.gson.Gson;
+
 import org.apache.maven.project.MavenProject;
 
 import java.io.*;
@@ -20,6 +21,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -59,14 +61,12 @@ public class ProjectBuilder {
             //update entitlements file
             prepareEntitlementsFile(properties, projectDirectory);
 
-            File precompiledHeadersDir = createPrecompileHeadersDirectory(targetDirectory);
-
             //BEG clean the application
-            ProcessBuilder processBuilder = cleanXcodeProject(properties, projectDirectory, xcodeBuildParameters);
+            cleanXcodeProject(properties, projectDirectory, xcodeBuildParameters);
             //END clean the application
 
             //unlock keychain
-            unlockKeychain(properties, mavenProject, projectName, projectDirectory, processBuilder);
+            unlockKeychain(properties, mavenProject, projectDirectory);
 
             //if project contains cocoaPods dependencies, we install them first
             if (Utils.cocoaPodsEnabled(properties)) {
@@ -74,10 +74,7 @@ public class ProjectBuilder {
             }
 
             // Build the application
-            List<String> buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, false, xcodeBuildParameters);
-            processBuilder = new ProcessBuilder(buildParameters);
-            processBuilder.directory(projectDirectory);
-            CommandHelper.performCommand(processBuilder);
+            buildXcodeProject(mavenProject, properties, projectDirectory, targetDirectory, projectName, false, xcodeBuildParameters);
 
             if (Utils.isiOSFramework(mavenProject, properties) || Utils.isMacOSFramework(properties)) {
                 String simulatorArchitectures = Utils.getArchitecturesForSdk(properties, Utils.SDK_IPHONE_SIMULATOR);
@@ -85,10 +82,7 @@ public class ProjectBuilder {
 
                 if (!Utils.isMacOSFramework(properties) && shouldBuildSimulatorArchitectures) {
                     //generate framework product also for iphonesimulator sdk
-                    buildParameters = generateBuildParameters(mavenProject, properties, targetDirectory, projectName, precompiledHeadersDir, true, xcodeBuildParameters);
-                    processBuilder = new ProcessBuilder(buildParameters);
-                    processBuilder.directory(projectDirectory);
-                    CommandHelper.performCommand(processBuilder);
+                    buildXcodeProject(mavenProject, properties, projectDirectory, targetDirectory, projectName, true, xcodeBuildParameters);
                 }
 
                 String appName = properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString());
@@ -117,8 +111,7 @@ public class ProjectBuilder {
                 }
 
                 // Zip Frameworks
-                processBuilder = new ProcessBuilder("zip", "-r", "../" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString(), frameworkName);
-
+                ProcessBuilder processBuilder = new ProcessBuilder("zip", "-r", "../" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString(), frameworkName);
                 processBuilder.directory(targetWorkDirectory);
                 CommandHelper.performCommand(processBuilder);
             }
@@ -126,7 +119,7 @@ public class ProjectBuilder {
             else {
 
                 //unlock keychain
-                unlockKeychain(properties, mavenProject, projectName, projectDirectory, processBuilder); //unlock it again, if during xcrun keychain is closed automatically again.
+                unlockKeychain(properties, mavenProject, projectDirectory); //unlock it again, if during xcrun keychain is closed automatically again.
 
                 if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
                     projectVersion += "-b" + properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString());
@@ -150,13 +143,13 @@ public class ProjectBuilder {
                         + "-" + Utils.SDK_IPHONE_OS + "/" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.APP_DSYM);
 
                 if (appTargetPath.exists() && !(appTargetPath.toString().equalsIgnoreCase(newAppTargetPath.toString()))) {
-                    processBuilder = new ProcessBuilder("mv", appTargetPath.toString(), newAppTargetPath.toString());
+                    ProcessBuilder processBuilder = new ProcessBuilder("mv", appTargetPath.toString(), newAppTargetPath.toString());
                     processBuilder.directory(projectDirectory);
                     CommandHelper.performCommand(processBuilder);
                 }
 
                 if (dsymTargetPath.exists() && !(dsymTargetPath.toString().equalsIgnoreCase(newDsymTargetPath.toString()))) {
-                    processBuilder = new ProcessBuilder("mv", dsymTargetPath.toString(), newDsymTargetPath.toString());
+                    ProcessBuilder processBuilder = new ProcessBuilder("mv", dsymTargetPath.toString(), newDsymTargetPath.toString());
                     processBuilder.directory(projectDirectory);
                     CommandHelper.performCommand(processBuilder);
                 }
@@ -184,7 +177,7 @@ public class ProjectBuilder {
             }
 
             // Generate the the deploy plist file
-            generateDeployPlistFile(mavenProject, properties, projectName, targetDirectory, projectVersion, processBuilder);
+            generateDeployPlistFile(mavenProject, properties, targetDirectory, projectVersion);
         } catch (Exception e) {
             System.err.println("exception occurred while building project, e=" + e.getMessage());
 
@@ -198,7 +191,7 @@ public class ProjectBuilder {
         }
     }
 
-    protected static void selectXcodeVersion(String xcodeVersionPath, File workDirectory) {
+    private static void selectXcodeVersion(String xcodeVersionPath, File workDirectory) {
         // Run shell-script from resource-folder.
         try {
             final String scriptName = "set-xcode-version.sh";
@@ -231,7 +224,7 @@ public class ProjectBuilder {
         }
     }
 
-    protected static String updateXcodeProjectInfoPlist(Map<String, String> properties, MavenProject mavenProject, String projectName, File workDirectory) throws IOSException {
+    private static String updateXcodeProjectInfoPlist(Map<String, String> properties, MavenProject mavenProject, String projectName, File workDirectory) throws IOSException {
         // Run agvtool to stamp marketing version
         String projectVersion = Utils.getAdjustedVersion(mavenProject, properties);
 
@@ -268,26 +261,23 @@ public class ProjectBuilder {
         return projectVersion;
     }
 
-    protected static ProcessBuilder cleanXcodeProject(Map<String, String> properties, File workDirectory, List<String> xcodeBuildParameters) throws IOSException {
-        List<String> cleanParameters = new ArrayList<String>();
-        cleanParameters.add("xcodebuild");
-        cleanParameters.add("-alltargets");
-        cleanParameters.add("-configuration");
-        cleanParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()));
-        cleanParameters.add("clean");
+    private static void cleanXcodeProject(Map<String, String> properties, File workDirectory, List<String> xcodeBuildParameters) throws IOSException {
+        StringBuilder xcodebuildCommand = new StringBuilder("xcodebuild -alltargets -configuration " + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + " clean");
 
         //add each dynamic parameter from pom
         for (String param : xcodeBuildParameters) {
-            cleanParameters.add(param);
+            xcodebuildCommand.append(" ").append(param);
         }
 
-        ProcessBuilder processBuilder = new ProcessBuilder(cleanParameters);
-        processBuilder.directory(workDirectory);
-        CommandHelper.performCommand(processBuilder);
-        return processBuilder;
+        //append xcpretty arguments
+        for (String xcprettyArg : getXcprettyCommand("xcodebuild-clean.log").split(" ")) {
+            xcodebuildCommand.append(" ").append(xcprettyArg);
+        }
+
+        executeShellScript("execute-xcodebuild.sh", xcodebuildCommand.toString(), null, null, workDirectory);
     }
 
-    protected static File createPrecompileHeadersDirectory(File targetDirectory) {
+    private static File createPrecompileHeadersDirectory(File targetDirectory) {
         File precompiledHeadersDir = new File(targetDirectory, "precomp-dir-" + UUID.randomUUID().toString());
         if (!precompiledHeadersDir.mkdir()) {
             System.err.println("Could not create precompiled headers dir at path = " + precompiledHeadersDir.getAbsolutePath());
@@ -295,27 +285,27 @@ public class ProjectBuilder {
         return precompiledHeadersDir;
     }
 
-    protected static void generateDeployPlistFile(MavenProject mavenProject, Map<String, String> properties, String projectName, File targetDirectory, String projectVersion, ProcessBuilder processBuilder) throws IOSException {
+    private static void generateDeployPlistFile(MavenProject mavenProject, Map<String, String> properties, File targetDirectory, String projectVersion) throws IOSException {
         if ((properties.get(Utils.PLUGIN_PROPERTIES.DEPLOY_IPA_PATH.toString()) != null) && (properties.get(Utils.PLUGIN_PROPERTIES.DEPLOY_ICON_PATH.toString()) != null)) {
             final String deployPlistName = properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "-" + projectVersion + "." + Utils.PLUGIN_SUFFIX.PLIST;
-            writeDeployPlistFile(mavenProject, targetDirectory, projectName, deployPlistName, properties, processBuilder);
+            writeDeployPlistFile(mavenProject, targetDirectory, deployPlistName, properties);
 
         }
     }
 
-    protected static void revertReplacedFiles(final List<FileReplacement> fileReplacements, File projectDirectory) throws IOSException {
+    private static void revertReplacedFiles(final List<FileReplacement> fileReplacements, File projectDirectory) throws IOSException {
         for (FileReplacement fileReplacement : fileReplacements) {
             replaceFile(projectDirectory, fileReplacement.targetFile, fileReplacement.sourceFile, true);
         }
     }
 
-    protected static void replaceFiles(final List<FileReplacement> fileReplacements, File projectDirectory) throws IOSException {
+    private static void replaceFiles(final List<FileReplacement> fileReplacements, File projectDirectory) throws IOSException {
         for (FileReplacement fileReplacement : fileReplacements) {
             replaceFile(projectDirectory, fileReplacement.sourceFile, fileReplacement.targetFile, false);
         }
     }
 
-    protected static void replaceFile(File projectDirectory, String replaceSource, String replaceTarget, boolean revertTempFile) throws IOSException {
+    private static void replaceFile(File projectDirectory, String replaceSource, String replaceTarget, boolean revertTempFile) throws IOSException {
         File sourceFile = new File(projectDirectory.toString() + File.separator + replaceSource);
         File tempFile = new File(projectDirectory.toString() + File.separator + ((revertTempFile) ? replaceSource : replaceTarget) + ".tmp");
         File targetFile = new File(projectDirectory.toString() + File.separator + replaceTarget);
@@ -343,7 +333,7 @@ public class ProjectBuilder {
         }
     }
 
-    protected static void lockKeychain(Map<String, String> properties) throws IOSException {
+    private static void lockKeychain(Map<String, String> properties) throws IOSException {
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString())) {
             String command = "security lock-keychain " + properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString());
             ProcessBuilder processBuilderLockKeyChain = new ProcessBuilder(CommandHelper.getCommand(command));
@@ -351,7 +341,7 @@ public class ProjectBuilder {
         }
     }
 
-    protected static void codeSignBeforeXcode6(Map<String, String> properties, File workDirectory, File newAppTargetPath, File ipaTargetPath, File ipaTmpDir) throws IOSException {
+    private static void codeSignBeforeXcode6(Map<String, String> properties, File workDirectory, File newAppTargetPath, File ipaTargetPath, File ipaTmpDir) throws IOSException {
         ProcessBuilder processBuilderCodeSign = new ProcessBuilder(
                 "xcrun",
                 "--no-cache",  //disbale caching
@@ -370,7 +360,7 @@ public class ProjectBuilder {
         CommandHelper.performCommand(processBuilderCodeSign);
     }
 
-    protected static void codeSignAfterXcode6(Map<String, String> properties, MavenProject mavenProject, File workDirectory, File ipaTargetPath, File ipaTmpDir) throws IOSException {
+    private static void codeSignAfterXcode6(Map<String, String> properties, MavenProject mavenProject, File workDirectory, File ipaTargetPath, File ipaTmpDir) throws IOSException {
         /*
             xcodebuild -exportArchive -exportFormat format -archivePath xcarchivepath -exportPath destinationpath
                 [-exportProvisioningProfile profilename] [-exportSigningIdentity identityname]
@@ -381,24 +371,26 @@ public class ProjectBuilder {
             throw new RuntimeException("Could not create directories for ipa target path=" + ipaTargetPath.getAbsolutePath());
         }
 
-        ProcessBuilder processBuilderCodeSign = new ProcessBuilder(
-                "xcodebuild",
-                "-exportArchive",
-                "-exportFormat",
-                Utils.PLUGIN_SUFFIX.IPA.toString(),
-                "-archivePath",
-                Utils.getArchiveName(Utils.buildProjectName(properties, mavenProject), mavenProject),
-                "-exportPath",
-                ipaTargetPath.toString(),
-                "-exportWithOriginalSigningIdentity"
-        );
+        StringBuilder buildCommand = new StringBuilder();
+        buildCommand.append("xcodebuild");
+        buildCommand.append(" -exportArchive");
+        buildCommand.append(" -exportFormat ");
+        buildCommand.append(Utils.PLUGIN_SUFFIX.IPA.toString());
+        buildCommand.append(" -archivePath ");
+        buildCommand.append(Utils.getArchiveName(Utils.buildProjectName(properties, mavenProject), mavenProject));
+        buildCommand.append(" -exportPath ");
+        buildCommand.append(ipaTargetPath.toString());
+        buildCommand.append(" -exportWithOriginalSigningIdentity");
 
-        processBuilderCodeSign.directory(workDirectory);
-        processBuilderCodeSign.environment().put("TMPDIR", ipaTmpDir.getAbsolutePath());  //this is really important to avoid collisions, if not set /var/folders will be used here
-        CommandHelper.performCommand(processBuilderCodeSign);
+        //append xcpretty arguments
+        for (String xcprettyArg : getXcprettyCommand("xcodebuild-codesign.log").split(" ")) {
+            buildCommand.append(" ").append(xcprettyArg);
+        }
+
+        executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, null, workDirectory);
     }
 
-    protected static void codeSignAfterXcode8_3(Map<String, String> properties, MavenProject mavenProject, File workDirectory, String ipaName, File ipaBasePath, File ipaTargetPath, File ipaTmpDir, XcodeExportOptions xcodeExportOptions) throws IOSException {
+    private static void codeSignAfterXcode8_3(Map<String, String> properties, MavenProject mavenProject, File workDirectory, String ipaName, File ipaBasePath, File ipaTargetPath, File ipaTmpDir, XcodeExportOptions xcodeExportOptions) throws IOSException {
         /*
             xcodebuild -exportArchive -archivePath xcarchivepath -exportPath destinationpath -exportOptionsPlist plistpath
          */
@@ -409,22 +401,24 @@ public class ProjectBuilder {
 
         File plistFilePath = generateExportOptionsPlist(xcodeExportOptions, workDirectory);
 
-        ProcessBuilder processBuilderCodeSign = new ProcessBuilder(
-                "xcodebuild",
-                "-exportArchive",
-                "-archivePath",
-                Utils.getArchiveName(Utils.buildProjectName(properties, mavenProject), mavenProject),
-                "-exportPath",
-                ipaBasePath.toString(),
-                "-exportOptionsPlist",
-                plistFilePath.getAbsolutePath()
-        );
+        StringBuilder buildCommand = new StringBuilder();
+        buildCommand.append("xcodebuild");
+        buildCommand.append(" -exportArchive");
+        buildCommand.append(" -archivePath ");
+        buildCommand.append(Utils.getArchiveName(Utils.buildProjectName(properties, mavenProject), mavenProject));
+        buildCommand.append(" -exportPath ");
+        buildCommand.append(ipaBasePath.toString());
+        buildCommand.append(" -exportOptionsPlist ");
+        buildCommand.append(plistFilePath.getAbsolutePath());
+
+        //append xcpretty arguments
+        for (String xcprettyArg : getXcprettyCommand("xcodebuild-codesign.log").split(" ")) {
+            buildCommand.append(" ").append(xcprettyArg);
+        }
+
+        executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), ipaTmpDir.getAbsolutePath(), null, workDirectory);
 
         File ipaPath = new File(ipaBasePath.getAbsolutePath() + "/" + ipaName);
-
-        processBuilderCodeSign.directory(workDirectory);
-        processBuilderCodeSign.environment().put("TMPDIR", ipaTmpDir.getAbsolutePath());  //this is really important to avoid collisions, if not set /var/folders will be used here
-        CommandHelper.performCommand(processBuilderCodeSign);
 
         //move created ipa to final destination
         ProcessBuilder processBuilder = new ProcessBuilder("mv", ipaPath.toString(), ipaTargetPath.toString());
@@ -437,23 +431,13 @@ public class ProjectBuilder {
         CommandHelper.performCommand(processBuilder);
     }
 
-    private static void unlockKeychain(Map<String, String> properties, MavenProject mavenProject, String projectName, File workDirectory, ProcessBuilder processBuilder) throws IOSException {
+    private static void unlockKeychain(Map<String, String> properties, MavenProject mavenProject, File workDirectory) throws IOSException {
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString())) {
-//            List<String> keychainParameters = new ArrayList<String>();
-//            keychainParameters.add("security");
-//            keychainParameters.add("unlock-keychain");
-//            keychainParameters.add("-p");
-//            keychainParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()));
-//            keychainParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
-
-            executeShellScript("unlock-keychain.sh", properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()), properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()), null, workDirectory, projectName, properties, processBuilder);
-
-//            processBuilder = new ProcessBuilder(keychainParameters);
-//            CommandHelper.performCommand(processBuilder);
+            executeShellScript("unlock-keychain.sh", properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()), properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()), null, workDirectory);
         }
     }
 
-    private static List<String> generateBuildParameters(MavenProject mavenProject, Map<String, String> properties, File targetDirectory, String projectName, File precompiledHeadersDir, boolean shouldUseIphoneSimulatorSDK, List<String> xcodeBuildParameters) {
+    private static void buildXcodeProject(MavenProject mavenProject, Map<String, String> properties, File workDirectory, File targetDirectory, String projectName, boolean shouldUseIphoneSimulatorSDK, List<String> xcodeBuildParameters) throws IOSException {
         List<String> buildParameters = new ArrayList<String>();
         buildParameters.add("xcodebuild");
 
@@ -501,7 +485,7 @@ public class ProjectBuilder {
             }
 
             if (properties.containsKey(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString())) {
-                buildParameters.add("CODE_SIGN_IDENTITY=" + properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()));
+                buildParameters.add("CODE_SIGN_IDENTITY='" + properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()) + "'");
             }
         } else {
             //otherwise we skip code signing
@@ -510,27 +494,27 @@ public class ProjectBuilder {
         }
 
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString())) {
-            buildParameters.add("PROVISIONING_PROFILE=" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()));
+            buildParameters.add("PROVISIONING_PROFILE='" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()) + "'");
         }
 
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString())) {
-            buildParameters.add("PROVISIONING_PROFILE_SPECIFIER=" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString()));
+            buildParameters.add("PROVISIONING_PROFILE_SPECIFIER='" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString()) + "'");
         } else {
             buildParameters.add("PROVISIONING_PROFILE_SPECIFIER=");
         }
 
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.DEVELOPMENT_TEAM.toString())) {
-            buildParameters.add("DEVELOPMENT_TEAM=" + properties.get(Utils.PLUGIN_PROPERTIES.DEVELOPMENT_TEAM.toString()));
+            buildParameters.add("DEVELOPMENT_TEAM='" + properties.get(Utils.PLUGIN_PROPERTIES.DEVELOPMENT_TEAM.toString()) + "'");
         } else {
             buildParameters.add("DEVELOPMENT_TEAM=");
         }
 
         if (properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()) != null) {
-            buildParameters.add("PRODUCT_BUNDLE_IDENTIFIER=" + properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()));
+            buildParameters.add("PRODUCT_BUNDLE_IDENTIFIER='" + properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()) + "'");
         }
 
         if ((Utils.isMacOSFramework(properties) || Utils.isiOSFramework(mavenProject, properties)) && properties.containsKey(Utils.PLUGIN_PROPERTIES.APP_NAME.toString())) {
-            buildParameters.add("PRODUCT_NAME=" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()));
+            buildParameters.add("PRODUCT_NAME='" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "'");
         }
 
         String target = null;
@@ -547,11 +531,11 @@ public class ProjectBuilder {
 
         //buildParameters.add("SHARED_PRECOMPS_DIR=" + precompiledHeadersDir.getAbsolutePath());   //this is really important to avoid collisions, if not set /var/folders will be used here
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString())) {
-            buildParameters.add("OTHER_CODE_SIGN_FLAGS=--keychain " + properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()));
+            buildParameters.add("OTHER_CODE_SIGN_FLAGS='--keychain " + properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()) + "'");
         }
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString())) {
-            buildParameters.add("GCC_PREPROCESSOR_DEFINITIONS=" + properties.get(Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString()));
+            buildParameters.add("GCC_PREPROCESSOR_DEFINITIONS='" + properties.get(Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString()) + "'");
         }
 
         //add parameter to enable bitcode for build with iphone simulator sdk
@@ -561,15 +545,22 @@ public class ProjectBuilder {
         }
 
         if (shouldUseIphoneSimulatorSDK) {
-            buildParameters.add("CONFIGURATION_BUILD_DIR=" + targetDirectory.getAbsolutePath() + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR);
+            buildParameters.add("CONFIGURATION_BUILD_DIR='" + targetDirectory.getAbsolutePath() + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR + "'");
         }
 
         //add each dynamic parameter from pom
-        for (String param : xcodeBuildParameters) {
-            buildParameters.add(param);
+        buildParameters.addAll(xcodeBuildParameters);
+
+        //append xcpretty arguments
+        Collections.addAll(buildParameters, getXcprettyCommand("xcodebuild.log").split(" "));
+
+        StringBuilder buildCommand = new StringBuilder();
+        for (String buildParam : buildParameters) {
+            buildCommand.append(buildParam);
+            buildCommand.append(" ");
         }
 
-        return buildParameters;
+        executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, null, workDirectory);
     }
 
     private static void mergeFrameworkProducts(File targetWorkDirectoryIphone, File targetWorkDirectoryIphoneSimulator, String appName, String frameworkName) {
@@ -715,7 +706,7 @@ public class ProjectBuilder {
         }
     }
 
-    private static void executeShellScript(String scriptName, String value1, String value2, String value3, File workDirectory, String projectName, final Map<String, String> properties, ProcessBuilder processBuilder) throws IOSException {
+    private static void executeShellScript(String scriptName, String value1, String value2, String value3, File workDirectory) throws IOSException {
 
         // Run shell-script from resource-folder.
         try {
@@ -747,7 +738,7 @@ public class ProjectBuilder {
                 value3 = "";
             }
 
-            processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), value1, value2, value3);
+            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), value1, value2, value3);
 
             processBuilder.directory(workDirectory);
             CommandHelper.performCommand(processBuilder);
@@ -757,7 +748,7 @@ public class ProjectBuilder {
         }
     }
 
-    private static void writeDeployPlistFile(MavenProject mavenProject, File targetDirectory, String projectName, String deployPlistName, final Map<String, String> properties, ProcessBuilder processBuilder) throws IOSException {
+    private static void writeDeployPlistFile(MavenProject mavenProject, File targetDirectory, String deployPlistName, final Map<String, String> properties) throws IOSException {
         // Run shell-script from resource-folder.
         try {
             final String scriptName = "write-deploy-plist";
@@ -783,7 +774,7 @@ public class ProjectBuilder {
 
             outputStream.close();
 
-            processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
+            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
                     deployPlistName,
                     ipaLocation,
                     iconLocation,
@@ -857,5 +848,9 @@ public class ProjectBuilder {
         }
 
         return plistFile;
+    }
+
+    private static String getXcprettyCommand(String logFileName) {
+        return "| tee " + logFileName + " | xcpretty && exit ${PIPESTATUS[0]}";
     }
 }

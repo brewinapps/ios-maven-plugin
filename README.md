@@ -10,6 +10,7 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2018-XX-XX - Release version 1.16.24: Supporting Xcode 9 export options<br />
 2017-11-30 - Release version 1.16.23: Supporting Xcode 9 export options<br />
 
 ## Features
