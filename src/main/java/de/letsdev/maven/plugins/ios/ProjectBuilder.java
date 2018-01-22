@@ -26,6 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import de.letsdev.maven.plugins.ios.mojo.IOSException;
+import de.letsdev.maven.plugins.ios.mojo.container.FileReplacement;
+import de.letsdev.maven.plugins.ios.mojo.container.StringReplacement;
+import de.letsdev.maven.plugins.ios.mojo.container.StringReplacementConfig;
+import de.letsdev.maven.plugins.ios.mojo.container.XcodeExportOptions;
+
 /**
  * @author let's dev
  */
@@ -35,7 +41,7 @@ public class ProjectBuilder {
      * @param properties Properties
      * @throws IOSException
      */
-    public static void build(final Map<String, String> properties, MavenProject mavenProject, final List<FileReplacement> fileReplacements, final List<String> xcodeBuildParameters, final XcodeExportOptions xcodeExportOptions) throws IOSException, IOException {
+    public static void build(final Map<String, String> properties, MavenProject mavenProject, final List<FileReplacement> fileReplacements, final List<String> xcodeBuildParameters, final XcodeExportOptions xcodeExportOptions, final StringReplacementConfig stringReplacements) throws IOSException, IOException {
         // Make sure the source directory exists
         String projectName = Utils.buildProjectName(properties, mavenProject);
         String schemeName = properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString());
@@ -53,6 +59,11 @@ public class ProjectBuilder {
             //replace all configured files
             if (fileReplacements != null && fileReplacements.size() > 0) {
                 replaceFiles(fileReplacements, projectDirectory);
+            }
+
+            //replace all configured strings
+            if (stringReplacements != null && stringReplacements.stringReplacementList.size() > 0) {
+                replaceStrings(stringReplacements, projectDirectory);
             }
 
             File targetDirectory = Utils.getTargetDirectory(mavenProject);
@@ -171,9 +182,14 @@ public class ProjectBuilder {
             //lock keychain
             lockKeychain(properties);
 
-            //revert all replace files
+            //revert all replaced files
             if (fileReplacements != null && fileReplacements.size() > 0) {
                 revertReplacedFiles(fileReplacements, projectDirectory);
+            }
+
+            //revert all replaced strings
+            if (stringReplacements != null && stringReplacements.stringReplacementList.size() > 0) {
+                revertReplacedStrings(stringReplacements, projectDirectory);
             }
 
             // Generate the the deploy plist file
@@ -330,6 +346,44 @@ public class ProjectBuilder {
             ProcessBuilder processBuilder = new ProcessBuilder("mv", tempFile.toString(), sourceFile.toString());
             processBuilder.directory(projectDirectory);
             CommandHelper.performCommand(processBuilder);
+        }
+    }
+
+    private static void revertReplacedStrings(final StringReplacementConfig stringReplacements, File projectDirectory) throws IOSException, IOException {
+        for (StringReplacement stringReplacement : stringReplacements.stringReplacementList) {
+            replaceString(projectDirectory, stringReplacement.sourceFile, stringReplacement.targetString, stringReplacement.sourceString, stringReplacements.failWhenNotFound);
+        }
+    }
+
+    private static void replaceStrings(final StringReplacementConfig stringReplacements, File projectDirectory) throws IOSException, IOException {
+        for (StringReplacement stringReplacement : stringReplacements.stringReplacementList) {
+            replaceString(projectDirectory, stringReplacement.sourceFile, stringReplacement.sourceString, stringReplacement.targetString, stringReplacements.failWhenNotFound);
+        }
+    }
+
+    private static void replaceString(File projectDirectory, String sourceFilePath, String replaceSource, String replaceTarget, boolean failWhenNotFound) throws IOSException, IOException {
+        File sourceFile = new File(projectDirectory.toString() + File.separator + sourceFilePath);
+
+        if (sourceFile.exists()) {
+            byte[] encoded = Files.readAllBytes(Paths.get(sourceFile.getAbsolutePath()));
+            String sourceFileContents = new String(encoded, Charset.defaultCharset());
+            if (sourceFileContents.contains(replaceSource)) {
+                sourceFileContents = sourceFileContents.replace(replaceSource, replaceTarget);
+            } else if (failWhenNotFound) {
+                throw new IOSException("string '" + replaceSource + "' not found in: " + sourceFile.toString());
+            }
+
+            FileOutputStream sourceFileStream = new FileOutputStream(sourceFile, false);
+            byte[] contentBytes = sourceFileContents.getBytes();
+            sourceFileStream.write(contentBytes);
+            sourceFileStream.close();
+        } else {
+            String error = "source file doesn't exist at path= " + sourceFile.toString();
+            System.err.println(error);
+
+            if (failWhenNotFound) {
+                throw new IOSException(error);
+            }
         }
     }
 

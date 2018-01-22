@@ -9,10 +9,13 @@
  * e-Mail: contact@letsdev.de
  */
 
-package de.letsdev.maven.plugins.ios;
+package de.letsdev.maven.plugins.ios.mojo;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+
+import de.letsdev.maven.plugins.ios.ProjectTester;
+
 
 /**
  *

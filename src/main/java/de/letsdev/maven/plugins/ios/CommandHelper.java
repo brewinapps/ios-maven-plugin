@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
+import de.letsdev.maven.plugins.ios.mojo.IOSException;
+
 public class CommandHelper {
 
     /**

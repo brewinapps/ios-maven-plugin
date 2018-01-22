@@ -10,10 +10,13 @@
  * e-Mail: contact@letsdev.de
  */
 
-package de.letsdev.maven.plugins.ios;
+package de.letsdev.maven.plugins.ios.mojo;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+
+import de.letsdev.maven.plugins.ios.ProjectBuilder;
+import de.letsdev.maven.plugins.ios.mojo.BaseMojo;
 
 /**
  * 
@@ -27,7 +30,7 @@ public class IOSBuildMojo extends BaseMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
         super.execute();
 		try {
-			ProjectBuilder.build(this.properties, this.mavenProject, this.fileReplacements, this.xcodeBuildParameters, this.xcodeExportOptions);
+			ProjectBuilder.build(this.properties, this.mavenProject, this.fileReplacements, this.xcodeBuildParameters, this.xcodeExportOptions, this.stringReplacements);
 		} catch (Exception e) {
 			throw new MojoExecutionException(e.getMessage());
 		}

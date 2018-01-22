@@ -9,7 +9,7 @@
  * e-Mail: contact@letsdev.de
  */
 
-package de.letsdev.maven.plugins.ios;
+package de.letsdev.maven.plugins.ios.mojo;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -19,6 +19,11 @@ import org.apache.maven.project.MavenProject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import de.letsdev.maven.plugins.ios.mojo.container.FileReplacement;
+import de.letsdev.maven.plugins.ios.Utils;
+import de.letsdev.maven.plugins.ios.mojo.container.StringReplacementConfig;
+import de.letsdev.maven.plugins.ios.mojo.container.XcodeExportOptions;
 
 public class BaseMojo extends AbstractMojo {
 
@@ -344,6 +349,13 @@ public class BaseMojo extends AbstractMojo {
      * @parameter property="ios.fileReplacements"
      */
     protected List<FileReplacement> fileReplacements;
+
+    /**
+     * defining all files and directories to replace
+     *
+     * @parameter property="ios.stringReplacements"
+     */
+    protected StringReplacementConfig stringReplacements;
 
     /**
      * defining parameters passed to the xcodebuild

@@ -9,7 +9,7 @@
  * e-Mail: contact@letsdev.de
  */
 
-package de.letsdev.maven.plugins.ios;
+package de.letsdev.maven.plugins.ios.mojo.container;
 
 import java.util.Map;
 

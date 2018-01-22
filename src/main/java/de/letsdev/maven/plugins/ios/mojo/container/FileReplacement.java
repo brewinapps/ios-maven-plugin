@@ -9,9 +9,9 @@
  * e-Mail: contact@letsdev.de
  */
 
-package de.letsdev.maven.plugins.ios;
+package de.letsdev.maven.plugins.ios.mojo.container;
 
 public class FileReplacement {
-    protected String sourceFile;
-    protected String targetFile;
+    public String sourceFile;
+    public String targetFile;
 }

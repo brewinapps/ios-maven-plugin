@@ -1,4 +1,4 @@
-package de.letsdev.maven.plugins.ios;
+package de.letsdev.maven.plugins.ios.mojo.container;
 
 public class XcodeExportOptionsManifest {
     public String appURL;

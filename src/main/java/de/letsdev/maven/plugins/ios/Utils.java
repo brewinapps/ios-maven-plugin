@@ -5,6 +5,9 @@ import org.apache.maven.project.MavenProject;
 import java.io.*;
 import java.util.Map;
 
+import de.letsdev.maven.plugins.ios.mojo.IOSException;
+import de.letsdev.maven.plugins.ios.mojo.container.XcodeExportOptions;
+
 /**
  * Maven iOS Plugin
  * <p/>

@@ -16,6 +16,8 @@ import org.apache.maven.project.MavenProject;
 import java.io.*;
 import java.util.Map;
 
+import de.letsdev.maven.plugins.ios.mojo.IOSException;
+
 public class ProjectTester {
     public static void test(final Map<String, String> properties, MavenProject mavenProject) throws IOSException, IOException {
         String projectName = Utils.buildProjectName(properties, mavenProject);

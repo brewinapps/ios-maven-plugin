@@ -30,6 +30,8 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Map;
 
+import de.letsdev.maven.plugins.ios.mojo.IOSException;
+
 
 /**
  * @author let's dev

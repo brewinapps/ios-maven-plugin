@@ -10,7 +10,7 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
-2018-XX-XX - Release version 1.16.24: Supporting Xcode 9 export options<br />
+2018-01-22 - Release version 1.16.24: Supporting xcpretty and string replacements in files<br />
 2017-11-30 - Release version 1.16.23: Supporting Xcode 9 export options<br />
 
 ## Features
@@ -83,6 +83,7 @@ Compiles the application and generates an IPA package
 39. ios.resetSimulators           Specifies if iphone simulators should be resetted before testing
 40. ios.xcodeBuildParameters      Added xcodeBuildParameters parameter
 41. ios.xcodeExportOptions      Added xcodeExportOptions parameter (parameter defining values for exportOptionsPlist flag)
+42. ios.stringReplacements        (List of strings to replace while executing build)
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp
