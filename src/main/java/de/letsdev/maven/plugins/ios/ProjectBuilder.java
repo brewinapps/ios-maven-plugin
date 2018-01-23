@@ -62,7 +62,7 @@ public class ProjectBuilder {
             }
 
             //replace all configured strings
-            if (stringReplacements != null && stringReplacements.stringReplacementList.size() > 0) {
+            if (stringReplacements != null && stringReplacements.stringReplacementList != null && stringReplacements.stringReplacementList.size() > 0) {
                 replaceStrings(stringReplacements, projectDirectory);
             }
 
@@ -188,7 +188,7 @@ public class ProjectBuilder {
             }
 
             //revert all replaced strings
-            if (stringReplacements != null && stringReplacements.stringReplacementList.size() > 0) {
+            if (stringReplacements != null &&  stringReplacements.stringReplacementList != null &&stringReplacements.stringReplacementList.size() > 0) {
                 revertReplacedStrings(stringReplacements, projectDirectory);
             }
 
