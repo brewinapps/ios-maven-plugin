@@ -511,8 +511,8 @@ public class ProjectBuilder {
 
         String archs = Utils.getArchitecturesForSdk(properties, sdk);
         if (archs != null && !archs.isEmpty()) {
-            buildParameters.add("ARCHS=" + archs);
-            buildParameters.add("VALID_ARCHS=" + archs);
+            buildParameters.add("ARCHS=\"" + archs + "\"");
+            buildParameters.add("VALID_ARCHS=\"" + archs + "\"");
         }
 
         buildParameters.add("-configuration");
