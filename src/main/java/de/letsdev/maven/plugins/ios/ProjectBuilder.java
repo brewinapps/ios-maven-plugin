@@ -539,7 +539,7 @@ public class ProjectBuilder {
             }
 
             if (properties.containsKey(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString())) {
-                buildParameters.add("CODE_SIGN_IDENTITY='" + properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()) + "'");
+                buildParameters.add("CODE_SIGN_IDENTITY=\"" + properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()) + "\"");
             }
         } else {
             //otherwise we skip code signing
@@ -548,27 +548,27 @@ public class ProjectBuilder {
         }
 
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString())) {
-            buildParameters.add("PROVISIONING_PROFILE='" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()) + "'");
+            buildParameters.add("PROVISIONING_PROFILE=\"" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()) + "\"");
         }
 
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString())) {
-            buildParameters.add("PROVISIONING_PROFILE_SPECIFIER='" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString()) + "'");
+            buildParameters.add("PROVISIONING_PROFILE_SPECIFIER=\"" + properties.get(Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString()) + "\"");
         } else {
             buildParameters.add("PROVISIONING_PROFILE_SPECIFIER=");
         }
 
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.DEVELOPMENT_TEAM.toString())) {
-            buildParameters.add("DEVELOPMENT_TEAM='" + properties.get(Utils.PLUGIN_PROPERTIES.DEVELOPMENT_TEAM.toString()) + "'");
+            buildParameters.add("DEVELOPMENT_TEAM=\"" + properties.get(Utils.PLUGIN_PROPERTIES.DEVELOPMENT_TEAM.toString()) + "\"");
         } else {
             buildParameters.add("DEVELOPMENT_TEAM=");
         }
 
         if (properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()) != null) {
-            buildParameters.add("PRODUCT_BUNDLE_IDENTIFIER='" + properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()) + "'");
+            buildParameters.add("PRODUCT_BUNDLE_IDENTIFIER=\"" + properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()) + "\"");
         }
 
         if ((Utils.isMacOSFramework(properties) || Utils.isiOSFramework(mavenProject, properties)) && properties.containsKey(Utils.PLUGIN_PROPERTIES.APP_NAME.toString())) {
-            buildParameters.add("PRODUCT_NAME='" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "'");
+            buildParameters.add("PRODUCT_NAME=\"" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "\"");
         }
 
         String target = null;
@@ -585,11 +585,11 @@ public class ProjectBuilder {
 
         //buildParameters.add("SHARED_PRECOMPS_DIR=" + precompiledHeadersDir.getAbsolutePath());   //this is really important to avoid collisions, if not set /var/folders will be used here
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString())) {
-            buildParameters.add("OTHER_CODE_SIGN_FLAGS='--keychain " + properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()) + "'");
+            buildParameters.add("OTHER_CODE_SIGN_FLAGS=\"--keychain " + properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()) + "\"");
         }
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString())) {
-            buildParameters.add("GCC_PREPROCESSOR_DEFINITIONS='" + properties.get(Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString()) + "'");
+            buildParameters.add("GCC_PREPROCESSOR_DEFINITIONS=\"" + properties.get(Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString()) + "\"");
         }
 
         //add parameter to enable bitcode for build with iphone simulator sdk
@@ -599,7 +599,7 @@ public class ProjectBuilder {
         }
 
         if (shouldUseIphoneSimulatorSDK) {
-            buildParameters.add("CONFIGURATION_BUILD_DIR='" + targetDirectory.getAbsolutePath() + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR + "'");
+            buildParameters.add("CONFIGURATION_BUILD_DIR=\"" + targetDirectory.getAbsolutePath() + "/" + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR + "\"");
         }
 
         //add each dynamic parameter from pom
