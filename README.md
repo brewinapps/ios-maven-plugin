@@ -10,7 +10,7 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
-2018-01-30 - Release version 1.16.27: Supporting xcpretty and string replacements in files<br />
+2018-01-30 - Release version 1.16.28: Supporting xcpretty and string replacements in files<br />
 2017-11-30 - Release version 1.16.23: Supporting Xcode 9 export options<br />
 
 ## Features
