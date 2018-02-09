@@ -589,7 +589,7 @@ public class ProjectBuilder {
         }
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString())) {
-            buildParameters.add("GCC_PREPROCESSOR_DEFINITIONS=" + properties.get(Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString()));
+            buildParameters.add("GCC_PREPROCESSOR_DEFINITIONS='" + properties.get(Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString()) + "'");
         }
 
         //add parameter to enable bitcode for build with iphone simulator sdk
