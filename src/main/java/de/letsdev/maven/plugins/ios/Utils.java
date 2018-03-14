@@ -1,11 +1,13 @@
 package de.letsdev.maven.plugins.ios;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.project.MavenProject;
 
 import java.io.*;
 import java.util.Map;
 
 import de.letsdev.maven.plugins.ios.mojo.IOSException;
+import de.letsdev.maven.plugins.ios.mojo.container.XcodeArchiveProductType;
 import de.letsdev.maven.plugins.ios.mojo.container.XcodeExportOptions;
 
 /**
@@ -33,6 +35,13 @@ public class Utils {
     public static String RELEASE_TASK = "releaseTask";
     public static String RELEASE_TASK_TESTFLIGHT = "Testflight";
     public static String RELEASE_TASK_APP_STORE_UPLOAD = "AppStoreUpload";
+
+    public static String EXPORT_PRODUCT_PATH_BASE = "Products/Library";
+    public static String EXPORT_PRODUCT_PATH_FRAMEWORK = EXPORT_PRODUCT_PATH_BASE + "/Frameworks";
+    public static String EXPORT_PRODUCT_PATH_BUNDLE = EXPORT_PRODUCT_PATH_BASE + "/Bundles";
+
+    public static String EXPORT_PRODUCT_TYPE_EXTENSION_FRAMEWORK = "framework";
+    public static String EXPORT_PRODUCT_TYPE_EXTENSION_BUNDLE = "bundle";
 
     public enum PLUGIN_PROPERTIES {
 
@@ -311,5 +320,35 @@ public class Utils {
         }
 
         return architectures;
+    }
+
+    public static String getExportProductPath(XcodeArchiveProductType productType) {
+        String productPath;
+
+        switch (productType) {
+            case XCODE_ARCHIVE_PRODUCT_TYPE_BUNDLE:
+                productPath = Utils.EXPORT_PRODUCT_PATH_BUNDLE;
+                break;
+            case XCODE_ARCHIVE_PRODUCT_TYPE_FRAMEWORK:
+                productPath = Utils.EXPORT_PRODUCT_PATH_FRAMEWORK;
+                break;
+            default:
+                productPath = "";
+                break;
+        }
+
+        return productPath;
+    }
+
+    public static XcodeArchiveProductType getExportProductType(String productName) {
+        XcodeArchiveProductType type = XcodeArchiveProductType.XCODE_ARCHIVE_PRODUCT_TYPE_UNKNOWN;
+
+        if (EXPORT_PRODUCT_TYPE_EXTENSION_FRAMEWORK.equals(FilenameUtils.getExtension(productName))) {
+            type = XcodeArchiveProductType.XCODE_ARCHIVE_PRODUCT_TYPE_FRAMEWORK;
+        } else if (EXPORT_PRODUCT_TYPE_EXTENSION_BUNDLE.equals(FilenameUtils.getExtension(productName))) {
+            type = XcodeArchiveProductType.XCODE_ARCHIVE_PRODUCT_TYPE_BUNDLE;
+        }
+
+        return type;
     }
 }

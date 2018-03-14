@@ -21,6 +21,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import de.letsdev.maven.plugins.ios.mojo.IOSException;
 import de.letsdev.maven.plugins.ios.mojo.container.FileReplacement;
 import de.letsdev.maven.plugins.ios.mojo.container.StringReplacement;
 import de.letsdev.maven.plugins.ios.mojo.container.StringReplacementConfig;
+import de.letsdev.maven.plugins.ios.mojo.container.XcodeArchiveProductType;
 import de.letsdev.maven.plugins.ios.mojo.container.XcodeExportOptions;
 
 /**
@@ -41,7 +43,7 @@ public class ProjectBuilder {
      * @param properties Properties
      * @throws IOSException
      */
-    public static void build(final Map<String, String> properties, MavenProject mavenProject, final List<FileReplacement> fileReplacements, final List<String> xcodeBuildParameters, final XcodeExportOptions xcodeExportOptions, final StringReplacementConfig stringReplacements) throws IOSException, IOException {
+    public static void build(final Map<String, String> properties, MavenProject mavenProject, final List<FileReplacement> fileReplacements, final List<String> xcodeBuildParameters, final XcodeExportOptions xcodeExportOptions, final StringReplacementConfig stringReplacements, List<String> targetDependencies) throws IOSException, IOException {
         // Make sure the source directory exists
         String projectName = Utils.buildProjectName(properties, mavenProject);
         String schemeName = properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString());
@@ -97,7 +99,7 @@ public class ProjectBuilder {
                 }
 
                 String appName = properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString());
-                String frameworkName = appName + ".framework";
+                String frameworkName = appName + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK.toString();
 
                 File targetWorkDirectory;
                 if (Utils.isMacOSFramework(properties)) {
@@ -110,7 +112,9 @@ public class ProjectBuilder {
                     //if we'd build the framework with xcodebuild archive command, we have to export the framework from archive
                     if (Utils.shouldBuildXCArchive(mavenProject, properties)) {
                         File archiveFile = new File(Utils.getArchiveName(projectName, mavenProject));
-                        exportFrameworkArchive(archiveFile, targetWorkDirectoryIphone, appName, frameworkName);
+                        exportProductArchive(archiveFile, targetWorkDirectoryIphone, frameworkName);
+
+                        exportTargetDependencies(targetDependencies, archiveFile, targetWorkDirectoryIphone);
                     }
 
                     if (shouldBuildSimulatorArchitectures) {
@@ -122,7 +126,15 @@ public class ProjectBuilder {
                 }
 
                 // Zip Frameworks
-                ProcessBuilder processBuilder = new ProcessBuilder("zip", "-r", "../" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString(), frameworkName);
+                String targetZipPath = "../" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "." + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString();
+                List<String> zipCommandParams = new ArrayList<String>();
+                zipCommandParams.add("zip");
+                zipCommandParams.add("-r");
+                zipCommandParams.add(targetZipPath);
+                zipCommandParams.add(frameworkName);
+                zipCommandParams.addAll(targetDependencies);
+
+                ProcessBuilder processBuilder = new ProcessBuilder(zipCommandParams);
                 processBuilder.directory(targetWorkDirectory);
                 CommandHelper.performCommand(processBuilder);
             }
@@ -188,7 +200,7 @@ public class ProjectBuilder {
             }
 
             //revert all replaced strings
-            if (stringReplacements != null &&  stringReplacements.stringReplacementList != null &&stringReplacements.stringReplacementList.size() > 0) {
+            if (stringReplacements != null && stringReplacements.stringReplacementList != null && stringReplacements.stringReplacementList.size() > 0) {
                 revertReplacedStrings(stringReplacements, projectDirectory);
             }
 
@@ -652,14 +664,24 @@ public class ProjectBuilder {
         }
     }
 
-    private static void exportFrameworkArchive(File archiveFile, File targetFrameworkPath, String appName, String frameworkName) {
+    private static void exportTargetDependencies(List<String> targetDependencies, File archiveFile, File targetDirectory) {
+        if (targetDependencies != null && targetDependencies.size() > 0) {
+            for (String targetDependency : targetDependencies) {
+                exportProductArchive(archiveFile, targetDirectory, targetDependency);
+            }
+        }
+    }
+
+    private static void exportProductArchive(File archiveFile, File targetPath, String productName) {
         // Run shell-script from resource-folder.
         try {
-            final String scriptName = "export-framework-archive";
+            final String scriptName = "export-product-archive";
 
-            targetFrameworkPath.mkdir();
-            final String iphoneosFrameworkPath = targetFrameworkPath.toString() + "/" + frameworkName;
-            final String iphoneosFrameworkProductPath = targetFrameworkPath.toString() + "/" + frameworkName + "/" + appName;
+            targetPath.mkdir();
+            final String productTargetPath = targetPath.toString() + "/" + productName;
+
+            XcodeArchiveProductType productType = Utils.getExportProductType(productName);
+            String productPath = Utils.getExportProductPath(productType);
 
             File tempFile = File.createTempFile(scriptName, "sh");
             InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName + ".sh");
@@ -676,12 +698,12 @@ public class ProjectBuilder {
 
             ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
                     archiveFile.toString(),
-                    frameworkName,
-                    targetFrameworkPath.toString(),
-                    iphoneosFrameworkPath,
-                    iphoneosFrameworkProductPath);
+                    productPath,
+                    productName,
+                    targetPath.toString(),
+                    productTargetPath);
 
-            processBuilder.directory(targetFrameworkPath);
+            processBuilder.directory(targetPath);
             CommandHelper.performCommand(processBuilder);
 
         } catch (Exception e) {

@@ -10,8 +10,8 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Last-Changes
 
+2018-03-14 - Release version 1.17.0: Supporting target dependencies for framework builds<br />
 2018-02-09 - Release version 1.16.29: Supporting xcpretty and string replacements in files<br />
-2017-11-30 - Release version 1.16.23: Supporting Xcode 9 export options<br />
 
 ## Features
 1. Compilation and siging of iOS applications
@@ -84,6 +84,7 @@ Compiles the application and generates an IPA package
 40. ios.xcodeBuildParameters      Added xcodeBuildParameters parameter
 41. ios.xcodeExportOptions      Added xcodeExportOptions parameter (parameter defining values for exportOptionsPlist flag)
 42. ios.stringReplacements        (List of strings to replace while executing build)
+43. ios.targetDependencies      (List of strings, naming the target dependencies of the target)
 
 ### ios:deploy
 Deploys the IPA package as well as the generated dSYM.zip to HockeyApp

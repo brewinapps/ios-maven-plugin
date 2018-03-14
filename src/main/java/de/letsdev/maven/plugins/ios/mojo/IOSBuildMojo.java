@@ -30,7 +30,7 @@ public class IOSBuildMojo extends BaseMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
         super.execute();
 		try {
-			ProjectBuilder.build(this.properties, this.mavenProject, this.fileReplacements, this.xcodeBuildParameters, this.xcodeExportOptions, this.stringReplacements);
+			ProjectBuilder.build(this.properties, this.mavenProject, this.fileReplacements, this.xcodeBuildParameters, this.xcodeExportOptions, this.stringReplacements, this.targetDependencies);
 		} catch (Exception e) {
 			throw new MojoExecutionException(e.getMessage());
 		}

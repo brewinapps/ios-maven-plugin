@@ -373,6 +373,13 @@ public class BaseMojo extends AbstractMojo {
     protected XcodeExportOptions xcodeExportOptions;
 
     /**
+     * defining target dependencies of the project, it will be bundled in the artefact
+     *
+     * @parameter property="ios.targetDependencies"
+     */
+    protected List<String> targetDependencies;
+
+    /**
      * The maven project.
      *
      * @parameter property="project"
@@ -382,7 +389,7 @@ public class BaseMojo extends AbstractMojo {
     protected MavenProject mavenProject;
     protected Map<String, String> properties = null;
 
-    protected Map<String, String> prepareProteries() {
+    protected Map<String, String> prepareProperties() {
         Map<String, String> properties = new HashMap<String, String>();
 
         final String targetDir = this.mavenProject.getBuild().getDirectory();
@@ -439,6 +446,6 @@ public class BaseMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-         this.properties = prepareProteries();
+         this.properties = prepareProperties();
     }
 }
