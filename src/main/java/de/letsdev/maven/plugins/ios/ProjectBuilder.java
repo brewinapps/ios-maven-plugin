@@ -290,7 +290,7 @@ public class ProjectBuilder {
     }
 
     private static void cleanXcodeProject(Map<String, String> properties, File workDirectory, List<String> xcodeBuildParameters) throws IOSException {
-        StringBuilder xcodebuildCommand = new StringBuilder("xcodebuild -alltargets -configuration " + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + " clean");
+        StringBuilder xcodebuildCommand = new StringBuilder("xcodebuild -alltargets -configuration " + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + " clean -scheme " + properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString()));
 
         //add each dynamic parameter from pom
         for (String param : xcodeBuildParameters) {
