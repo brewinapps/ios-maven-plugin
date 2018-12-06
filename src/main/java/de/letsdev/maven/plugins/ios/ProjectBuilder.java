@@ -288,7 +288,7 @@ public class ProjectBuilder {
     }
 
     private static void cleanXcodeProject(Map<String, String> properties, File workDirectory, List<String> xcodeBuildParameters) throws IOSException {
-        StringBuilder xcodebuildCommand = new StringBuilder("xcodebuild -alltargets -configuration " + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + " clean");
+        StringBuilder xcodebuildCommand = new StringBuilder("xcodebuild -alltargets -configuration " + properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + " clean -scheme " + properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString()));
 
         //add each dynamic parameter from pom
         for (String param : xcodeBuildParameters) {
@@ -599,7 +599,7 @@ public class ProjectBuilder {
         }
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString())) {
-            buildParameters.add("GCC_PREPROCESSOR_DEFINITIONS='$(inherited) " + properties.get(Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString()) + "'");
+            buildParameters.add("GCC_PREPROCESSOR_DEFINITIONS='" + properties.get(Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString()) + "'");
         }
 
         //add parameter to enable bitcode for build with iphone simulator sdk
