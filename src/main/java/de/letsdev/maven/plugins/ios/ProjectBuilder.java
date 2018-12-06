@@ -21,7 +21,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -219,7 +218,7 @@ public class ProjectBuilder {
         }
     }
 
-    private static void selectXcodeVersion(String xcodeVersionPath, File workDirectory) {
+    private static void selectXcodeVersion(String xcodeVersionPath, File workDirectory) throws IOSException {
         // Run shell-script from resource-folder.
         try {
             final String scriptName = "set-xcode-version.sh";
@@ -247,8 +246,7 @@ public class ProjectBuilder {
 
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (IOSException e) {
-            e.printStackTrace();
+            throw new IOSException(e);
         }
     }
 
@@ -629,42 +627,60 @@ public class ProjectBuilder {
         executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, null, workDirectory);
     }
 
-    private static void mergeFrameworkProducts(File targetWorkDirectoryIphone, File targetWorkDirectoryIphoneSimulator, String appName, String frameworkName) {
+    private static void mergeFrameworkProducts(File targetWorkDirectoryIphone, File targetWorkDirectoryIphoneSimulator, String appName, String frameworkName) throws IOSException {
         // Run shell-script from resource-folder.
+        final String scriptName = "merge-framework-products";
+
+        final String iphoneosFrameworkProductPath = targetWorkDirectoryIphone.toString() + "/" + frameworkName + "/" + appName;
+        final String iphoneSimulatorFrameworkProductPath = targetWorkDirectoryIphoneSimulator.toString() + "/" + frameworkName + "/" + appName;
+        final String mergedFrameworkPath = targetWorkDirectoryIphone.toString() + "/" + frameworkName + "/" + appName;
+
+        File tempFile;
         try {
-            final String scriptName = "merge-framework-products";
+            tempFile = File.createTempFile(scriptName, "sh");
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOSException("Cannot create tempfile for script: " + scriptName);
+        }
 
-            final String iphoneosFrameworkProductPath = targetWorkDirectoryIphone.toString() + "/" + frameworkName + "/" + appName;
-            final String iphoneSimulatorFrameworkProductPath = targetWorkDirectoryIphoneSimulator.toString() + "/" + frameworkName + "/" + appName;
-            final String mergedFrameworkPath = targetWorkDirectoryIphone.toString() + "/" + frameworkName + "/" + appName;
+        InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName + ".sh");
 
-            File tempFile = File.createTempFile(scriptName, "sh");
-            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName + ".sh");
-            OutputStream outputStream = new FileOutputStream(tempFile);
+        OutputStream outputStream = null;
 
+        try {
+            outputStream = new FileOutputStream(tempFile);
             byte[] buffer = new byte[1024];
             int bytesRead;
 
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, bytesRead);
             }
-
-            outputStream.close();
-
-            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
-                    iphoneosFrameworkProductPath,
-                    iphoneSimulatorFrameworkProductPath,
-                    mergedFrameworkPath);
-
-            processBuilder.directory(targetWorkDirectoryIphone);
-            CommandHelper.performCommand(processBuilder);
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+        catch (IOException e){
+            e.printStackTrace();
+            throw new IOSException("Cannot find tempfile at path: " + tempFile.getAbsolutePath());
+        }
+        finally {
+            try {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
+                iphoneosFrameworkProductPath,
+                iphoneSimulatorFrameworkProductPath,
+                mergedFrameworkPath);
+
+        processBuilder.directory(targetWorkDirectoryIphone);
+        CommandHelper.performCommand(processBuilder);
+
     }
 
-    private static void exportTargetDependencies(List<String> targetDependencies, File archiveFile, File targetDirectory) {
+    private static void exportTargetDependencies(List<String> targetDependencies, File archiveFile, File targetDirectory) throws IOSException {
         if (targetDependencies != null && targetDependencies.size() > 0) {
             for (String targetDependency : targetDependencies) {
                 exportProductArchive(archiveFile, targetDirectory, targetDependency);
@@ -672,7 +688,7 @@ public class ProjectBuilder {
         }
     }
 
-    private static void exportProductArchive(File archiveFile, File targetPath, String productName) {
+    private static void exportProductArchive(File archiveFile, File targetPath, String productName) throws IOSException {
         // Run shell-script from resource-folder.
         try {
             final String scriptName = "export-product-archive";
@@ -708,6 +724,7 @@ public class ProjectBuilder {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new IOSException(e);
         }
     }
 
@@ -779,6 +796,7 @@ public class ProjectBuilder {
 
         } catch (IOException e) {
             e.printStackTrace();
+            throw new IOSException(e);
         }
     }
 
@@ -821,6 +839,7 @@ public class ProjectBuilder {
 
         } catch (IOException e) {
             e.printStackTrace();
+            throw new IOSException(e);
         }
     }
 
@@ -864,6 +883,7 @@ public class ProjectBuilder {
 
         } catch (IOException e) {
             e.printStackTrace();
+            throw new IOSException(e);
         }
     }
 
@@ -877,17 +897,18 @@ public class ProjectBuilder {
         return tmpBuildNumber;
     }
 
-    private static void installCocoaPodsDependencies(File projectDirectory) {
+    private static void installCocoaPodsDependencies(File projectDirectory) throws IOSException {
         try {
             ProcessBuilder processBuilder = new ProcessBuilder("pod", "install", "--repo-update");
             processBuilder.directory(projectDirectory);
             CommandHelper.performCommand(processBuilder);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new IOSException(e);
         }
     }
 
-    private static File generateExportOptionsPlist(XcodeExportOptions xcodeExportOptions, File workDirectory) {
+    private static File generateExportOptionsPlist(XcodeExportOptions xcodeExportOptions, File workDirectory) throws IOSException {
         //create tmp file path
         String plistFilePath = "/tmp/exportOptions-" + UUID.randomUUID() + ".plist";
         File plistFile = new File(plistFilePath);
@@ -919,8 +940,7 @@ public class ProjectBuilder {
             CommandHelper.performCommand(processBuilder);
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (IOSException e) {
-            e.printStackTrace();
+            throw new IOSException(e);
         }
 
         return plistFile;
