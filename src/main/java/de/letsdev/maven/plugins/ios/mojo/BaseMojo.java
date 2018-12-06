@@ -1,5 +1,5 @@
 /**
- * maven-ios-plugin
+ * ios-maven-plugin
  * <p>
  * User: cwack
  * Date: 2016-06-08

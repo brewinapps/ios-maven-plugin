@@ -11,7 +11,7 @@
 	 <plugins>
     	<plugin>
 	        <groupId>de.letsdev.maven.plugins</groupId>
-	        <artifactId>maven-ios-plugin</artifactId>
+	        <artifactId>ios-maven-plugin</artifactId>
 	        <version>1.9.3-SNAPSHOT</version>
 	        <extensions>true</extensions>                
 	        <configuration>

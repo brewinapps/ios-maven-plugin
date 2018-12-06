@@ -1,8 +1,8 @@
-# maven-ios-plugin
+# ios-maven-plugin
 
 [![Build Status](https://secure.travis-ci.org/letsdev/maven-ios-plugin.png)](http://travis-ci.org/letsdev/maven-ios-plugin)
 
-The maven-ios-plugin plugs in to the Maven build lifecycle to automate compilation and deployment of iOS applications. This enables continuous integration for the iOS platform with ease.
+The ios-maven-plugin plugs in to the Maven build lifecycle to automate compilation and deployment of iOS applications. This enables continuous integration for the iOS platform with ease.
 
 This is a plugin provided by let's dev GmbH & Co.KG
 
@@ -33,7 +33,7 @@ http://www.letsdev.de - professional mobile solutions
 
 ## Requirements
 1. The plugin relies on several tools that are only available on Mac OS X: xcodebuild, xcrun and agvtool.  Install the Xcode Command Line Tools (Xcode -> Preferences... -> Downloads).  
-2. To let maven-ios-plugin take care of versioning, be sure to set 'Versioning System' in the project settings to `apple-generic`
+2. To let ios-maven-plugin take care of versioning, be sure to set 'Versioning System' in the project settings to `apple-generic`
 
 ## Maven Goals
 
@@ -110,14 +110,14 @@ Also deploys a ios framework. Then the dependency type is "ios-framework". The f
 
 	<project>
 		<groupId>de.letsdev.ios.app.maven</groupId>
-		<artifactId>maven-ios-project</artifactId>
+		<artifactId>ios-maven-project</artifactId>
 		<packaging>ipa</packaging> <!-- <packaging>ios-framework</packaging> -->
 
 **Configure a basic POM for your iOS project or module and add:**
 
     <plugin>
         <groupId>de.letsdev.maven.plugins</groupId>
-        <artifactId>maven-ios-plugin</artifactId>
+        <artifactId>ios-maven-plugin</artifactId>
         <version>1.0</version>
         <extensions>true</extensions>                
         <configuration>
@@ -158,7 +158,7 @@ To sign the package, unlock the keychain on the jenkins node. The two commands b
 ```
     <plugin>
 	   <groupId>de.letsdev.maven.plugins</groupId>
-	      <artifactId>maven-ios-plugin</artifactId>
+	      <artifactId>ios-maven-plugin</artifactId>
 	      <version>1.12</version>
 	      <extensions>true</extensions>
 	      <configuration>
@@ -202,7 +202,7 @@ Snippet:
 
                 <plugin>
                     <groupId>de.letsdev.maven.plugins</groupId>
-                    <artifactId>maven-ios-plugin</artifactId>
+                    <artifactId>ios-maven-plugin</artifactId>
                     <version>1.9.3</version>
                     <extensions>true</extensions>
                     <configuration>
@@ -267,7 +267,7 @@ Configure the maven plugin to build an universal framework in one execution bloc
 
 <plugin>
     <groupId>de.letsdev.maven.plugins</groupId>
-    <artifactId>maven-ios-plugin</artifactId>
+    <artifactId>ios-maven-plugin</artifactId>
     <extensions>true</extensions>
     <executions>
         ...
@@ -304,7 +304,7 @@ Configure the maven plugin to build an universal framework in one execution bloc
 
 <plugin>
     <groupId>de.letsdev.maven.plugins</groupId>
-    <artifactId>maven-ios-plugin</artifactId>
+    <artifactId>ios-maven-plugin</artifactId>
     <extensions>true</extensions>
     <executions>
         ...
