@@ -44,16 +44,16 @@ public class CommandHelper {
         BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
         int rc;
-        String output = "";
+        StringBuilder output = new StringBuilder();
         int readLines = 0;
         try {
             // Display output
             String outLine;
             while ((outLine = input.readLine()) != null) {
                 if (readLines > 0) {
-                    output += "\n";
+                    output.append("\n");
                 }
-                output += outLine;
+                output.append(outLine);
                 System.out.println(outLine);
 
                 readLines++;
@@ -73,10 +73,10 @@ public class CommandHelper {
             throw new IOSException("The Xcode command was unsuccessful");
         }
 
-        return output;
+        return output.toString();
     }
 
-    public static String[] getCommand(String input) {
+    static String[] getCommand(String input) {
         StringTokenizer tokenizer = new StringTokenizer(input);
         String[] result = new String[tokenizer.countTokens()];
         for (int i = 0; tokenizer.hasMoreTokens(); i++) {
