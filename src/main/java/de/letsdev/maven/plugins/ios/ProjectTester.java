@@ -40,14 +40,18 @@ public class ProjectTester {
         InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
         OutputStream outputStream = new FileOutputStream(tempFile);
 
-        byte[] buffer = new byte[1024];
-        int bytesRead;
+        try {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
 
-        while ((bytesRead = inputStream.read(buffer)) != -1) {
-            outputStream.write(buffer, 0, bytesRead);
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
         }
-
-        outputStream.close();
+        finally {
+            outputStream.flush();
+            outputStream.close();
+        }
 
         ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", tempFile.getAbsoluteFile().toString(),
                 scheme,
@@ -68,14 +72,18 @@ public class ProjectTester {
         InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
         OutputStream outputStream = new FileOutputStream(tempFile);
 
-        byte[] buffer = new byte[1024];
-        int bytesRead;
+        try {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
 
-        while ((bytesRead = inputStream.read(buffer)) != -1) {
-            outputStream.write(buffer, 0, bytesRead);
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
         }
-
-        outputStream.close();
+        finally {
+            outputStream.flush();
+            outputStream.close();
+        }
 
         ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", tempFile.getAbsoluteFile().toString());
         processBuilder.directory(workDirectory);
