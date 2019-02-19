@@ -189,6 +189,9 @@ public class Utils {
         if (buildProperties.get(Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString()) != null) {
             projectName = buildProperties.get(Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString());
         }
+        else {
+            throw new RuntimeException("PROJECT_NAME is null, properties= " + buildProperties);
+        }
         return projectName;
     }
 
