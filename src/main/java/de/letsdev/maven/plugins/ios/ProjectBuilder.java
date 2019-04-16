@@ -88,6 +88,12 @@ public class ProjectBuilder {
             // Build the application
             buildXcodeProject(mavenProject, properties, projectDirectory, targetDirectory, projectName, false, xcodeBuildParameters);
 
+            if (xcodeExportOptions.method.equals("app-store")) {
+                //remove simulator architectures if app-store is chosen
+                removeSimulatorArchitectures(targetDirectory);
+                removeSimulatorArchitectures(projectDirectory);
+            }
+
             if (Utils.isiOSFramework(mavenProject, properties) || Utils.isMacOSFramework(properties)) {
                 String simulatorArchitectures = Utils.getArchitecturesForSdk(properties, Utils.SDK_IPHONE_SIMULATOR);
                 boolean shouldBuildSimulatorArchitectures = simulatorArchitectures != null && !simulatorArchitectures.isEmpty();
@@ -944,6 +950,37 @@ public class ProjectBuilder {
         }
 
         return plistFile;
+    }
+
+    private static void removeSimulatorArchitectures(File rootDirectory) {
+        // Run shell-script from resource-folder.
+        try {
+            final String scriptName = "remove-simulator-archs.sh";
+            File tempFile = File.createTempFile(scriptName, "sh");
+
+            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
+            OutputStream outputStream = new FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+
+            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
+                    rootDirectory.getAbsolutePath());
+
+            processBuilder.directory(rootDirectory);
+            CommandHelper.performCommand(processBuilder);
+        } catch (IOException e) {
+            e.printStackTrace();
+            //throw new IOSException(e);
+        } catch (IOSException e) {
+            e.printStackTrace();
+        }
     }
 
     private static String getXcprettyCommand(String logFileName) {
