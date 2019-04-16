@@ -131,8 +131,8 @@ public class ProjectBuilder {
                 zipCommandParams.add("-r");
                 zipCommandParams.add(targetZipPath);
                 zipCommandParams.add(frameworkName);
+                zipCommandParams.add(frameworkName+".dSYM");
                 zipCommandParams.addAll(targetDependencies);
-
                 ProcessBuilder processBuilder = new ProcessBuilder(zipCommandParams);
                 processBuilder.directory(targetWorkDirectory);
                 CommandHelper.performCommand(processBuilder);
