@@ -210,7 +210,7 @@ public class ProjectBuilder {
                 //add ipa to zip
                 zipperCommandParams = new ArrayList<String>();
                 zipperCommandParams.add("zip");
-                zipperCommandParams.add("-qjr");
+                zipperCommandParams.add("-qr");
                 zipperCommandParams.add(targetZipPath);
                 zipperCommandParams.add(ipaTargetPath.getName());
                 ProcessBuilder processBuilder = new ProcessBuilder(zipperCommandParams);
