@@ -145,7 +145,7 @@ public class ProjectBuilder {
             }
             // Generate IPA
             else {
-
+                System.out.println("MAKING IPA");
                 //unlock keychain
                 unlockKeychain(properties, mavenProject, projectDirectory); //unlock it again, if during xcrun keychain is closed automatically again.
 
@@ -194,6 +194,28 @@ public class ProjectBuilder {
                 } else {
                     codeSignBeforeXcode6(properties, projectDirectory, newAppTargetPath, ipaTargetPath, ipaTmpDir);
                 }
+
+                String targetZipPath = targetDirectory+File.separator+properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "."+"zip";
+                File dsymDir=new File(targetDirectory+File.separator+projectName+".xcarchive"+File.separator+"dSYMs");
+
+                //zip dSYM
+                List<String> zipperCommandParams = new ArrayList<String>();
+                zipperCommandParams.add("zip");
+                zipperCommandParams.add("-rq");
+                zipperCommandParams.add(targetZipPath);
+                zipperCommandParams.add( properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString())+".app.dSYM");
+                ProcessBuilder zipper = new ProcessBuilder(zipperCommandParams);
+                zipper.directory(dsymDir);
+                CommandHelper.performCommand(zipper);
+                //add ipa to zip
+                zipperCommandParams = new ArrayList<String>();
+                zipperCommandParams.add("zip");
+                zipperCommandParams.add("-qjr");
+                zipperCommandParams.add(targetZipPath);
+                zipperCommandParams.add(ipaTargetPath.getName());
+                ProcessBuilder processBuilder = new ProcessBuilder(zipperCommandParams);
+                processBuilder.directory(ipaTargetPath.getParentFile());
+                CommandHelper.performCommand(processBuilder);
             }
 
             //lock keychain
