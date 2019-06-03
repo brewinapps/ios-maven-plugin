@@ -9,6 +9,9 @@ ARCHS=$4
 DESTINATION=$5
 OTHER_ARGS=$6
 
-xcodebuild -scheme ${SCHEME} -configuration ${CONFIGURATION} -sdk ${SDK} ARCHS="'${ARCHS}'" VALID_ARCHS="'${ARCHS}'" -destination "'${DESTINATION}'" ${OTHER_ARGS}  clean test 2>&1 | tee test-results.txt
+echo "----------------------------------------------------------------------------"
+echo "executing xcodebuild -scheme $SCHEME -configuration $CONFIGURATION -sdk $SDK ARCHS='$ARCHS' VALID_ARCHS='$ARCHS' -destination '$DESTINATION' $OTHER_ARGS  clean test 2>&1 | tee test-results.txt"
+echo "----------------------------------------------------------------------------"
+eval "xcodebuild -scheme $SCHEME -configuration $CONFIGURATION -sdk $SDK ARCHS='$ARCHS' VALID_ARCHS='$ARCHS' -destination '$DESTINATION' $OTHER_ARGS  clean test 2>&1 | tee test-results.txt"
 
 cat test-results.txt | ocunit2junit
