@@ -326,7 +326,7 @@ public class BaseMojo extends AbstractMojo {
      *
      * @parameter property="ios.xcTestsDestination"
      */
-    protected String xcTestsDestination;
+    protected String xcTestsDestination = "platform=iOS Simulator,name=iPhone X,OS=latest" ;
 
     /**
      * defining the sdk for xctests execution
