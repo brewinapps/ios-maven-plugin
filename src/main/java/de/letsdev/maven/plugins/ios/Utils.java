@@ -351,4 +351,51 @@ public class Utils {
 
         return type;
     }
+
+    public static String getXcprettyCommand(String logFileName) {
+        return "| tee " + logFileName + " | xcpretty && exit ${PIPESTATUS[0]}";
+    }
+
+    public static void executeShellScript(String scriptName, String value1, String value2, String value3, File workDirectory) throws IOSException {
+
+        // Run shell-script from resource-folder.
+        try {
+            File tempFile = File.createTempFile(scriptName, "sh");
+
+            InputStream inputStream = ProjectBuilder.class
+                    .getResourceAsStream("/META-INF/" + scriptName);
+            OutputStream outputStream = new FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+
+            if (value1 == null) {
+                value1 = "";
+            }
+
+            if (value2 == null) {
+                value2 = "";
+            }
+
+            if (value3 == null) {
+                value3 = "";
+            }
+
+            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), value1, value2, value3);
+
+            processBuilder.directory(workDirectory);
+            CommandHelper.performCommand(processBuilder);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOSException(e);
+        }
+    }
 }

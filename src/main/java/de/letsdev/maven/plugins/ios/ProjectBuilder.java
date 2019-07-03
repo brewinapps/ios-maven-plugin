@@ -296,11 +296,11 @@ public class ProjectBuilder {
         }
 
         //append xcpretty arguments
-        for (String xcprettyArg : getXcprettyCommand("xcodebuild-clean.log").split(" ")) {
+        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-clean.log").split(" ")) {
             xcodebuildCommand.append(" ").append(xcprettyArg);
         }
 
-        executeShellScript("execute-xcodebuild.sh", xcodebuildCommand.toString(), null, null, workDirectory);
+        Utils.executeShellScript("execute-xcodebuild.sh", xcodebuildCommand.toString(), null, null, workDirectory);
     }
 
     private static File createPrecompileHeadersDirectory(File targetDirectory) {
@@ -447,11 +447,11 @@ public class ProjectBuilder {
         buildCommand.append(" -exportWithOriginalSigningIdentity");
 
         //append xcpretty arguments
-        for (String xcprettyArg : getXcprettyCommand("xcodebuild-codesign.log").split(" ")) {
+        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-codesign.log").split(" ")) {
             buildCommand.append(" ").append(xcprettyArg);
         }
 
-        executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, null, workDirectory);
+        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, null, workDirectory);
     }
 
     private static void codeSignAfterXcode8_3(Map<String, String> properties, MavenProject mavenProject, File workDirectory, String ipaName, File ipaBasePath, File ipaTargetPath, File ipaTmpDir, XcodeExportOptions xcodeExportOptions) throws IOSException {
@@ -476,11 +476,11 @@ public class ProjectBuilder {
         buildCommand.append(plistFilePath.getAbsolutePath());
 
         //append xcpretty arguments
-        for (String xcprettyArg : getXcprettyCommand("xcodebuild-codesign.log").split(" ")) {
+        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-codesign.log").split(" ")) {
             buildCommand.append(" ").append(xcprettyArg);
         }
 
-        executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), ipaTmpDir.getAbsolutePath(), null, workDirectory);
+        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), ipaTmpDir.getAbsolutePath(), null, workDirectory);
 
         File ipaPath = new File(ipaBasePath.getAbsolutePath() + "/" + ipaName);
 
@@ -497,7 +497,7 @@ public class ProjectBuilder {
 
     private static void unlockKeychain(Map<String, String> properties, MavenProject mavenProject, File workDirectory) throws IOSException {
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()) && properties.containsKey(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString())) {
-            executeShellScript("unlock-keychain.sh", properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()), properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()), null, workDirectory);
+            Utils.executeShellScript("unlock-keychain.sh", properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()), properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()), null, workDirectory);
         }
     }
 
@@ -616,7 +616,7 @@ public class ProjectBuilder {
         buildParameters.addAll(xcodeBuildParameters);
 
         //append xcpretty arguments
-        Collections.addAll(buildParameters, getXcprettyCommand("xcodebuild.log").split(" "));
+        Collections.addAll(buildParameters, Utils.getXcprettyCommand("xcodebuild.log").split(" "));
 
         StringBuilder buildCommand = new StringBuilder();
         for (String buildParam : buildParameters) {
@@ -624,7 +624,7 @@ public class ProjectBuilder {
             buildCommand.append(" ");
         }
 
-        executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, null, workDirectory);
+        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, null, workDirectory);
     }
 
     private static void mergeFrameworkProducts(File targetWorkDirectoryIphone, File targetWorkDirectoryIphoneSimulator, String appName, String frameworkName) throws IOSException {
@@ -800,49 +800,6 @@ public class ProjectBuilder {
         }
     }
 
-    private static void executeShellScript(String scriptName, String value1, String value2, String value3, File workDirectory) throws IOSException {
-
-        // Run shell-script from resource-folder.
-        try {
-            File tempFile = File.createTempFile(scriptName, "sh");
-
-            InputStream inputStream = ProjectBuilder.class
-                    .getResourceAsStream("/META-INF/" + scriptName);
-            OutputStream outputStream = new FileOutputStream(tempFile);
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            outputStream.close();
-
-            if (value1 == null) {
-                value1 = "";
-            }
-
-            if (value2 == null) {
-                value2 = "";
-            }
-
-            if (value3 == null) {
-                value3 = "";
-            }
-
-            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), value1, value2, value3);
-
-            processBuilder.directory(workDirectory);
-            CommandHelper.performCommand(processBuilder);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IOSException(e);
-        }
-    }
-
     private static void writeDeployPlistFile(MavenProject mavenProject, File targetDirectory, String deployPlistName, final Map<String, String> properties) throws IOSException {
         // Run shell-script from resource-folder.
         try {
@@ -946,7 +903,4 @@ public class ProjectBuilder {
         return plistFile;
     }
 
-    private static String getXcprettyCommand(String logFileName) {
-        return "| tee " + logFileName + " | xcpretty && exit ${PIPESTATUS[0]}";
-    }
 }

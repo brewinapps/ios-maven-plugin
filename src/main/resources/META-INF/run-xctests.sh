@@ -10,8 +10,8 @@ DESTINATION=$5
 OTHER_ARGS=$6
 
 echo "----------------------------------------------------------------------------"
-echo "executing xcodebuild -scheme $SCHEME -configuration $CONFIGURATION -sdk $SDK ARCHS='$ARCHS' VALID_ARCHS='$ARCHS' -destination '$DESTINATION' $OTHER_ARGS  clean test 2>&1 | tee test-results.txt"
+echo "executing xcodebuild -scheme $SCHEME -configuration $CONFIGURATION -sdk $SDK ARCHS='$ARCHS' VALID_ARCHS='$ARCHS' -destination '$DESTINATION' $OTHER_ARGS  clean test 2>&1 | tee test-results.txt | xcpretty"
 echo "----------------------------------------------------------------------------"
-eval "xcodebuild -scheme $SCHEME -configuration $CONFIGURATION -sdk $SDK ARCHS='$ARCHS' VALID_ARCHS='$ARCHS' -destination '$DESTINATION' $OTHER_ARGS  clean test 2>&1 | tee test-results.txt"
+eval "xcodebuild -scheme $SCHEME -configuration $CONFIGURATION -sdk $SDK ARCHS='$ARCHS' VALID_ARCHS='$ARCHS' -destination '$DESTINATION' $OTHER_ARGS  clean test 2>&1 | tee test-results.txt | xcpretty"
 
-cat test-results.txt | ocunit2junit
+cat test-results.txt | ocunit2junit > /dev/null
