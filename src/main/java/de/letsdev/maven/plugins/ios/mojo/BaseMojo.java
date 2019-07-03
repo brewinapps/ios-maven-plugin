@@ -98,7 +98,6 @@ public class BaseMojo extends AbstractMojo {
      */
     protected String displayName;
 
-
     /**
      * iOS scheme. This is necessary for xcarchive builds.
      * <p>
@@ -182,9 +181,9 @@ public class BaseMojo extends AbstractMojo {
      * Following will be added to code sign execution:
      * <p>
      * <pre>CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist</pre>
-     *
+     * <p>
      * This was necessary from iOS SDK 6.1 until 8.0
-     *
+     * <p>
      * Default: false
      *
      * @parameter property="ios.codeSigningWithResourceRulesEnabled"
@@ -272,11 +271,19 @@ public class BaseMojo extends AbstractMojo {
     protected String ipaVersion;
 
     /**
-     * determines if project uses cocoapods, dependencies will be installed (via pod install) and .xcworkspace will be built instead of .xcodeproj
+     * determines if project uses cocoapods, dependencies will be installed (via pod install) and .xcworkspace will
+     * be built instead of .xcodeproj
      *
      * @parameter
      */
     protected String cocoaPodsEnabled;
+
+    /**
+     * determines if project uses carthage, dependencies will be installed (via carthage update)
+     *
+     * @parameter
+     */
+    protected String carthageEnabled;
 
     /**
      * defining release task
@@ -290,7 +297,8 @@ public class BaseMojo extends AbstractMojo {
     protected String releaseTask;
 
     /**
-     * defines the path to the xcode version, which will be used for the build process. The given path will be used for the xcode-select --switch command
+     * defines the path to the xcode version, which will be used for the build process. The given path will be used
+     * for the xcode-select --switch command
      * e.g. path looks like that: /Applications/Xcode.app
      *
      * @parameter property="ios.xcodeVersion"
@@ -390,6 +398,7 @@ public class BaseMojo extends AbstractMojo {
     protected Map<String, String> properties = null;
 
     protected Map<String, String> prepareProperties() {
+
         Map<String, String> properties = new HashMap<String, String>();
 
         final String targetDir = this.mavenProject.getBuild().getDirectory();
@@ -397,17 +406,27 @@ public class BaseMojo extends AbstractMojo {
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.APP_NAME.toString(), this.appName);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.APP_ICON_NAME.toString(), this.appIconName);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString(), this.projectName);
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString(), this.gccPreprocessorDefinitions);
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPHONESIMULATOR_ARCHITECTURES.toString(), this.iphonesimulatorArchitectures);
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPHONESIMULATOR_BITCODE_ENABLED.toString(), Boolean.toString(this.iphonesimulatorBitcodeEnabled));
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPHONEOS_ARCHITECTURES.toString(), this.iphoneosArchitectures);
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IOS_FRAMEWORK_BUILD.toString(), Boolean.toString(this.iOSFrameworkBuild));
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.MACOSX_FRAMEWORK_BUILD.toString(), Boolean.toString(this.macOSFrameworkBuild));
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGNING_ENABLED.toString(), Boolean.toString(this.codeSigningEnabled));
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.BUILD_TO_XCARCHIVE_ENABLED.toString(), Boolean.toString(this.buildXCArchiveEnabled));
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_WITH_RESOURCE_RULES_ENABLED.toString(), Boolean.toString(this.codeSigningWithResourceRulesEnabled));
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.GCC_PREPROCESSOR_DEFINITIONS.toString(),
+                this.gccPreprocessorDefinitions);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPHONESIMULATOR_ARCHITECTURES.toString(),
+                this.iphonesimulatorArchitectures);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPHONESIMULATOR_BITCODE_ENABLED.toString(),
+                Boolean.toString(this.iphonesimulatorBitcodeEnabled));
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPHONEOS_ARCHITECTURES.toString(),
+                this.iphoneosArchitectures);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IOS_FRAMEWORK_BUILD.toString(),
+                Boolean.toString(this.iOSFrameworkBuild));
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.MACOSX_FRAMEWORK_BUILD.toString(),
+                Boolean.toString(this.macOSFrameworkBuild));
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGNING_ENABLED.toString(),
+                Boolean.toString(this.codeSigningEnabled));
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.BUILD_TO_XCARCHIVE_ENABLED.toString(),
+                Boolean.toString(this.buildXCArchiveEnabled));
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_WITH_RESOURCE_RULES_ENABLED.toString(),
+                Boolean.toString(this.codeSigningWithResourceRulesEnabled));
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString(), this.codeSignIdentity);
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_ENTITLEMENTS.toString(), this.codeSignEntitlements);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGN_ENTITLEMENTS.toString(),
+                this.codeSignEntitlements);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SDK.toString(), this.sdk);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SOURCE_DIRECTORY.toString(), this.sourceDir);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.TARGET_DIR.toString(), targetDir);
@@ -419,26 +438,33 @@ public class BaseMojo extends AbstractMojo {
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString(), this.keychainPassword);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.INFO_PLIST.toString(), this.infoPlist);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IPA_VERSION.toString(), this.ipaVersion);
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString(), this.provisioningProfileUUID);
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString(), this.provisioningProfileSpecifier);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString(),
+                this.provisioningProfileUUID);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString(),
+                this.provisioningProfileSpecifier);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.DEVELOPMENT_TEAM.toString(), this.developmentTeam);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString(), this.bundleIdentifier);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString(), this.displayName);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CLASSIFIER.toString(), this.classifier);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString(), this.cocoaPodsEnabled);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CARTHAGE_ENABLED.toString(), this.carthageEnabled);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RELEASE_TASK.toString(), this.releaseTask);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString(), this.xcodeVersion);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_SCHEME.toString(), this.xcTestsScheme);
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_CONFIGURATION.toString(), this.xcTestsConfiguration);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_CONFIGURATION.toString(),
+                this.xcTestsConfiguration);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_DESTINATION.toString(), this.xcTestsDestination);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_SDK.toString(), this.xcTestsSdk);
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_BUILD_ARGUMENTS.toString(), this.xcTestsBuildArguments);
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RESET_SIMULATORS.toString(), Boolean.toString(this.resetSimulators));
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_BUILD_ARGUMENTS.toString(),
+                this.xcTestsBuildArguments);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RESET_SIMULATORS.toString(),
+                Boolean.toString(this.resetSimulators));
 
         return properties;
     }
 
     protected void addProperty(Map<String, String> properties, String key, String value) {
+
         if (properties != null && key != null && value != null) {
             properties.put(key, value);
         }
@@ -446,6 +472,7 @@ public class BaseMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-         this.properties = prepareProperties();
+
+        this.properties = prepareProperties();
     }
 }
