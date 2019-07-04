@@ -98,6 +98,7 @@ public class ProjectBuilder {
             }
 
             // Build the application
+
             buildXcodeProject(mavenProject, properties, projectDirectory, targetDirectory, projectName, false,
                     xcodeBuildParameters);
 
@@ -716,9 +717,12 @@ public class ProjectBuilder {
             buildParameters.add("OTHER_CFLAGS='-fembed-bitcode'");
         }
 
-        if (shouldUseIphoneSimulatorSDK) {
-            buildParameters.add("CONFIGURATION_BUILD_DIR=\"" + targetDirectory.getAbsolutePath() + "/" + properties.get(
-                    Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR + "\"");
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCTEST_DERIVED_DATA_PATH.toString())) {
+            buildParameters.add(
+                    "-derivedDataPath " + properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_DERIVED_DATA_PATH.toString()));
+        } else if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
+            buildParameters.add(
+                    "-derivedDataPath " + properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()));
         }
 
         //add each dynamic parameter from pom

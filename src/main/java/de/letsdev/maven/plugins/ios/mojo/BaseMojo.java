@@ -326,7 +326,7 @@ public class BaseMojo extends AbstractMojo {
      *
      * @parameter property="ios.xcTestsDestination"
      */
-    protected String xcTestsDestination = "platform=iOS Simulator,name=iPhone X,OS=latest" ;
+    protected String xcTestsDestination = "platform=iOS Simulator,name=iPhone X,OS=latest";
 
     /**
      * defining the sdk for xctests execution
@@ -343,6 +343,20 @@ public class BaseMojo extends AbstractMojo {
      * default-value="GCC_SYMBOLS_PRIVATE_EXTERN=NO COPY_PHASE_STRIP=NO"
      */
     protected String xcTestsBuildArguments;
+
+    /**
+     * defining the path for the build folder
+     *
+     * @parameter
+     */
+    protected String derivedDataPath;
+
+    /**
+     * defining the path for the build folder when you run tests
+     *
+     * @parameter
+     */
+    protected String xcTestsDerivedDataPath;
 
     /**
      * defining if simulators should be resetted
@@ -459,6 +473,9 @@ public class BaseMojo extends AbstractMojo {
                 this.xcTestsBuildArguments);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RESET_SIMULATORS.toString(),
                 Boolean.toString(this.resetSimulators));
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString(), this.derivedDataPath);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_DERIVED_DATA_PATH.toString(),
+                this.xcTestsDerivedDataPath);
 
         return properties;
     }

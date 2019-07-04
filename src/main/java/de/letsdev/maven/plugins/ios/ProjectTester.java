@@ -41,6 +41,11 @@ public class ProjectTester {
         StringBuilder otherArguments = new StringBuilder();
         otherArguments.append(properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_BUILD_ARGUMENTS.toString()));
 
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
+            otherArguments.append(
+                    "-derivedDataPath " + properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()));
+        }
+
         final String scriptName = "run-xctests.sh";
 
         File tempFile = File.createTempFile(scriptName, "sh");

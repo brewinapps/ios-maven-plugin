@@ -92,7 +92,9 @@ public class Utils {
         XCTEST_DESTINATION("xcTestsDestination"),
         XCTEST_SDK("xcTestsSdk"),
         XCTEST_BUILD_ARGUMENTS("xcTestsBuildArguments"),
-        RESET_SIMULATORS("resetSimulators");
+        RESET_SIMULATORS("resetSimulators"),
+        DERIVED_DATA_PATH("derivedDataPath"),
+        XCTEST_DERIVED_DATA_PATH("xcTestsDerivedDataPath");
 
         private PLUGIN_PROPERTIES(String name) {
 
