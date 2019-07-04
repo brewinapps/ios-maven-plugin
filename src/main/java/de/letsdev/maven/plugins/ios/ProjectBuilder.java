@@ -654,17 +654,17 @@ public class ProjectBuilder {
         }
 
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(
-                Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString())) {
+                Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()) && !properties.get(
+                Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()).equals("")) {
             buildParameters.add("PROVISIONING_PROFILE=\"" + properties.get(
                     Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()) + "\"");
         }
 
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(
-                Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString())) {
+                Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString()) && !properties.get(
+                Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString()).equals("")) {
             buildParameters.add("PROVISIONING_PROFILE_SPECIFIER=\"" + properties.get(
                     Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString()) + "\"");
-        } else {
-            buildParameters.add("PROVISIONING_PROFILE_SPECIFIER=");
         }
 
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(
@@ -717,10 +717,7 @@ public class ProjectBuilder {
             buildParameters.add("OTHER_CFLAGS='-fembed-bitcode'");
         }
 
-        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCTEST_DERIVED_DATA_PATH.toString())) {
-            buildParameters.add(
-                    "-derivedDataPath " + properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_DERIVED_DATA_PATH.toString()));
-        } else if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
             buildParameters.add(
                     "-derivedDataPath " + properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()));
         }
