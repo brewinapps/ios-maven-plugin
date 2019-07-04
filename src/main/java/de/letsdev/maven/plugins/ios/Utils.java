@@ -390,9 +390,20 @@ public class Utils {
         return type;
     }
 
-    public static String getXcprettyCommand(String logFileName) {
+    public static String getXcprettyCommand(String logFileName, String jsonOutputFile) {
 
-        return "| tee " + logFileName + " | xcpretty && exit ${PIPESTATUS[0]}";
+        String xcPrettyStatement = "";
+        if (jsonOutputFile != null && !jsonOutputFile.isEmpty()) {
+            xcPrettyStatement += "| XCPRETTY_JSON_FILE_OUTPUT=" + jsonOutputFile;
+        } else {
+            xcPrettyStatement += " | tee " + logFileName + " |";
+        }
+        xcPrettyStatement += " xcpretty";
+        if (jsonOutputFile != null && !jsonOutputFile.isEmpty()) {
+            xcPrettyStatement += " -f `xcpretty-json-formatter`";
+        }
+        xcPrettyStatement += " && exit ${PIPESTATUS[0]}";
+        return xcPrettyStatement;
     }
 
     public static void executeShellScript(String scriptName, String value1, String value2, String value3,

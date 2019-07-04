@@ -349,7 +349,12 @@ public class ProjectBuilder {
         }
 
         //append xcpretty arguments
-        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-clean.log").split(" ")) {
+        String jsonOutputFile = "";
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
+            jsonOutputFile += properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()) + "/";
+        }
+        jsonOutputFile += "build/reports/result-clean.json";
+        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-clean.log", jsonOutputFile).split(" ")) {
             xcodebuildCommand.append(" ").append(xcprettyArg);
         }
 
@@ -524,7 +529,7 @@ public class ProjectBuilder {
         buildCommand.append(" -exportWithOriginalSigningIdentity");
 
         //append xcpretty arguments
-        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-codesign.log").split(" ")) {
+        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-codesign.log", null).split(" ")) {
             buildCommand.append(" ").append(xcprettyArg);
         }
 
@@ -558,7 +563,7 @@ public class ProjectBuilder {
         buildCommand.append(plistFilePath.getAbsolutePath());
 
         //append xcpretty arguments
-        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-codesign.log").split(" ")) {
+        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-codesign.log", null).split(" ")) {
             buildCommand.append(" ").append(xcprettyArg);
         }
 
@@ -726,7 +731,14 @@ public class ProjectBuilder {
         buildParameters.addAll(xcodeBuildParameters);
 
         //append xcpretty arguments
-        Collections.addAll(buildParameters, Utils.getXcprettyCommand("xcodebuild.log").split(" "));
+
+        String jsonOutputFile = "";
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
+            jsonOutputFile += properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()) + "/";
+        }
+
+        jsonOutputFile += "build/reports/result-build.json";
+        Collections.addAll(buildParameters, Utils.getXcprettyCommand("xcodebuild.log", jsonOutputFile).split(" "));
 
         StringBuilder buildCommand = new StringBuilder();
         for (String buildParam : buildParameters) {
