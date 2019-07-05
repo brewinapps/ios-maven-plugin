@@ -390,6 +390,15 @@ public class Utils {
         return type;
     }
 
+    public static boolean shouldUseWorkspaceFile(Map<String, String> properties) {
+
+        if(properties.containsKey(PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString())) {
+            return properties.get(PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString()).equals("true");
+        }
+
+        return false;
+    }
+
     public static String getXcprettyCommand(String logFileName, String jsonOutputFile) {
 
         String xcPrettyStatement = "";
@@ -447,5 +456,14 @@ public class Utils {
             e.printStackTrace();
             throw new IOSException(e);
         }
+    }
+
+    public static String createJsonOutputFilePath(String relativeFilePath, Map<String, String> properties){
+        String jsonOutputFile = "";
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
+            jsonOutputFile += properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()) + "/";
+        }
+        jsonOutputFile += relativeFilePath;
+        return jsonOutputFile;
     }
 }

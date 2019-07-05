@@ -349,11 +349,7 @@ public class ProjectBuilder {
         }
 
         //append xcpretty arguments
-        String jsonOutputFile = "";
-        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
-            jsonOutputFile += properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()) + "/";
-        }
-        jsonOutputFile += "build/reports/result-clean.json";
+        String jsonOutputFile = Utils.createJsonOutputFilePath("build/reports/result-clean.json", properties);
         for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-clean.log", jsonOutputFile).split(" ")) {
             xcodebuildCommand.append(" ").append(xcprettyArg);
         }
@@ -529,7 +525,8 @@ public class ProjectBuilder {
         buildCommand.append(" -exportWithOriginalSigningIdentity");
 
         //append xcpretty arguments
-        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-codesign.log", null).split(" ")) {
+        String jsonOutputFile = Utils.createJsonOutputFilePath("build/reports/result-codesign.json", properties);
+        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-codesign.log", jsonOutputFile).split(" ")) {
             buildCommand.append(" ").append(xcprettyArg);
         }
 
@@ -563,7 +560,8 @@ public class ProjectBuilder {
         buildCommand.append(plistFilePath.getAbsolutePath());
 
         //append xcpretty arguments
-        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-codesign.log", null).split(" ")) {
+        String jsonOutputFile = Utils.createJsonOutputFilePath("build/reports/result-codesign.json", properties);
+        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-codesign.log", jsonOutputFile).split(" ")) {
             buildCommand.append(" ").append(xcprettyArg);
         }
 
@@ -603,7 +601,7 @@ public class ProjectBuilder {
         buildParameters.add("xcodebuild");
 
         //if cocoa pods is enabled, we have to build the .xcworkspace file instead of .xcodeproj
-        if (Utils.cocoaPodsEnabled(properties)) {
+        if (Utils.shouldUseWorkspaceFile(properties)) {
             buildParameters.add("-workspace");
             buildParameters.add(projectName + ".xcworkspace");
         }
@@ -732,12 +730,7 @@ public class ProjectBuilder {
 
         //append xcpretty arguments
 
-        String jsonOutputFile = "";
-        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
-            jsonOutputFile += properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()) + "/";
-        }
-
-        jsonOutputFile += "build/reports/result-build.json";
+        String jsonOutputFile = Utils.createJsonOutputFilePath("build/reports/result-build.json", properties);
         Collections.addAll(buildParameters, Utils.getXcprettyCommand("xcodebuild.log", jsonOutputFile).split(" "));
 
         StringBuilder buildCommand = new StringBuilder();

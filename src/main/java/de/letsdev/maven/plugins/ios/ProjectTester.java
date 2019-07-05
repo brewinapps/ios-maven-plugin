@@ -41,6 +41,11 @@ public class ProjectTester {
         StringBuilder otherArguments = new StringBuilder();
         otherArguments.append(properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_BUILD_ARGUMENTS.toString()));
 
+        if (Utils.shouldUseWorkspaceFile(properties)) {
+            otherArguments.append("-workspace");
+            otherArguments.append(projectName + ".xcworkspace");
+        }
+
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCTEST_DERIVED_DATA_PATH.toString())) {
             otherArguments.append(" " + "-derivedDataPath " + properties.get(
                     Utils.PLUGIN_PROPERTIES.XCTEST_DERIVED_DATA_PATH.toString()));
@@ -48,6 +53,9 @@ public class ProjectTester {
             otherArguments.append(
                     " " + "-derivedDataPath " + properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()));
         }
+
+        String jsonOutputFile = Utils.createJsonOutputFilePath("build/reports/result-test.json", properties);
+        String xcPrettyCommand = Utils.getXcprettyCommand("testResults.txt", jsonOutputFile);
 
         final String scriptName = "run-xctests.sh";
 
@@ -68,7 +76,7 @@ public class ProjectTester {
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", tempFile.getAbsoluteFile().toString(), scheme,
-                configuration, sdk, sdkArchs, destination, otherArguments.toString());
+                configuration, sdk, sdkArchs, destination, otherArguments.toString(), xcPrettyCommand);
 
         processBuilder.directory(workDirectory);
         CommandHelper.performCommand(processBuilder);
