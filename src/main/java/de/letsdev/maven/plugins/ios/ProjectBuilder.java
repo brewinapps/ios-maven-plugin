@@ -57,12 +57,6 @@ public class ProjectBuilder {
         String currentXcodeVersion = Utils.getCurrentXcodeVersion(projectDirectory);
 
         try {
-            //determine if xcode version is set as parameter
-            if (properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()) != null && !properties.get(
-                    Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
-                selectXcodeVersion(properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()), projectDirectory);
-            }
-
             //replace all configured files
             if (fileReplacements != null && fileReplacements.size() > 0) {
                 replaceFiles(fileReplacements, projectDirectory);
@@ -248,46 +242,6 @@ public class ProjectBuilder {
             System.err.println("exception occurred while building project, e=" + e.getMessage());
 
             throw new IOSException(e.getMessage());
-        } finally {
-            //determine if xcode version is set as parameter
-            if (properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()) != null && !properties.get(
-                    Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
-                //return to previous xcode version
-                selectXcodeVersion(currentXcodeVersion, projectDirectory);
-            }
-        }
-    }
-
-    private static void selectXcodeVersion(String xcodeVersionPath, File workDirectory) throws IOSException {
-        // Run shell-script from resource-folder.
-        try {
-            final String scriptName = "set-xcode-version.sh";
-            File tempFile = File.createTempFile(scriptName, "sh");
-
-            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
-            OutputStream outputStream = new FileOutputStream(tempFile);
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            outputStream.close();
-
-            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
-                    xcodeVersionPath);
-
-            processBuilder.directory(workDirectory);
-            CommandHelper.performCommand(processBuilder);
-            System.out.println("############################################################################");
-            System.out.println("################################ set " + xcodeVersionPath
-                    + " as current xcode version ################################ set ");
-            System.out.println("############################################################################");
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IOSException(e);
         }
     }
 

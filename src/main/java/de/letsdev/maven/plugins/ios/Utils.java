@@ -94,7 +94,8 @@ public class Utils {
         XCTEST_BUILD_ARGUMENTS("xcTestsBuildArguments"),
         RESET_SIMULATORS("resetSimulators"),
         DERIVED_DATA_PATH("derivedDataPath"),
-        XCTEST_DERIVED_DATA_PATH("xcTestsDerivedDataPath");
+        XCTEST_DERIVED_DATA_PATH("xcTestsDerivedDataPath"),
+        PROVISIONING_PROFILE_NAME("provisioningProfileName");
 
         private PLUGIN_PROPERTIES(String name) {
 
@@ -347,6 +348,39 @@ public class Utils {
         return xcodeVersion;
     }
 
+    public static String getTeamId(File workDirectory, String provisioningProfileUuid) {
+        String teamId = "";
+
+        // Run shell-script from resource-folder.
+        try {
+            final String scriptName = "get-team-id.sh";
+            File tempFile = File.createTempFile(scriptName, "sh");
+
+            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
+            OutputStream outputStream = new FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+
+            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), provisioningProfileUuid);
+
+            processBuilder.directory(workDirectory);
+            teamId = CommandHelper.performCommand(processBuilder);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IOSException e) {
+            e.printStackTrace();
+        }
+
+        return teamId;
+    }
+
     public static String getArchitecturesForSdk(Map<String, String> properties, String sdk) {
 
         String architectures = properties.get(PLUGIN_PROPERTIES.IPHONEOS_ARCHITECTURES.toString());
@@ -392,7 +426,7 @@ public class Utils {
 
     public static boolean shouldUseWorkspaceFile(Map<String, String> properties) {
 
-        if(properties.containsKey(PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString())) {
+        if (properties.containsKey(PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString())) {
             return properties.get(PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString()).equals("true");
         }
 
@@ -458,7 +492,8 @@ public class Utils {
         }
     }
 
-    public static String createJsonOutputFilePath(String relativeFilePath, Map<String, String> properties){
+    public static String createJsonOutputFilePath(String relativeFilePath, Map<String, String> properties) {
+
         String jsonOutputFile = "";
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
             jsonOutputFile += properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()) + "/";

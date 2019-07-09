@@ -11,14 +11,26 @@
 
 package de.letsdev.maven.plugins.ios.mojo;
 
+import de.letsdev.maven.plugins.ios.CommandHelper;
+import de.letsdev.maven.plugins.ios.ProjectBuilder;
+import de.letsdev.maven.plugins.ios.ProvisioningProfileData;
+import de.letsdev.maven.plugins.ios.ProvisioningProfileHelper;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.letsdev.maven.plugins.ios.mojo.container.FileReplacement;
 import de.letsdev.maven.plugins.ios.Utils;
@@ -409,6 +421,14 @@ public class BaseMojo extends AbstractMojo {
      * @readonly
      */
     protected MavenProject mavenProject;
+
+    /**
+     * The filename of the provisioning profile
+     *
+     * @parameter
+     */
+    protected String provisioningProfileName;
+
     protected Map<String, String> properties = null;
 
     protected Map<String, String> prepareProperties() {
@@ -476,6 +496,8 @@ public class BaseMojo extends AbstractMojo {
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString(), this.derivedDataPath);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_DERIVED_DATA_PATH.toString(),
                 this.xcTestsDerivedDataPath);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_NAME.toString(),
+                this.provisioningProfileName);
 
         return properties;
     }
@@ -491,5 +513,76 @@ public class BaseMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         this.properties = prepareProperties();
+
+        if (properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()) != null && !properties.get(
+                Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
+            try {
+                selectXcodeVersion(properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()),
+                        Utils.getWorkDirectory(properties, mavenProject, projectName));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (this.provisioningProfileName != null && !this.provisioningProfileName.equals("")) {
+            ProvisioningProfileHelper helper = new ProvisioningProfileHelper(this.provisioningProfileName, properties,
+                    mavenProject);
+            try {
+                ProvisioningProfileData data = helper.getData();
+                this.xcodeExportOptions.provisioningProfiles = new HashMap<>();
+                this.xcodeExportOptions.provisioningProfiles.put("bundleIdentifier", data.getUuid());
+                this.provisioningProfileSpecifier = null;
+                this.xcodeExportOptions.teamID = data.getTeamID();
+                this.xcodeExportOptions.method = data.getType().toString();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static void selectXcodeVersion(String xcodeVersionPath, File workDirectory) throws IOSException {
+        // Run shell-script from resource-folder.
+        try {
+            final String scriptName = "set-xcode-version.sh";
+            File tempFile = File.createTempFile(scriptName, "sh");
+
+            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
+            OutputStream outputStream = new FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+
+            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
+                    xcodeVersionPath);
+
+            processBuilder.directory(workDirectory);
+            CommandHelper.performCommand(processBuilder);
+            System.out.println("############################################################################");
+            System.out.println("################################ set " + xcodeVersionPath
+                    + " as current xcode version ################################ set ");
+            System.out.println("############################################################################");
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOSException(e);
+        }
+    }
+
+    protected void resetXcodeVersion(File workDirectory) throws IOSException {
+
+        try {
+            if (properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()) != null && !properties.get(
+                    Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
+                selectXcodeVersion(properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()),
+                        Utils.getWorkDirectory(properties, mavenProject, projectName));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
