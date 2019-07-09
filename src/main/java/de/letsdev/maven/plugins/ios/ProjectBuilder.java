@@ -53,9 +53,6 @@ public class ProjectBuilder {
         String schemeName = properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString());
         File projectDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
 
-        //get current xcode version
-        String currentXcodeVersion = Utils.getCurrentXcodeVersion(projectDirectory);
-
         try {
             //replace all configured files
             if (fileReplacements != null && fileReplacements.size() > 0) {

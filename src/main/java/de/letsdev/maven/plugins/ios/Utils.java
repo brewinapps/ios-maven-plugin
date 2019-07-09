@@ -207,7 +207,7 @@ public class Utils {
         return new File(mavenProject.getBuild().getDirectory());
     }
 
-    protected static String buildProjectName(Map<String, String> buildProperties, MavenProject mavenProject) {
+    public static String buildProjectName(Map<String, String> buildProperties, MavenProject mavenProject) {
 
         String projectName = mavenProject.getArtifactId();
         if (buildProperties.get(Utils.PLUGIN_PROPERTIES.PROJECT_NAME.toString()) != null) {

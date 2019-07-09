@@ -39,6 +39,8 @@ import de.letsdev.maven.plugins.ios.mojo.container.XcodeExportOptions;
 
 public class BaseMojo extends AbstractMojo {
 
+    private String currentXcodeVersion = null;
+
     /**
      * iOS Source Directory
      *
@@ -514,6 +516,15 @@ public class BaseMojo extends AbstractMojo {
 
         this.properties = prepareProperties();
 
+        try {
+            String projectName = Utils.buildProjectName(properties, mavenProject);
+            String schemeName = properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString());
+            File projectDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
+            this.currentXcodeVersion = Utils.getCurrentXcodeVersion(projectDirectory);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         if (properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()) != null && !properties.get(
                 Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
             try {
@@ -576,10 +587,8 @@ public class BaseMojo extends AbstractMojo {
     protected void resetXcodeVersion(File workDirectory) throws IOSException {
 
         try {
-            if (properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()) != null && !properties.get(
-                    Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
-                selectXcodeVersion(properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()),
-                        Utils.getWorkDirectory(properties, mavenProject, projectName));
+            if (currentXcodeVersion != null) {
+                selectXcodeVersion(currentXcodeVersion, Utils.getWorkDirectory(properties, mavenProject, projectName));
             }
         } catch (Exception e) {
             e.printStackTrace();
