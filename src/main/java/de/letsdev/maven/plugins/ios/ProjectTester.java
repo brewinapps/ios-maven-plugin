@@ -14,12 +14,18 @@ package de.letsdev.maven.plugins.ios;
 import org.apache.maven.project.MavenProject;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import de.letsdev.maven.plugins.ios.mojo.IOSException;
 
 public class ProjectTester {
-    public static void test(final Map<String, String> properties, MavenProject mavenProject) throws IOSException, IOException {
+
+    public static void test(final Map<String, String> properties,
+                            MavenProject mavenProject) throws IOSException, IOException {
+
         String projectName = Utils.buildProjectName(properties, mavenProject);
         File workDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
 
@@ -32,7 +38,24 @@ public class ProjectTester {
         String sdk = properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_SDK.toString());
         String sdkArchs = Utils.getArchitecturesForSdk(properties, sdk);
         String destination = properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_DESTINATION.toString());
-        String otherArguments = properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_BUILD_ARGUMENTS.toString());
+        StringBuilder otherArguments = new StringBuilder();
+        otherArguments.append(properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_BUILD_ARGUMENTS.toString()));
+
+        if (Utils.shouldUseWorkspaceFile(properties)) {
+            otherArguments.append("-workspace");
+            otherArguments.append(projectName + ".xcworkspace");
+        }
+
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCTEST_DERIVED_DATA_PATH.toString())) {
+            otherArguments.append(" " + "-derivedDataPath " + properties.get(
+                    Utils.PLUGIN_PROPERTIES.XCTEST_DERIVED_DATA_PATH.toString()));
+        } else if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
+            otherArguments.append(
+                    " " + "-derivedDataPath " + properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()));
+        }
+
+        String jsonOutputFile = Utils.createJsonOutputFilePath("build/reports/result-test.json", properties);
+        String xcPrettyCommand = Utils.getXcprettyCommand("testResults.txt", jsonOutputFile);
 
         final String scriptName = "run-xctests.sh";
 
@@ -47,25 +70,20 @@ public class ProjectTester {
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, bytesRead);
             }
-        }
-        finally {
+        } finally {
             outputStream.flush();
             outputStream.close();
         }
 
-        ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", tempFile.getAbsoluteFile().toString(),
-                scheme,
-                configuration,
-                sdk,
-                sdkArchs,
-                destination,
-                otherArguments);
+        ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", tempFile.getAbsoluteFile().toString(), scheme,
+                configuration, sdk, sdkArchs, destination, otherArguments.toString(), xcPrettyCommand);
 
         processBuilder.directory(workDirectory);
         CommandHelper.performCommand(processBuilder);
     }
 
     private static void resetSimulators(File workDirectory) throws IOSException, IOException {
+
         final String scriptName = "reset-simulators.sh";
 
         File tempFile = File.createTempFile(scriptName, "sh");
@@ -79,8 +97,7 @@ public class ProjectTester {
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, bytesRead);
             }
-        }
-        finally {
+        } finally {
             outputStream.flush();
             outputStream.close();
         }
