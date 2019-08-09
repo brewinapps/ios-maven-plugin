@@ -300,7 +300,7 @@ public class ProjectBuilder {
         }
 
         //append xcpretty arguments
-        String jsonOutputFile = Utils.createJsonOutputFilePath("build/reports/result-clean.json", properties);
+        String jsonOutputFile = Utils.createJsonOutputFilePath("result-clean.json", properties);
         for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-clean.log", jsonOutputFile).split(" ")) {
             xcodebuildCommand.append(" ").append(xcprettyArg);
         }
@@ -476,7 +476,7 @@ public class ProjectBuilder {
         buildCommand.append(" -exportWithOriginalSigningIdentity");
 
         //append xcpretty arguments
-        String jsonOutputFile = Utils.createJsonOutputFilePath("build/reports/result-codesign.json", properties);
+        String jsonOutputFile = Utils.createJsonOutputFilePath("result-codesign.json", properties);
         for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-codesign.log", jsonOutputFile).split(" ")) {
             buildCommand.append(" ").append(xcprettyArg);
         }
@@ -511,7 +511,7 @@ public class ProjectBuilder {
         buildCommand.append(plistFilePath.getAbsolutePath());
 
         //append xcpretty arguments
-        String jsonOutputFile = Utils.createJsonOutputFilePath("build/reports/result-codesign.json", properties);
+        String jsonOutputFile = Utils.createJsonOutputFilePath("result-codesign.json", properties);
         for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-codesign.log", jsonOutputFile).split(" ")) {
             buildCommand.append(" ").append(xcprettyArg);
         }
@@ -681,7 +681,7 @@ public class ProjectBuilder {
 
         //append xcpretty arguments
 
-        String jsonOutputFile = Utils.createJsonOutputFilePath("build/reports/result-build.json", properties);
+        String jsonOutputFile = Utils.createJsonOutputFilePath("result-build.json", properties);
         Collections.addAll(buildParameters, Utils.getXcprettyCommand("xcodebuild.log", jsonOutputFile).split(" "));
 
         StringBuilder buildCommand = new StringBuilder();

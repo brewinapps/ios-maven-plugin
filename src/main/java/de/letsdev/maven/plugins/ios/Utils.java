@@ -348,39 +348,6 @@ public class Utils {
         return xcodeVersion;
     }
 
-    public static String getTeamId(File workDirectory, String provisioningProfileUuid) {
-        String teamId = "";
-
-        // Run shell-script from resource-folder.
-        try {
-            final String scriptName = "get-team-id.sh";
-            File tempFile = File.createTempFile(scriptName, "sh");
-
-            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
-            OutputStream outputStream = new FileOutputStream(tempFile);
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            outputStream.close();
-
-            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), provisioningProfileUuid);
-
-            processBuilder.directory(workDirectory);
-            teamId = CommandHelper.performCommand(processBuilder);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (IOSException e) {
-            e.printStackTrace();
-        }
-
-        return teamId;
-    }
-
     public static String getArchitecturesForSdk(Map<String, String> properties, String sdk) {
 
         String architectures = properties.get(PLUGIN_PROPERTIES.IPHONEOS_ARCHITECTURES.toString());
@@ -498,6 +465,7 @@ public class Utils {
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
             jsonOutputFile += properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()) + "/";
         }
+        jsonOutputFile += "build/reports/";
         jsonOutputFile += relativeFilePath;
         return jsonOutputFile;
     }

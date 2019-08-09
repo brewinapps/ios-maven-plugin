@@ -290,14 +290,14 @@ public class BaseMojo extends AbstractMojo {
      *
      * @parameter
      */
-    protected String cocoaPodsEnabled;
+    protected boolean cocoaPodsEnabled = false;
 
     /**
      * determines if project uses carthage, dependencies will be installed (via carthage update)
      *
      * @parameter
      */
-    protected String carthageEnabled;
+    protected boolean carthageEnabled = false;
 
     /**
      * defining release task
@@ -482,8 +482,10 @@ public class BaseMojo extends AbstractMojo {
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString(), this.bundleIdentifier);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString(), this.displayName);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CLASSIFIER.toString(), this.classifier);
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString(), this.cocoaPodsEnabled);
-        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CARTHAGE_ENABLED.toString(), this.carthageEnabled);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString(),
+                Boolean.toString(this.cocoaPodsEnabled));
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CARTHAGE_ENABLED.toString(),
+                Boolean.toString(this.carthageEnabled));
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RELEASE_TASK.toString(), this.releaseTask);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString(), this.xcodeVersion);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_SCHEME.toString(), this.xcTestsScheme);
@@ -516,14 +518,12 @@ public class BaseMojo extends AbstractMojo {
 
         this.properties = prepareProperties();
 
-        try {
-            String projectName = Utils.buildProjectName(properties, mavenProject);
-            String schemeName = properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString());
-            File projectDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
-            this.currentXcodeVersion = Utils.getCurrentXcodeVersion(projectDirectory);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.setXcodeVersion();
+
+        this.setXcodeExportOptions();
+    }
+
+    private void setXcodeExportOptions() {
 
         if (properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()) != null && !properties.get(
                 Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
@@ -536,18 +536,34 @@ public class BaseMojo extends AbstractMojo {
         }
 
         if (this.provisioningProfileName != null && !this.provisioningProfileName.equals("")) {
+
             ProvisioningProfileHelper helper = new ProvisioningProfileHelper(this.provisioningProfileName, properties,
                     mavenProject);
             try {
                 ProvisioningProfileData data = helper.getData();
-                this.xcodeExportOptions.provisioningProfiles = new HashMap<>();
-                this.xcodeExportOptions.provisioningProfiles.put("bundleIdentifier", data.getUuid());
+                if (this.xcodeExportOptions.provisioningProfiles == null) {
+                    this.xcodeExportOptions.provisioningProfiles = new HashMap<>();
+                }
+                this.xcodeExportOptions.provisioningProfiles.put(this.bundleIdentifier, data.getUuid());
+                this.provisioningProfileUUID = data.getUuid();
                 this.provisioningProfileSpecifier = null;
                 this.xcodeExportOptions.teamID = data.getTeamID();
+                this.developmentTeam = data.getTeamID();
                 this.xcodeExportOptions.method = data.getType().toString();
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void setXcodeVersion() {
+
+        try {
+            String projectName = Utils.buildProjectName(properties, mavenProject);
+            File projectDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
+            this.currentXcodeVersion = Utils.getCurrentXcodeVersion(projectDirectory);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

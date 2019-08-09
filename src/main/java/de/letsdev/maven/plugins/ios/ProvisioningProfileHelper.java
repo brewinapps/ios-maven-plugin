@@ -18,14 +18,14 @@ import java.util.Map;
 public class ProvisioningProfileHelper {
 
     private static final String provisioningProfileDirectory =
-            "/Users/mauer/Library/MobileDevice/Provisioning\\ " + "Profiles";
+            System.getProperty("user.home") + "/Library/MobileDevice/Provisioning\\ " + "Profiles";
     private static final String provisioningProfileFileExtension = ".mobileprovision";
     private static final String shellScriptFileName = "load-xml-file.sh";
     private final String provisioningProfileName;
     private final Map<String, String> properties;
     private MavenProject mavenProject;
     private String projectName;
-    File workDirectory;
+    private File workDirectory;
 
     public ProvisioningProfileHelper(String provisioningProfileName, Map<String, String> properties,
                                      MavenProject mavenProject) {
@@ -43,6 +43,13 @@ public class ProvisioningProfileHelper {
     }
 
     public ProvisioningProfileData getData() throws IOSException, IOException {
+
+        File outputFile = this.buildProcess();
+
+        return this.createProvisioningProfileData(outputFile);
+    }
+
+    private File buildProcess() throws IOSException, IOException {
 
         final String filepath = getProvisioningProfileFilePath(this.provisioningProfileName);
 
@@ -70,12 +77,17 @@ public class ProvisioningProfileHelper {
         processBuilder.redirectOutput(outputFile);
         CommandHelper.performCommand(processBuilder);
 
+        return outputFile;
+    }
+
+    private ProvisioningProfileData createProvisioningProfileData(File inputFile) {
+
         Document doc;
 
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            doc = dBuilder.parse(outputFile);
+            doc = dBuilder.parse(inputFile);
             doc.getDocumentElement().normalize();
             String uuid = null;
             String teamID = null;
@@ -129,13 +141,9 @@ public class ProvisioningProfileHelper {
 
             if (checkKey("get-task-allow", nodeList.item(i))) {
                 type = ProvisioningProfileType.TYPE_DEVELOPEMENT;
-            }
-            if (checkKey("ProvisionsAllDevices", nodeList.item(i))
-                    && type != ProvisioningProfileType.TYPE_DEVELOPEMENT) {
+            } else if (checkKey("ProvisionsAllDevices", nodeList.item(i))) {
                 type = ProvisioningProfileType.TYPE_ENTERPRISE;
-            }
-
-            if (nodeList.item(i).getFirstChild().getNodeValue().equals("ProvisionedDevices") && type == null) {
+            } else if (nodeList.item(i).getFirstChild().getNodeValue().equals("ProvisionedDevices")) {
                 Node current = nodeList.item(i).getNextSibling();
                 while (true) {
                     current = current.getNextSibling();
