@@ -361,14 +361,14 @@ public class BaseMojo extends AbstractMojo {
     /**
      * defining the path for the build folder
      *
-     * @parameter
+     * @parameter property="ios.derivedDataPath"
      */
     protected String derivedDataPath;
 
     /**
      * defining the path for the build folder when you run tests
      *
-     * @parameter
+     * @parameter property="ios.xcTestsDerivedDataPath"
      */
     protected String xcTestsDerivedDataPath;
 
