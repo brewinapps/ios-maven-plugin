@@ -700,10 +700,10 @@ public class ProjectBuilder {
         final String scriptName = "merge-framework-products";
 
         final String iphoneosFrameworkProductPath =
-                targetWorkDirectoryIphone.toString() + "/" + frameworkName + "/" + appName;
+                targetWorkDirectoryIphone.toString() + "/" + frameworkName;
         final String iphoneSimulatorFrameworkProductPath =
-                targetWorkDirectoryIphoneSimulator.toString() + "/" + frameworkName + "/" + appName;
-        final String mergedFrameworkPath = targetWorkDirectoryIphone.toString() + "/" + frameworkName + "/" + appName;
+                targetWorkDirectoryIphoneSimulator.toString() + "/" + frameworkName;
+        final String mergedFrameworkPath = targetWorkDirectoryIphone.toString() + "/" + frameworkName;
 
         File tempFile;
         try {
@@ -739,7 +739,7 @@ public class ProjectBuilder {
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
-                iphoneosFrameworkProductPath, iphoneSimulatorFrameworkProductPath, mergedFrameworkPath);
+                iphoneosFrameworkProductPath, iphoneSimulatorFrameworkProductPath, mergedFrameworkPath, appName);
 
         processBuilder.directory(targetWorkDirectoryIphone);
         CommandHelper.performCommand(processBuilder);
