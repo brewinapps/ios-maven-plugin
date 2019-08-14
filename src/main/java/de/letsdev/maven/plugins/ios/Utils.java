@@ -465,7 +465,7 @@ public class Utils {
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
             jsonOutputFile += properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()) + "/";
         }
-        jsonOutputFile += "build/reports/";
+        jsonOutputFile += "Build/reports/";
         jsonOutputFile += relativeFilePath;
         return jsonOutputFile;
     }
