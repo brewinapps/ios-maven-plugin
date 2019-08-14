@@ -11,8 +11,8 @@ OTHER_ARGS=$6
 XCPRETTY_COMMAND=$7
 
 echo "----------------------------------------------------------------------------"
-echo "xcodebuild -scheme $SCHEME -configuration $CONFIGURATION -sdk $SDK ARCHS='$ARCHS' VALID_ARCHS='$ARCHS' -destination '$DESTINATION' $OTHER_ARGS test 2>&1 $XCPRETTY_COMMAND"
+echo "xcodebuild -scheme $SCHEME -configuration $CONFIGURATION -sdk $SDK ARCHS='$ARCHS' VALID_ARCHS='$ARCHS' -destination '$DESTINATION' $OTHER_ARGS clean test 2>&1 $XCPRETTY_COMMAND"
 echo "----------------------------------------------------------------------------"
-eval "xcodebuild -scheme $SCHEME -configuration $CONFIGURATION -sdk $SDK ARCHS='$ARCHS' VALID_ARCHS='$ARCHS' -destination '$DESTINATION' $OTHER_ARGS test 2>&1 $XCPRETTY_COMMAND"
+eval "xcodebuild -scheme $SCHEME -configuration $CONFIGURATION -sdk $SDK ARCHS='$ARCHS' VALID_ARCHS='$ARCHS' -destination '$DESTINATION' $OTHER_ARGS clean test 2>&1 $XCPRETTY_COMMAND"
 
 cat test-results.txt | ocunit2junit > /dev/null

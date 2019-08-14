@@ -411,6 +411,9 @@ public class Utils {
         xcPrettyStatement += " xcpretty";
         if (jsonOutputFile != null && !jsonOutputFile.isEmpty()) {
             xcPrettyStatement += " -f `xcpretty-json-formatter`";
+
+            String outputPath = FilenameUtils.getPath(jsonOutputFile);
+            xcPrettyStatement += " -r json-compilation-database -o /" + outputPath + "/compile_commands.json";
         }
         xcPrettyStatement += " && exit ${PIPESTATUS[0]}";
         return xcPrettyStatement;
