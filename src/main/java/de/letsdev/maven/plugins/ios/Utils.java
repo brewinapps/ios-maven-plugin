@@ -400,24 +400,23 @@ public class Utils {
         return false;
     }
 
-    public static String getXcprettyCommand(String logFileName, String jsonOutputFile) {
+    public static String getXcprettyCommand(String logFileName, String jsonOutputFileIdentifier) {
+        String xcprettyOutputFile = jsonOutputFileIdentifier + "-result.json";
+        String xcprettyCompilationDatabaseFile = jsonOutputFileIdentifier + "-compile-commands.json";
 
         String xcPrettyStatement = "";
-        if (jsonOutputFile != null && !jsonOutputFile.isEmpty()) {
-            xcPrettyStatement += "| XCPRETTY_JSON_FILE_OUTPUT=" + jsonOutputFile;
+        if (jsonOutputFileIdentifier != null && !jsonOutputFileIdentifier.isEmpty()) {
+            xcPrettyStatement += "| XCPRETTY_JSON_FILE_OUTPUT=" + xcprettyOutputFile;
         } else {
             xcPrettyStatement += " | tee " + logFileName + " |";
         }
+        
         xcPrettyStatement += " xcpretty";
-        if (jsonOutputFile != null && !jsonOutputFile.isEmpty()) {
-            xcPrettyStatement += " -f `xcpretty-json-formatter`";
 
-            String outputPath = FilenameUtils.getPath(jsonOutputFile);
-            if (outputPath.charAt(0) != '.') {
-                outputPath = "/" + outputPath;
-            }
-            xcPrettyStatement += " -r json-compilation-database -o " + outputPath + "/compile_commands.json";
+        if (jsonOutputFileIdentifier != null && !jsonOutputFileIdentifier.isEmpty()) {
+            xcPrettyStatement += " -f `xcpretty-json-formatter` -r json-compilation-database -o " + xcprettyCompilationDatabaseFile;
         }
+
         xcPrettyStatement += " && exit ${PIPESTATUS[0]}";
         return xcPrettyStatement;
     }
@@ -471,7 +470,7 @@ public class Utils {
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
             jsonOutputFile += properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()) + "/";
         }
-        jsonOutputFile += "Build/reports/";
+        jsonOutputFile += "build/reports/";
         jsonOutputFile += relativeFilePath;
         return jsonOutputFile;
     }

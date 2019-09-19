@@ -54,7 +54,7 @@ public class ProjectTester {
                     " " + "-derivedDataPath " + properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()));
         }
 
-        String jsonOutputFile = Utils.createJsonOutputFilePath("Build/reports/result-test.json", properties);
+        String jsonOutputFile = Utils.createJsonOutputFilePath("test", properties);
         String xcPrettyCommand = Utils.getXcprettyCommand("testResults.txt", jsonOutputFile);
 
         final String scriptName = "run-xctests.sh";
