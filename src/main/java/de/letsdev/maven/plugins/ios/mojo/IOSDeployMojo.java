@@ -12,24 +12,12 @@
 
 package de.letsdev.maven.plugins.ios.mojo;
 
-import de.letsdev.maven.plugins.ios.mojo.container.FileReplacement;
-import de.letsdev.maven.plugins.ios.mojo.container.StringReplacementConfig;
-import de.letsdev.maven.plugins.ios.mojo.container.XcodeExportOptions;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import de.letsdev.maven.plugins.ios.ProjectDeployer;
 import de.letsdev.maven.plugins.ios.Utils;
 
 /**
- *
  * @author let's dev
  * @goal deploy
  * @phase deploy
@@ -39,14 +27,15 @@ public class IOSDeployMojo extends BaseMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
+        super.execute();
         try {
-            ProjectDeployer.deploy(properties, this.mavenProject);
+            ProjectDeployer.deploy(this.properties, this.mavenProject);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new MojoExecutionException(e.getMessage());
-        }finally {
+        } finally {
             try {
-                super.resetXcodeVersion(Utils.getWorkDirectory(properties, mavenProject, projectName));
+                super.resetXcodeVersion(Utils.getWorkDirectory(this.properties, this.mavenProject, this.projectName));
             } catch (Exception e) {
                 e.printStackTrace();
             }
