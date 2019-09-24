@@ -11,26 +11,34 @@
 
 package de.letsdev.maven.plugins.ios.mojo;
 
+import de.letsdev.maven.plugins.ios.Utils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import de.letsdev.maven.plugins.ios.ProjectTester;
 
-
 /**
- *
  * @author let's dev
  * @goal test
  * @phase test
  */
 public class IOSTestMojo extends BaseMojo {
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+
         super.execute();
         try {
             ProjectTester.test(this.properties, this.mavenProject);
         } catch (Exception e) {
             throw new MojoExecutionException(e.getMessage());
+        } finally {
+            try {
+                super.resetXcodeVersion(Utils.getWorkDirectory(properties, mavenProject, projectName));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
+

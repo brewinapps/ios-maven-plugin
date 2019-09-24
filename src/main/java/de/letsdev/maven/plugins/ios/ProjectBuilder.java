@@ -1,9 +1,13 @@
 /**
  * Maven iOS Plugin
  * <p/>
- * User: sbott Date: 19.07.2012 Time: 19:54:44
+ * User: sbott
+ * Date: 19.07.2012
+ * Time: 19:54:44
  * <p/>
- * This code is copyright (c) 2012 let's dev. URL: http://www.letsdev.de e-Mail: contact@letsdev.de
+ * This code is copyright (c) 2012 let's dev.
+ * URL: http://www.letsdev.de
+ * e-Mail: contact@letsdev.de
  */
 
 package de.letsdev.maven.plugins.ios;
@@ -18,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -28,6 +33,7 @@ import de.letsdev.maven.plugins.ios.mojo.container.StringReplacement;
 import de.letsdev.maven.plugins.ios.mojo.container.StringReplacementConfig;
 import de.letsdev.maven.plugins.ios.mojo.container.XcodeArchiveProductType;
 import de.letsdev.maven.plugins.ios.mojo.container.XcodeExportOptions;
+import sun.nio.ch.Util;
 
 /**
  * @author let's dev
@@ -48,16 +54,8 @@ public class ProjectBuilder {
         String projectName = Utils.buildProjectName(properties, mavenProject);
         String schemeName = properties.get(Utils.PLUGIN_PROPERTIES.SCHEME.toString());
         File projectDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
-        //get current xcode version
-        String currentXcodeVersion = Utils.getCurrentXcodeVersion(projectDirectory);
 
         try {
-            //determine if xcode version is set as parameter
-            if (properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()) != null && !properties.get(
-                    Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
-                selectXcodeVersion(properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()), projectDirectory);
-            }
-
             //replace all configured files
             if (fileReplacements != null && fileReplacements.size() > 0) {
                 replaceFiles(fileReplacements, projectDirectory);
@@ -88,7 +86,9 @@ public class ProjectBuilder {
                 installCocoaPodsDependencies(projectDirectory);
             }
 
-            //remove simulator architechtures if requested
+            if (Utils.carthageEnebled(properties)) {
+                installCarthageDependencies(projectDirectory);
+            }
 
             // Build the application
 
@@ -117,7 +117,6 @@ public class ProjectBuilder {
 
                 File targetWorkDirectory;
                 if (Utils.isMacOSFramework(properties)) {
-
                     targetWorkDirectory = new File(targetDirectory.toString() + File.separator + properties.get(
                             Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + File.separator);
                 } else {
@@ -249,13 +248,6 @@ public class ProjectBuilder {
             System.err.println("exception occurred while building project, e=" + e.getMessage());
 
             throw new IOSException(e.getMessage());
-        } finally {
-            //determine if xcode version is set as parameter
-            if (properties.get(Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()) != null && !properties.get(
-                    Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString()).isEmpty()) {
-                //return to previous xcode version
-                selectXcodeVersion(currentXcodeVersion, projectDirectory);
-            }
         }
     }
 
@@ -287,39 +279,6 @@ public class ProjectBuilder {
             //throw new IOSException(e);
         } catch (IOSException e) {
             e.printStackTrace();
-        }
-    }
-
-    private static void selectXcodeVersion(String xcodeVersionPath, File workDirectory) throws IOSException {
-        // Run shell-script from resource-folder.
-        try {
-            final String scriptName = "set-xcode-version.sh";
-            File tempFile = File.createTempFile(scriptName, "sh");
-
-            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
-            OutputStream outputStream = new FileOutputStream(tempFile);
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            outputStream.close();
-
-            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
-                    xcodeVersionPath);
-
-            processBuilder.directory(workDirectory);
-            CommandHelper.performCommand(processBuilder);
-            System.out.println("############################################################################");
-            System.out.println("################################ set " + xcodeVersionPath
-                    + " as current xcode version ################################ set ");
-            System.out.println("############################################################################");
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IOSException(e);
         }
     }
 
@@ -381,11 +340,12 @@ public class ProjectBuilder {
         }
 
         //append xcpretty arguments
-        for (String xcprettyArg : getXcprettyCommand("xcodebuild-clean.log").split(" ")) {
+        String jsonOutputFile = Utils.createJsonOutputFilePath("clean", properties);
+        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-clean.log", jsonOutputFile).split(" ")) {
             xcodebuildCommand.append(" ").append(xcprettyArg);
         }
 
-        executeShellScript("execute-xcodebuild.sh", xcodebuildCommand.toString(), null, null, workDirectory);
+        Utils.executeShellScript("execute-xcodebuild.sh", xcodebuildCommand.toString(), null, null, workDirectory);
     }
 
     private static File createPrecompileHeadersDirectory(File targetDirectory) {
@@ -556,11 +516,12 @@ public class ProjectBuilder {
         buildCommand.append(" -exportWithOriginalSigningIdentity");
 
         //append xcpretty arguments
-        for (String xcprettyArg : getXcprettyCommand("xcodebuild-codesign.log").split(" ")) {
+        String jsonOutputFile = Utils.createJsonOutputFilePath("codesign", properties);
+        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-codesign.log", jsonOutputFile).split(" ")) {
             buildCommand.append(" ").append(xcprettyArg);
         }
 
-        executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, null, workDirectory);
+        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, null, workDirectory);
     }
 
     private static void codeSignAfterXcode8_3(Map<String, String> properties, MavenProject mavenProject,
@@ -590,11 +551,12 @@ public class ProjectBuilder {
         buildCommand.append(plistFilePath.getAbsolutePath());
 
         //append xcpretty arguments
-        for (String xcprettyArg : getXcprettyCommand("xcodebuild-codesign.log").split(" ")) {
+        String jsonOutputFile = Utils.createJsonOutputFilePath("codesign", properties);
+        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-codesign.log", jsonOutputFile).split(" ")) {
             buildCommand.append(" ").append(xcprettyArg);
         }
 
-        executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), ipaTmpDir.getAbsolutePath(), null,
+        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), ipaTmpDir.getAbsolutePath(), null,
                 workDirectory);
 
         File ipaPath = new File(ipaBasePath.getAbsolutePath() + "/" + ipaName);
@@ -616,7 +578,7 @@ public class ProjectBuilder {
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(
                 Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()) && properties.containsKey(
                 Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString())) {
-            executeShellScript("unlock-keychain.sh",
+            Utils.executeShellScript("unlock-keychain.sh",
                     properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()),
                     properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()), null, workDirectory);
         }
@@ -630,7 +592,7 @@ public class ProjectBuilder {
         buildParameters.add("xcodebuild");
 
         //if cocoa pods is enabled, we have to build the .xcworkspace file instead of .xcodeproj
-        if (Utils.cocoaPodsEnabled(properties)) {
+        if (Utils.shouldUseWorkspaceFile(properties)) {
             buildParameters.add("-workspace");
             buildParameters.add(projectName + ".xcworkspace");
         }
@@ -686,17 +648,17 @@ public class ProjectBuilder {
         }
 
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(
-                Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString())) {
+                Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()) && !properties.get(
+                Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()).equals("")) {
             buildParameters.add("PROVISIONING_PROFILE=\"" + properties.get(
                     Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_UUID.toString()) + "\"");
         }
 
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(
-                Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString())) {
+                Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString()) && !properties.get(
+                Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString()).equals("")) {
             buildParameters.add("PROVISIONING_PROFILE_SPECIFIER=\"" + properties.get(
                     Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_SPECIFIER.toString()) + "\"");
-        } else {
-            buildParameters.add("PROVISIONING_PROFILE_SPECIFIER=");
         }
 
         if (Utils.shouldCodeSign(mavenProject, properties) && properties.containsKey(
@@ -749,19 +711,18 @@ public class ProjectBuilder {
             buildParameters.add("OTHER_CFLAGS='-fembed-bitcode'");
         }
 
-        if (shouldUseIphoneSimulatorSDK) {
-            buildParameters.add("CONFIGURATION_BUILD_DIR=\"" + targetDirectory.getAbsolutePath() + "/" + properties.get(
-                    Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_SIMULATOR + "\"");
-        } else {
-            buildParameters.add("CONFIGURATION_BUILD_DIR=\"" + targetDirectory.getAbsolutePath() + "/" + properties.get(
-                    Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + "-" + Utils.SDK_IPHONE_OS + "\"");
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
+            buildParameters.add(
+                    "-derivedDataPath " + properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()));
         }
 
         //add each dynamic parameter from pom
         buildParameters.addAll(xcodeBuildParameters);
 
         //append xcpretty arguments
-        Collections.addAll(buildParameters, getXcprettyCommand("xcodebuild.log").split(" "));
+
+        String jsonOutputFile = Utils.createJsonOutputFilePath("build", properties);
+        Collections.addAll(buildParameters, Utils.getXcprettyCommand("xcodebuild.log", jsonOutputFile).split(" "));
 
         StringBuilder buildCommand = new StringBuilder();
         for (String buildParam : buildParameters) {
@@ -769,7 +730,7 @@ public class ProjectBuilder {
             buildCommand.append(" ");
         }
 
-        executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, null, workDirectory);
+        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, null, workDirectory);
     }
 
     private static void mergeFrameworkProducts(File targetWorkDirectoryIphone, File targetWorkDirectoryIphoneSimulator,
@@ -778,10 +739,10 @@ public class ProjectBuilder {
         final String scriptName = "merge-framework-products";
 
         final String iphoneosFrameworkProductPath =
-                targetWorkDirectoryIphone.toString() + "/" + frameworkName + "/" + appName;
+                targetWorkDirectoryIphone.toString() + "/" + frameworkName;
         final String iphoneSimulatorFrameworkProductPath =
-                targetWorkDirectoryIphoneSimulator.toString() + "/" + frameworkName + "/" + appName;
-        final String mergedFrameworkPath = targetWorkDirectoryIphone.toString() + "/" + frameworkName + "/" + appName;
+                targetWorkDirectoryIphoneSimulator.toString() + "/" + frameworkName;
+        final String mergedFrameworkPath = targetWorkDirectoryIphone.toString() + "/" + frameworkName;
 
         File tempFile;
         try {
@@ -817,7 +778,7 @@ public class ProjectBuilder {
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
-                iphoneosFrameworkProductPath, iphoneSimulatorFrameworkProductPath, mergedFrameworkPath);
+                iphoneosFrameworkProductPath, iphoneSimulatorFrameworkProductPath, mergedFrameworkPath, appName);
 
         processBuilder.directory(targetWorkDirectoryIphone);
         CommandHelper.performCommand(processBuilder);
@@ -949,48 +910,6 @@ public class ProjectBuilder {
         }
     }
 
-    private static void executeShellScript(String scriptName, String value1, String value2, String value3,
-                                           File workDirectory) throws IOSException {
-
-        // Run shell-script from resource-folder.
-        try {
-            File tempFile = File.createTempFile(scriptName, "sh");
-
-            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
-            OutputStream outputStream = new FileOutputStream(tempFile);
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            outputStream.close();
-
-            if (value1 == null) {
-                value1 = "";
-            }
-
-            if (value2 == null) {
-                value2 = "";
-            }
-
-            if (value3 == null) {
-                value3 = "";
-            }
-
-            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), value1,
-                    value2, value3);
-
-            processBuilder.directory(workDirectory);
-            CommandHelper.performCommand(processBuilder);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IOSException(e);
-        }
-    }
-
     private static void writeDeployPlistFile(MavenProject mavenProject, File targetDirectory, String deployPlistName,
                                              final Map<String, String> properties) throws IOSException {
         // Run shell-script from resource-folder.
@@ -1053,6 +972,18 @@ public class ProjectBuilder {
         }
     }
 
+    private static void installCarthageDependencies(File projectDirectory) throws IOSException {
+
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("carthage", "update");
+            processBuilder.directory(projectDirectory);
+            CommandHelper.performCommand(processBuilder);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new IOSException(e);
+        }
+    }
+
     private static File generateExportOptionsPlist(XcodeExportOptions xcodeExportOptions,
                                                    File workDirectory) throws IOSException {
         //create tmp file path
@@ -1091,10 +1022,5 @@ public class ProjectBuilder {
         }
 
         return plistFile;
-    }
-
-    private static String getXcprettyCommand(String logFileName) {
-
-        return "| tee " + logFileName + " | xcpretty && exit ${PIPESTATUS[0]}";
     }
 }
