@@ -42,6 +42,7 @@ public class ProjectBuilder {
 
     /**
      * @param properties Properties
+     *
      * @throws IOSException
      */
     public static void build(final Map<String, String> properties, MavenProject mavenProject,
@@ -93,6 +94,12 @@ public class ProjectBuilder {
 
             buildXcodeProject(mavenProject, properties, projectDirectory, targetDirectory, projectName, false,
                     xcodeBuildParameters);
+
+            if (xcodeExportOptions.method.equals("app-store")) {
+                //remove simulator architectures if app-store is chosen
+                removeSimulatorArchitectures(targetDirectory);
+                removeSimulatorArchitectures(projectDirectory);
+            }
 
             if (Utils.isiOSFramework(mavenProject, properties) || Utils.isMacOSFramework(properties)) {
                 String simulatorArchitectures = Utils.getArchitecturesForSdk(properties, Utils.SDK_IPHONE_SIMULATOR);
@@ -206,6 +213,7 @@ public class ProjectBuilder {
                 }
 
                 File ipaTmpDir = new File(targetDirectory, "ipa-temp-dir-" + UUID.randomUUID().toString());
+
                 if (!ipaTmpDir.mkdir()) {
                     System.err.println("Could not create ipa temp dir at path = " + ipaTmpDir.getAbsolutePath());
                 }
@@ -240,6 +248,37 @@ public class ProjectBuilder {
             System.err.println("exception occurred while building project, e=" + e.getMessage());
 
             throw new IOSException(e.getMessage());
+        }
+    }
+
+    private static void removeSimulatorArchitectures(File rootDirectory) {
+        // Run shell-script from resource-folder.
+        try {
+            final String scriptName = "remove-simulator-archs.sh";
+            File tempFile = File.createTempFile(scriptName, "sh");
+
+            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
+            OutputStream outputStream = new FileOutputStream(tempFile);
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            outputStream.close();
+
+            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
+                    rootDirectory.getAbsolutePath());
+
+            processBuilder.directory(rootDirectory);
+            CommandHelper.performCommand(processBuilder);
+        } catch (IOException e) {
+            e.printStackTrace();
+            //throw new IOSException(e);
+        } catch (IOSException e) {
+            e.printStackTrace();
         }
     }
 
