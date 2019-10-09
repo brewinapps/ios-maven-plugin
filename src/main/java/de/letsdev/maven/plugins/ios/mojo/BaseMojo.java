@@ -431,6 +431,19 @@ public class BaseMojo extends AbstractMojo {
      */
     protected String provisioningProfileName;
 
+    /**
+     * the username for iTunesConnect
+     * @parameter iTunesConnectUsername
+     */
+    private String iTunesConnectUsername;
+
+    /**
+     * the password for iTunesConnect
+     * @parameter iTunesConnectPassword
+     */
+    private String iTunesConnectPassword;
+
+
     protected Map<String, String> properties = null;
 
     protected Map<String, String> prepareProperties() {
@@ -502,6 +515,10 @@ public class BaseMojo extends AbstractMojo {
                 this.xcTestsDerivedDataPath);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.PROVISIONING_PROFILE_NAME.toString(),
                 this.provisioningProfileName);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.ITUNES_CONNECT_PASSWORD.toString(),
+                this.iTunesConnectPassword);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.ITUNES_CONNECT_USERNAME.toString(),
+                this.iTunesConnectUsername);
 
         return properties;
     }
