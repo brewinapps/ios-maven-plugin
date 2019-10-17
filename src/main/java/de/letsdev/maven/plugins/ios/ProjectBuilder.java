@@ -95,7 +95,7 @@ public class ProjectBuilder {
             buildXcodeProject(mavenProject, properties, projectDirectory, targetDirectory, projectName, false,
                     xcodeBuildParameters);
 
-            if (xcodeExportOptions.method.equals("app-store")) {
+            if (xcodeExportOptions.method != null && xcodeExportOptions.method.equals("app-store")) {
                 //remove simulator architectures if app-store is chosen
                 removeSimulatorArchitectures(targetDirectory);
                 removeSimulatorArchitectures(projectDirectory);
