@@ -721,7 +721,7 @@ public class ProjectBuilder {
 
         //append xcpretty arguments
 
-        String jsonOutputFile = Utils.createJsonOutputFilePath("Build", properties);
+        String jsonOutputFile = Utils.createJsonOutputFilePath("build", properties);
         Collections.addAll(buildParameters, Utils.getXcprettyCommand("xcodebuild.log", jsonOutputFile).split(" "));
 
         StringBuilder buildCommand = new StringBuilder();
