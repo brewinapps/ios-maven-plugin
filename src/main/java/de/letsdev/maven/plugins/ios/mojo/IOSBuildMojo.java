@@ -6,7 +6,7 @@
  * Time: 19:54:44
  * <p>
  * This code is copyright (c) 2012 let's dev.
- * URL: http://www.letsdev.de
+ * URL: https://www.letsdev.de
  * e-Mail: contact@letsdev.de
  */
 
@@ -37,7 +37,7 @@ public class IOSBuildMojo extends BaseMojo {
             throw new MojoExecutionException(e.getMessage());
         } finally {
             try {
-                super.resetXcodeVersion(Utils.getWorkDirectory(properties, mavenProject, projectName));
+                super.resetXcodeVersion();
             } catch (Exception e) {
                 e.printStackTrace();
             }

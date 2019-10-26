@@ -9,10 +9,7 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Map;
 
 public class ProvisioningProfileHelper {
@@ -22,20 +19,15 @@ public class ProvisioningProfileHelper {
     private static final String provisioningProfileFileExtension = ".mobileprovision";
     private static final String shellScriptFileName = "load-xml-file.sh";
     private final String provisioningProfileName;
-    private final Map<String, String> properties;
-    private MavenProject mavenProject;
-    private String projectName;
     private File workDirectory;
 
     public ProvisioningProfileHelper(String provisioningProfileName, Map<String, String> properties,
                                      MavenProject mavenProject) {
 
         this.provisioningProfileName = provisioningProfileName;
-        this.properties = properties;
-        this.mavenProject = mavenProject;
 
         try {
-            this.projectName = Utils.buildProjectName(properties, mavenProject);
+            String projectName = Utils.buildProjectName(properties, mavenProject);
             this.workDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,21 +45,7 @@ public class ProvisioningProfileHelper {
 
         final String filepath = getProvisioningProfileFilePath(this.provisioningProfileName);
 
-        File tempFile = File.createTempFile(shellScriptFileName, "sh");
-        InputStream iStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + shellScriptFileName);
-        OutputStream oStream = new FileOutputStream(tempFile);
-
-        try {
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = iStream.read(buffer)) != -1) {
-                oStream.write(buffer, 0, bytesRead);
-            }
-        } finally {
-            oStream.flush();
-            oStream.close();
-        }
+        File tempFile = Utils.createTempFile(shellScriptFileName);
 
         ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", tempFile.getAbsoluteFile().toString(),
                 filepath);
@@ -94,27 +72,8 @@ public class ProvisioningProfileHelper {
 
             NodeList nodeList = doc.getElementsByTagName("key");
             for (int i = 0; i < nodeList.getLength(); i++) {
-                if (nodeList.item(i).getFirstChild().getNodeValue().equals("UUID")) {
-                    Node current = nodeList.item(i).getNextSibling();
-                    //iterate trough notes until node with value for the uuid key is current
-                    while (!current.getNodeName().equals("string")) {
-                        current = current.getNextSibling();
-                    }
-                    uuid = current.getFirstChild().getNodeValue();
-                }
-
-                if (nodeList.item(i).getFirstChild().getNodeValue().equals("TeamIdentifier")) {
-                    Node current = nodeList.item(i).getNextSibling();
-                    //iterate trough notes until array node, that has value of team id key as child is current
-                    while (!current.getNodeName().equals("array")) {
-                        current = current.getNextSibling();
-                    }
-                    current = current.getFirstChild();
-                    while (!current.getNodeName().equals("string")) {
-                        current = current.getNextSibling();
-                    }
-                    teamID = current.getFirstChild().getNodeValue();
-                }
+                uuid = getUuid(uuid, nodeList, i);
+                teamID = getTeamId(teamID, nodeList, i);
             }
 
             ProvisioningProfileType type = getProvisioningProfileType(nodeList);
@@ -129,6 +88,34 @@ public class ProvisioningProfileHelper {
         return null;
     }
 
+    private String getUuid(String uuid, NodeList nodeList, int i) {
+        if (nodeList.item(i).getFirstChild().getNodeValue().equals("UUID")) {
+            Node current = nodeList.item(i).getNextSibling();
+            //iterate trough notes until node with value for the uuid key is current
+            while (!current.getNodeName().equals("string")) {
+                current = current.getNextSibling();
+            }
+            uuid = current.getFirstChild().getNodeValue();
+        }
+        return uuid;
+    }
+
+    private String getTeamId(String teamID, NodeList nodeList, int i) {
+        if (nodeList.item(i).getFirstChild().getNodeValue().equals("TeamIdentifier")) {
+            Node current = nodeList.item(i).getNextSibling();
+            //iterate trough notes until array node, that has value of team id key as child is current
+            while (!current.getNodeName().equals("array")) {
+                current = current.getNextSibling();
+            }
+            current = current.getFirstChild();
+            while (!current.getNodeName().equals("string")) {
+                current = current.getNextSibling();
+            }
+            teamID = current.getFirstChild().getNodeValue();
+        }
+        return teamID;
+    }
+
     private static String getProvisioningProfileFilePath(String provisioningProfileName) {
 
         return provisioningProfileDirectory + "/" + provisioningProfileName + provisioningProfileFileExtension;
@@ -140,7 +127,7 @@ public class ProvisioningProfileHelper {
         for (int i = 0; i < nodeList.getLength(); i++) {
 
             if (checkKey("get-task-allow", nodeList.item(i))) {
-                type = ProvisioningProfileType.TYPE_DEVELOPEMENT;
+                type = ProvisioningProfileType.TYPE_DEVELOPMENT;
             } else if (checkKey("ProvisionsAllDevices", nodeList.item(i))) {
                 type = ProvisioningProfileType.TYPE_ENTERPRISE;
             } else if (nodeList.item(i).getFirstChild().getNodeValue().equals("ProvisionedDevices")) {
@@ -168,7 +155,7 @@ public class ProvisioningProfileHelper {
         return type;
     }
 
-    public static boolean checkKey(String keyName, Node node) {
+    private static boolean checkKey(String keyName, Node node) {
 
         if (node.getFirstChild().getNodeValue().equals(keyName)) {
             Node current = node.getNextSibling();

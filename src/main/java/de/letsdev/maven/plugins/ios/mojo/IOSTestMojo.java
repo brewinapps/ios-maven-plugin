@@ -5,7 +5,7 @@
  * Date: 2016-06-23
  * <p/>
  * This code is copyright (c) 2016 let's dev.
- * URL: http://www.letsdev.de
+ * URL: https://www.letsdev.de
  * e-Mail: contact@letsdev.de
  */
 
@@ -34,7 +34,7 @@ public class IOSTestMojo extends BaseMojo {
             throw new MojoExecutionException(e.getMessage());
         } finally {
             try {
-                super.resetXcodeVersion(Utils.getWorkDirectory(properties, mavenProject, projectName));
+                super.resetXcodeVersion();
             } catch (Exception e) {
                 e.printStackTrace();
             }

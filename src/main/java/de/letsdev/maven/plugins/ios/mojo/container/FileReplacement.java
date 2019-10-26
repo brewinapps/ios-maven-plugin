@@ -5,7 +5,7 @@
  * Date: 2016-06-20
  * <p/>
  * This code is copyright (c) 2016 let's dev.
- * URL: http://www.letsdev.de
+ * URL: https://www.letsdev.de
  * e-Mail: contact@letsdev.de
  */
 

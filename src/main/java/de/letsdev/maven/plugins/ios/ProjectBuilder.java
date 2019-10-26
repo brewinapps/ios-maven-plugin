@@ -6,7 +6,7 @@
  * Time: 19:54:44
  * <p/>
  * This code is copyright (c) 2012 let's dev.
- * URL: http://www.letsdev.de
+ * URL: https://www.letsdev.de
  * e-Mail: contact@letsdev.de
  */
 
@@ -22,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -33,7 +32,6 @@ import de.letsdev.maven.plugins.ios.mojo.container.StringReplacement;
 import de.letsdev.maven.plugins.ios.mojo.container.StringReplacementConfig;
 import de.letsdev.maven.plugins.ios.mojo.container.XcodeArchiveProductType;
 import de.letsdev.maven.plugins.ios.mojo.container.XcodeExportOptions;
-import sun.nio.ch.Util;
 
 /**
  * @author let's dev
@@ -132,7 +130,7 @@ public class ProjectBuilder {
 
                     //if we'd build the framework with xcodebuild archive command, we have to export the framework
                     // from archive
-                    if (Utils.shouldBuildXCArchive(mavenProject, properties)) {
+                    if (Utils.shouldBuildXCArchive(properties)) {
                         File archiveFile = new File(Utils.getArchiveName(projectName, mavenProject));
                         exportProductArchive(archiveFile, targetWorkDirectoryIphone, frameworkName);
 
@@ -221,8 +219,8 @@ public class ProjectBuilder {
                 if (Utils.shouldBuildXCArchiveWithExportOptionsPlist(xcodeExportOptions)) {
                     codeSignAfterXcode8_3(properties, mavenProject, projectDirectory, Utils.getIpaName(schemeName),
                             ipaBasePath, ipaTargetPath, ipaTmpDir, xcodeExportOptions);
-                } else if (Utils.shouldBuildXCArchive(mavenProject, properties)) {
-                    codeSignAfterXcode6(properties, mavenProject, projectDirectory, ipaTargetPath, ipaTmpDir);
+                } else if (Utils.shouldBuildXCArchive(properties)) {
+                    codeSignAfterXcode6(properties, mavenProject, projectDirectory, ipaTargetPath);
                 } else {
                     codeSignBeforeXcode6(properties, projectDirectory, newAppTargetPath, ipaTargetPath, ipaTmpDir);
                 }
@@ -255,30 +253,15 @@ public class ProjectBuilder {
         // Run shell-script from resource-folder.
         try {
             final String scriptName = "remove-simulator-archs.sh";
-            File tempFile = File.createTempFile(scriptName, "sh");
-
-            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
-            OutputStream outputStream = new FileOutputStream(tempFile);
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            outputStream.close();
-
+            File tempFile = Utils.createTempFile(scriptName);
             ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
                     rootDirectory.getAbsolutePath());
 
             processBuilder.directory(rootDirectory);
             CommandHelper.performCommand(processBuilder);
-        } catch (IOException e) {
+        } catch (IOException | IOSException e) {
             e.printStackTrace();
             //throw new IOSException(e);
-        } catch (IOSException e) {
-            e.printStackTrace();
         }
     }
 
@@ -345,17 +328,7 @@ public class ProjectBuilder {
             xcodebuildCommand.append(" ").append(xcprettyArg);
         }
 
-        Utils.executeShellScript("execute-xcodebuild.sh", xcodebuildCommand.toString(), null, null, workDirectory);
-    }
-
-    private static File createPrecompileHeadersDirectory(File targetDirectory) {
-
-        File precompiledHeadersDir = new File(targetDirectory, "precomp-dir-" + UUID.randomUUID().toString());
-        if (!precompiledHeadersDir.mkdir()) {
-            System.err.println(
-                    "Could not create precompiled headers dir at path = " + precompiledHeadersDir.getAbsolutePath());
-        }
-        return precompiledHeadersDir;
+        Utils.executeShellScript("execute-xcodebuild.sh", xcodebuildCommand.toString(), null, workDirectory);
     }
 
     private static void generateDeployPlistFile(MavenProject mavenProject, Map<String, String> properties,
@@ -491,8 +464,7 @@ public class ProjectBuilder {
     }
 
     private static void codeSignAfterXcode6(Map<String, String> properties, MavenProject mavenProject,
-                                            File workDirectory, File ipaTargetPath,
-                                            File ipaTmpDir) throws IOSException {
+                                            File workDirectory, File ipaTargetPath) throws IOSException {
         /*
             xcodebuild -exportArchive -exportFormat format -archivePath xcarchivepath -exportPath destinationpath
                 [-exportProvisioningProfile profilename] [-exportSigningIdentity identityname]
@@ -521,7 +493,7 @@ public class ProjectBuilder {
             buildCommand.append(" ").append(xcprettyArg);
         }
 
-        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, null, workDirectory);
+        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, workDirectory);
     }
 
     private static void codeSignAfterXcode8_3(Map<String, String> properties, MavenProject mavenProject,
@@ -556,7 +528,7 @@ public class ProjectBuilder {
             buildCommand.append(" ").append(xcprettyArg);
         }
 
-        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), ipaTmpDir.getAbsolutePath(), null,
+        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), ipaTmpDir.getAbsolutePath(),
                 workDirectory);
 
         File ipaPath = new File(ipaBasePath.getAbsolutePath() + "/" + ipaName);
@@ -580,7 +552,7 @@ public class ProjectBuilder {
                 Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString())) {
             Utils.executeShellScript("unlock-keychain.sh",
                     properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PASSWORD.toString()),
-                    properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()), null, workDirectory);
+                    properties.get(Utils.PLUGIN_PROPERTIES.KEYCHAIN_PATH.toString()), workDirectory);
         }
     }
 
@@ -588,7 +560,7 @@ public class ProjectBuilder {
                                           File targetDirectory, String projectName, boolean shouldUseIphoneSimulatorSDK,
                                           List<String> xcodeBuildParameters) throws IOSException {
 
-        List<String> buildParameters = new ArrayList<String>();
+        List<String> buildParameters = new ArrayList<>();
         buildParameters.add("xcodebuild");
 
         //if cocoa pods is enabled, we have to build the .xcworkspace file instead of .xcodeproj
@@ -614,7 +586,7 @@ public class ProjectBuilder {
         buildParameters.add("-configuration");
         buildParameters.add(properties.get(Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()));
 
-        if (Utils.shouldBuildXCArchive(mavenProject, properties) && !shouldUseIphoneSimulatorSDK) {
+        if (Utils.shouldBuildXCArchive(properties) && !shouldUseIphoneSimulatorSDK) {
             buildParameters.add("archive");
             buildParameters.add("-archivePath");
             buildParameters.add(Utils.getArchiveName(projectName, mavenProject));
@@ -630,7 +602,7 @@ public class ProjectBuilder {
         //if product should be code signed, we add flags for code signing
         if (Utils.shouldCodeSign(mavenProject, properties)) {
 
-            if (Utils.shouldCodeSignWithResourceRules(mavenProject, properties)) {
+            if (Utils.shouldCodeSignWithResourceRules(properties)) {
                 buildParameters.add(
                         "CODE_SIGN_RESOURCE_RULES_PATH=$(SDKROOT)/ResourceRules.plist"); //since xcode 6.1 is
                 // necessary, if not set, app is not able to be signed with a key.
@@ -685,7 +657,7 @@ public class ProjectBuilder {
         }
 
         //only if target tag is present and we are not building via xcArchive, we set the target switch
-        if (!Utils.shouldBuildXCArchive(mavenProject, properties)
+        if (!Utils.shouldBuildXCArchive(properties)
                 && target != null) { //from XCode > Version 7 target should not be used any more. Use scheme instead!
             // Add target. Uses target 'framework' to build Frameworks.
             buildParameters.add("-target");
@@ -730,7 +702,7 @@ public class ProjectBuilder {
             buildCommand.append(" ");
         }
 
-        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, null, workDirectory);
+        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, workDirectory);
     }
 
     private static void mergeFrameworkProducts(File targetWorkDirectoryIphone, File targetWorkDirectoryIphoneSimulator,
@@ -806,19 +778,7 @@ public class ProjectBuilder {
             XcodeArchiveProductType productType = Utils.getExportProductType(productName);
             String productPath = Utils.getExportProductPath(productType);
 
-            File tempFile = File.createTempFile(scriptName, "sh");
-            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName + ".sh");
-            OutputStream outputStream = new FileOutputStream(tempFile);
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            outputStream.close();
-
+            File tempFile = Utils.createTempFile(scriptName);
             ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
                     archiveFile.toString(), productPath, productName, targetPath.toString(), productTargetPath);
 

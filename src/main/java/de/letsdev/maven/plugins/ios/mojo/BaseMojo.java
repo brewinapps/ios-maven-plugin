@@ -5,7 +5,7 @@
  * Date: 2016-06-08
  * <p>
  * This code is copyright (c) 2016 let's dev.
- * URL: http://www.letsdev.de
+ * URL: https://www.letsdev.de
  * e-Mail: contact@letsdev.de
  */
 
@@ -47,7 +47,7 @@ public class BaseMojo extends AbstractMojo {
      * @parameter property="ios.sourceDir"
      * default-value="src/ios"
      */
-    protected String sourceDir;
+    private String sourceDir;
 
     /**
      * iOS app name
@@ -55,14 +55,14 @@ public class BaseMojo extends AbstractMojo {
      * @parameter property="ios.appName"
      * @required
      */
-    protected String appName;
+    private String appName;
 
     /**
      * classifier
      *
      * @parameter property="ios.classifier"
      */
-    protected String classifier;
+    private String classifier;
 
     /**
      * iOS project name
@@ -78,30 +78,31 @@ public class BaseMojo extends AbstractMojo {
      *
      * @parameter property="ios.provisioningProfileUUID"
      */
-    protected String provisioningProfileUUID;
+    private String provisioningProfileUUID;
 
     /**
      * iOS provisioning profile specifier
      *
      * @parameter property="ios.provisioningProfileSpecifier"
      */
-    protected String provisioningProfileSpecifier;
+    private String provisioningProfileSpecifier;
 
     /**
      * iOS development team
      *
      * @parameter property="ios.developmentTeam"
      */
-    protected String developmentTeam;
+    private String developmentTeam;
 
     /**
      * iOS bundle identifier
      * <p>
      * If not set the bundle identifier in the info.plist will be used
+     * When using provisioningProfileName, bundleIdentifier has to be set
      *
      * @parameter property="ios.bundleIdentifier"
      */
-    protected String bundleIdentifier;
+    private String bundleIdentifier;
 
     /**
      * iOS display name
@@ -110,7 +111,7 @@ public class BaseMojo extends AbstractMojo {
      *
      * @parameter property="ios.displayName"
      */
-    protected String displayName;
+    private String displayName;
 
     /**
      * iOS scheme. This is necessary for xcarchive builds.
@@ -119,7 +120,7 @@ public class BaseMojo extends AbstractMojo {
      *
      * @parameter property="ios.scheme"
      */
-    protected String scheme;
+    private String scheme;
 
     /**
      * iOS SDK
@@ -134,7 +135,7 @@ public class BaseMojo extends AbstractMojo {
      *
      * @parameter property="ios.iphoneosArchitectures"
      */
-    protected String iphoneosArchitectures;
+    private String iphoneosArchitectures;
 
     /**
      * iphonesimulator SDK build architectures
@@ -143,7 +144,7 @@ public class BaseMojo extends AbstractMojo {
      * @parameter property="ios.iphonesimulatorArchitectures"
      * default-value="x86_64"
      */
-    protected String iphonesimulatorArchitectures = "x86_64";
+    private String iphonesimulatorArchitectures = "x86_64";
 
     /**
      * flag for bitcode enabled option for builds with iphonesimulator sdk
@@ -151,7 +152,7 @@ public class BaseMojo extends AbstractMojo {
      * @parameter property="ios.iphonesimulatorBitcodeEnabled"
      * default-value="true"
      */
-    protected boolean iphonesimulatorBitcodeEnabled = true;
+    private boolean iphonesimulatorBitcodeEnabled = true;
 
     /**
      * flag for iOS framework builds
@@ -159,7 +160,7 @@ public class BaseMojo extends AbstractMojo {
      * @parameter property="ios.iOSFrameworkBuild"
      * default-value="false"
      */
-    protected boolean iOSFrameworkBuild;
+    private boolean iOSFrameworkBuild;
 
     /**
      * flag for macosx framework builds
@@ -167,14 +168,14 @@ public class BaseMojo extends AbstractMojo {
      * @parameter property="ios.macOSFrameworkBuild"
      * default-value="false"
      */
-    protected boolean macOSFrameworkBuild;
+    private boolean macOSFrameworkBuild;
 
     /**
      * flag for iOS code signing enabled
      *
      * @parameter property="ios.codeSigningEnabled"
      */
-    protected boolean codeSigningEnabled;
+    private boolean codeSigningEnabled;
 
     /**
      * flag for iOS export to xcarchive enabled.
@@ -187,7 +188,7 @@ public class BaseMojo extends AbstractMojo {
      *
      * @parameter property="ios.buildXCArchiveEnabled"
      */
-    protected boolean buildXCArchiveEnabled = true;
+    private boolean buildXCArchiveEnabled = true;
 
     /**
      * flag for iOS code signing with resources rules enabled
@@ -202,35 +203,35 @@ public class BaseMojo extends AbstractMojo {
      *
      * @parameter property="ios.codeSigningWithResourceRulesEnabled"
      */
-    protected boolean codeSigningWithResourceRulesEnabled = false;
+    private boolean codeSigningWithResourceRulesEnabled = false;
 
     /**
      * iOS code sign identity. The Code Sign identity, see distribution certficates common name.
      *
      * @parameter property="ios.codeSignIdentity"
      */
-    protected String codeSignIdentity;
+    private String codeSignIdentity;
 
     /**
      * path to code signing entitlements file
      *
      * @parameter property="ios.codeSignEntitlements"
      */
-    protected String codeSignEntitlements;
+    private String codeSignEntitlements;
 
     /**
      * Path to keychain to sign with
      *
      * @parameter property="ios.keychainPath"
      */
-    protected String keychainPath;
+    private String keychainPath;
 
     /**
      * Password to unlock keychain to sign with
      *
      * @parameter property="ios.keychainPassword"
      */
-    protected String keychainPassword;
+    private String keychainPassword;
 
     /**
      * iOS configuration, Release or Debug
@@ -245,7 +246,7 @@ public class BaseMojo extends AbstractMojo {
      *
      * @parameter property="ios.buildId"
      */
-    protected String buildId;
+    private String buildId;
 
     /**
      * target. The XCode target. See also "scheme".
@@ -261,28 +262,28 @@ public class BaseMojo extends AbstractMojo {
      *
      * @parameter property="ios.infoPlist"
      */
-    protected String infoPlist;
+    private String infoPlist;
 
     /**
      * app icon name
      *
      * @parameter property="ios.appIconName"
      */
-    protected String appIconName;
+    private String appIconName;
 
     /**
      * gccPreprocessorDefinitions, added to xcodebuild command
      *
      * @parameter property="ios.gccPreprocessorDefinitions"
      */
-    protected String gccPreprocessorDefinitions;
+    private String gccPreprocessorDefinitions;
 
     /**
      * ipaVersion
      *
      * @parameter property="ios.ipaVersion"
      */
-    protected String ipaVersion;
+    private String ipaVersion;
 
     /**
      * determines if project uses cocoapods, dependencies will be installed (via pod install) and .xcworkspace will
@@ -290,14 +291,14 @@ public class BaseMojo extends AbstractMojo {
      *
      * @parameter
      */
-    protected boolean cocoaPodsEnabled = false;
+    private boolean cocoaPodsEnabled = false;
 
     /**
      * determines if project uses carthage, dependencies will be installed (via carthage update)
      *
      * @parameter
      */
-    protected boolean carthageEnabled = false;
+    private boolean carthageEnabled = false;
 
     /**
      * defining release task
@@ -308,7 +309,7 @@ public class BaseMojo extends AbstractMojo {
      * @parameter property="ios.releaseTask"
      * default-value="Release"
      */
-    protected String releaseTask;
+    private String releaseTask;
 
     /**
      * defines the path to the xcode version, which will be used for the build process. The given path will be used
@@ -317,14 +318,14 @@ public class BaseMojo extends AbstractMojo {
      *
      * @parameter property="ios.xcodeVersion"
      */
-    protected String xcodeVersion;
+    private String xcodeVersion;
 
     /**
      * defining the scheme for the xctest execution
      *
      * @parameter property="ios.xcTestsScheme"
      */
-    protected String xcTestsScheme;
+    private String xcTestsScheme;
 
     /**
      * defining the configuration for the xctest execution
@@ -332,7 +333,7 @@ public class BaseMojo extends AbstractMojo {
      * @parameter property="ios.xcTestsConfiguration"
      * default-value="Debug"
      */
-    protected String xcTestsConfiguration;
+    private String xcTestsConfiguration;
 
     /**
      * defining the destination for the xctest execution
@@ -340,7 +341,7 @@ public class BaseMojo extends AbstractMojo {
      *
      * @parameter property="ios.xcTestsDestination"
      */
-    protected String xcTestsDestination = "platform=iOS Simulator,name=iPhone X,OS=latest";
+    private String xcTestsDestination = "platform=iOS Simulator,name=iPhone X,OS=latest";
 
     /**
      * defining the sdk for xctests execution
@@ -348,7 +349,7 @@ public class BaseMojo extends AbstractMojo {
      * @parameter property="ios.xcTestsSdk"
      * default-value="iphonesimulator"
      */
-    protected String xcTestsSdk;
+    private String xcTestsSdk;
 
     /**
      * defining further arguments for xctests execution
@@ -356,49 +357,49 @@ public class BaseMojo extends AbstractMojo {
      * @parameter property="ios.xcTestsBuildArguments"
      * default-value="GCC_SYMBOLS_PRIVATE_EXTERN=NO COPY_PHASE_STRIP=NO"
      */
-    protected String xcTestsBuildArguments;
+    private String xcTestsBuildArguments;
 
     /**
      * defining the path for the build folder
      *
      * @parameter property="ios.derivedDataPath"
      */
-    protected String derivedDataPath;
+    private String derivedDataPath;
 
     /**
      * defining the path for the build folder when you run tests
      *
      * @parameter property="ios.xcTestsDerivedDataPath"
      */
-    protected String xcTestsDerivedDataPath;
+    private String xcTestsDerivedDataPath;
 
     /**
      * defining if simulators should be resetted
      *
      * @parameter property="ios.resetSimulators"
      */
-    protected boolean resetSimulators = true;
+    private boolean resetSimulators = true;
 
     /**
      * defining all files and directories to replace
      *
      * @parameter property="ios.fileReplacements"
      */
-    protected List<FileReplacement> fileReplacements;
+    List<FileReplacement> fileReplacements;
 
     /**
      * defining all files and directories to replace
      *
      * @parameter property="ios.stringReplacements"
      */
-    protected StringReplacementConfig stringReplacements;
+    StringReplacementConfig stringReplacements;
 
     /**
      * defining parameters passed to the xcodebuild
      *
      * @parameter property="ios.xcodeBuildParameters"
      */
-    protected List<String> xcodeBuildParameters;
+    List<String> xcodeBuildParameters;
 
     /**
      * defining parameters passed to the export options plist file
@@ -406,14 +407,14 @@ public class BaseMojo extends AbstractMojo {
      * @parameter property="ios.xcodeExportOptions"
      * * default-value="null"
      */
-    protected XcodeExportOptions xcodeExportOptions;
+    XcodeExportOptions xcodeExportOptions;
 
     /**
      * defining target dependencies of the project, it will be bundled in the artefact
      *
      * @parameter property="ios.targetDependencies"
      */
-    protected List<String> targetDependencies;
+    List<String> targetDependencies;
 
     /**
      * The maven project.
@@ -429,7 +430,7 @@ public class BaseMojo extends AbstractMojo {
      *
      * @parameter
      */
-    protected String provisioningProfileName;
+    private String provisioningProfileName;
 
     /**
      * the username for iTunesConnect
@@ -446,7 +447,7 @@ public class BaseMojo extends AbstractMojo {
 
     protected Map<String, String> properties = null;
 
-    protected Map<String, String> prepareProperties() {
+    private Map<String, String> prepareProperties() {
 
         Map<String, String> properties = new HashMap<String, String>();
 
@@ -523,7 +524,7 @@ public class BaseMojo extends AbstractMojo {
         return properties;
     }
 
-    protected void addProperty(Map<String, String> properties, String key, String value) {
+    private void addProperty(Map<String, String> properties, String key, String value) {
 
         if (properties != null && key != null && value != null) {
             properties.put(key, value);
@@ -566,7 +567,9 @@ public class BaseMojo extends AbstractMojo {
                 this.provisioningProfileSpecifier = null;
                 this.xcodeExportOptions.teamID = data.getTeamID();
                 this.developmentTeam = data.getTeamID();
-                this.xcodeExportOptions.method = data.getType().toString();
+                this.xcodeExportOptions.method = data.getTypeId();
+
+                this.properties = prepareProperties();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -588,20 +591,7 @@ public class BaseMojo extends AbstractMojo {
         // Run shell-script from resource-folder.
         try {
             final String scriptName = "set-xcode-version.sh";
-            File tempFile = File.createTempFile(scriptName, "sh");
-
-            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
-            OutputStream outputStream = new FileOutputStream(tempFile);
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            outputStream.close();
-
+            File tempFile = Utils.createTempFile(scriptName);
             ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
                     xcodeVersionPath);
 
@@ -617,7 +607,7 @@ public class BaseMojo extends AbstractMojo {
         }
     }
 
-    protected void resetXcodeVersion(File workDirectory) throws IOSException {
+    void resetXcodeVersion() {
 
         try {
             if (currentXcodeVersion != null) {

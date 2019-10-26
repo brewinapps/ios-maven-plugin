@@ -5,7 +5,7 @@
  * Date: 2016-06-23
  * <p/>
  * This code is copyright (c) 2016 let's dev.
- * URL: http://www.letsdev.de
+ * URL: https://www.letsdev.de
  * e-Mail: contact@letsdev.de
  */
 
@@ -14,9 +14,6 @@ package de.letsdev.maven.plugins.ios;
 import org.apache.maven.project.MavenProject;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import de.letsdev.maven.plugins.ios.mojo.IOSException;
@@ -43,15 +40,14 @@ public class ProjectTester {
 
         if (Utils.shouldUseWorkspaceFile(properties)) {
             otherArguments.append("-workspace");
-            otherArguments.append(projectName + ".xcworkspace");
+            otherArguments.append(projectName).append(".xcworkspace");
         }
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCTEST_DERIVED_DATA_PATH.toString())) {
-            otherArguments.append(" " + "-derivedDataPath " + properties.get(
+            otherArguments.append(" " + "-derivedDataPath ").append(properties.get(
                     Utils.PLUGIN_PROPERTIES.XCTEST_DERIVED_DATA_PATH.toString()));
         } else if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
-            otherArguments.append(
-                    " " + "-derivedDataPath " + properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()));
+            otherArguments.append(" " + "-derivedDataPath ").append(properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()));
         }
 
         String jsonOutputFile = Utils.createJsonOutputFilePath("test", properties);
@@ -59,21 +55,7 @@ public class ProjectTester {
 
         final String scriptName = "run-xctests.sh";
 
-        File tempFile = File.createTempFile(scriptName, "sh");
-        InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
-        OutputStream outputStream = new FileOutputStream(tempFile);
-
-        try {
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-        } finally {
-            outputStream.flush();
-            outputStream.close();
-        }
+        File tempFile = Utils.createTempFile(scriptName);
 
         ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", tempFile.getAbsoluteFile().toString(), scheme,
                 configuration, sdk, sdkArchs, destination, otherArguments.toString(), xcPrettyCommand);
@@ -86,21 +68,7 @@ public class ProjectTester {
 
         final String scriptName = "reset-simulators.sh";
 
-        File tempFile = File.createTempFile(scriptName, "sh");
-        InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
-        OutputStream outputStream = new FileOutputStream(tempFile);
-
-        try {
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-        } finally {
-            outputStream.flush();
-            outputStream.close();
-        }
+        File tempFile = Utils.createTempFile(scriptName);
 
         ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", tempFile.getAbsoluteFile().toString());
         processBuilder.directory(workDirectory);

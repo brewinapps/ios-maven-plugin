@@ -18,34 +18,27 @@ import de.letsdev.maven.plugins.ios.mojo.container.XcodeExportOptions;
  * Time: 19:54:44
  * <p/>
  * This code is copyright (c) 2012 let's dev.
- * URL: http://www.letsdev.de
+ * URL: https://www.letsdev.de
  * e-Mail: contact@letsdev.de
  */
 
 public class Utils {
 
-    public static String BUNDLE_VERSION_SNAPSHOT_ID = "-SNAPSHOT";
+    private static String BUNDLE_VERSION_SNAPSHOT_ID = "-SNAPSHOT";
 
-    public static String SDK_IPHONE_OS = "iphoneos";
-    public static String SDK_IPHONE_SIMULATOR = "iphonesimulator";
+    static String SDK_IPHONE_OS = "iphoneos";
+    static String SDK_IPHONE_SIMULATOR = "iphonesimulator";
 
-    public static String ARCHITECTURES_IPHONE_OS = "arm64 armv7";
-    public static String ARCHITECTURES_IPHONE_SIMULATOR = "i386 x86_64";
+    private static String RELEASE_TASK = "releaseTask";
+    private static String RELEASE_TASK_TESTFLIGHT = "Testflight";
+    private static String RELEASE_TASK_APP_STORE_UPLOAD = "AppStoreUpload";
 
-    public static String RELEASE_TASK = "releaseTask";
-    public static String RELEASE_TASK_TESTFLIGHT = "Testflight";
-    public static String RELEASE_TASK_APP_STORE_UPLOAD = "AppStoreUpload";
-
-    public static String EXPORT_PRODUCT_PATH_BASE = "Products/Library";
-    public static String EXPORT_PRODUCT_PATH_FRAMEWORK = EXPORT_PRODUCT_PATH_BASE + "/Frameworks";
-    public static String EXPORT_PRODUCT_PATH_BUNDLE = EXPORT_PRODUCT_PATH_BASE + "/Bundles";
-
-    public static String EXPORT_PRODUCT_TYPE_EXTENSION_FRAMEWORK = "framework";
-    public static String EXPORT_PRODUCT_TYPE_EXTENSION_BUNDLE = "bundle";
+    private static String EXPORT_PRODUCT_PATH_BASE = "Products/Library";
+    private static String EXPORT_PRODUCT_PATH_FRAMEWORK = EXPORT_PRODUCT_PATH_BASE + "/Frameworks";
+    private static String EXPORT_PRODUCT_PATH_BUNDLE = EXPORT_PRODUCT_PATH_BASE + "/Bundles";
 
     public enum PLUGIN_PROPERTIES {
 
-        APP_DIR("appDir"),
         APP_NAME("appName"),
         APP_ICON_NAME("appIconName"),
         BUILD_ID("buildId"),
@@ -97,7 +90,7 @@ public class Utils {
         XCTEST_DERIVED_DATA_PATH("xcTestsDerivedDataPath"),
         PROVISIONING_PROFILE_NAME("provisioningProfileName");
 
-        private PLUGIN_PROPERTIES(String name) {
+        PLUGIN_PROPERTIES(String name) {
 
             this.name = name;
         }
@@ -119,7 +112,7 @@ public class Utils {
         FRAMEWORK_ZIP("zip"),
         PLIST("plist");
 
-        private PLUGIN_SUFFIX(String name) {
+        PLUGIN_SUFFIX(String name) {
 
             this.name = name;
         }
@@ -137,7 +130,7 @@ public class Utils {
         IOS_FRAMEWORK("ios-framework"),
         FRAMEWORK_ZIP("zip");
 
-        private PLUGIN_PACKAGING(String name) {
+        PLUGIN_PACKAGING(String name) {
 
             this.name = name;
         }
@@ -166,43 +159,38 @@ public class Utils {
         return mavenProject.getPackaging().equals(Utils.PLUGIN_PACKAGING.IOS_FRAMEWORK.toString()) || isFrameworkBuild;
     }
 
-    public static boolean shouldCodeSign(MavenProject mavenProject, Map<String, String> properties) {
+    static boolean shouldCodeSign(MavenProject mavenProject, Map<String, String> properties) {
 
         return !isiOSFramework(mavenProject, properties) && !isMacOSFramework(properties);
     }
 
-    public static boolean shouldCodeSignWithResourceRules(MavenProject mavenProject, Map<String, String> properties) {
+    static boolean shouldCodeSignWithResourceRules(Map<String, String> properties) {
 
         return "true".equals(properties.get(PLUGIN_PROPERTIES.CODE_SIGN_WITH_RESOURCE_RULES_ENABLED.toString()));
     }
 
-    public static boolean shouldBuildXCArchive(MavenProject mavenProject, Map<String, String> properties) {
+    static boolean shouldBuildXCArchive(Map<String, String> properties) {
 
         return "true".equals(properties.get(PLUGIN_PROPERTIES.BUILD_TO_XCARCHIVE_ENABLED.toString()));
     }
 
-    public static boolean shouldBuildXCArchiveWithExportOptionsPlist(XcodeExportOptions xcodeExportOptions) {
+    static boolean shouldBuildXCArchiveWithExportOptionsPlist(XcodeExportOptions xcodeExportOptions) {
 
         return xcodeExportOptions.method != null;
     }
 
-    public static String getArchiveName(final String projectName, MavenProject mavenProject) {
+    static String getArchiveName(final String projectName, MavenProject mavenProject) {
 
         return getTargetDirectory(mavenProject).getAbsolutePath() + File.separator + projectName + "."
                 + PLUGIN_SUFFIX.XCARCHIVE;
     }
 
-    public static String getProjectIpaName(final String projectName) {
-
-        return projectName + "." + PLUGIN_SUFFIX.IPA;
-    }
-
-    public static String getIpaName(final String schemeName) {
+    static String getIpaName(final String schemeName) {
 
         return schemeName + "." + PLUGIN_SUFFIX.IPA;
     }
 
-    protected static File getTargetDirectory(MavenProject mavenProject) {
+    static File getTargetDirectory(MavenProject mavenProject) {
 
         return new File(mavenProject.getBuild().getDirectory());
     }
@@ -216,22 +204,22 @@ public class Utils {
         return projectName;
     }
 
-    public static boolean cocoaPodsEnabled(Map<String, String> buildProperties) {
+    static boolean cocoaPodsEnabled(Map<String, String> buildProperties) {
 
         return "true".equals(buildProperties.get(PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString()));
     }
 
-    public static boolean carthageEnebled(Map<String, String> buildProperties) {
+    static boolean carthageEnebled(Map<String, String> buildProperties) {
 
         return "true".equals(buildProperties.get(PLUGIN_PROPERTIES.CARTHAGE_ENABLED.toString()));
     }
 
-    public static boolean isIphoneSimulatorBitcodeEnabled(Map<String, String> buildProperties) {
+    static boolean isIphoneSimulatorBitcodeEnabled(Map<String, String> buildProperties) {
 
         return "true".equals(buildProperties.get(PLUGIN_PROPERTIES.IPHONESIMULATOR_BITCODE_ENABLED.toString()));
     }
 
-    public static boolean shouldResetIphoneSimulators(Map<String, String> buildProperties) {
+    static boolean shouldResetIphoneSimulators(Map<String, String> buildProperties) {
 
         return "true".equals(buildProperties.get(PLUGIN_PROPERTIES.RESET_SIMULATORS.toString()));
     }
@@ -248,7 +236,7 @@ public class Utils {
         return workDirectory;
     }
 
-    public static String getProjectVersion(MavenProject mavenProject, Map<String, String> properties) {
+    private static String getProjectVersion(MavenProject mavenProject, Map<String, String> properties) {
 
         String projectVersion = mavenProject.getVersion();
 
@@ -259,18 +247,16 @@ public class Utils {
         return projectVersion;
     }
 
-    public static boolean isTestflightBuild(Map<String, String> buildProperties) {
+    static boolean isTestflightBuild(Map<String, String> buildProperties) {
 
         String valueReleaseTask = buildProperties.get(Utils.RELEASE_TASK);
-        boolean result = Utils.RELEASE_TASK_TESTFLIGHT.equalsIgnoreCase(valueReleaseTask);
-        return result;
+        return Utils.RELEASE_TASK_TESTFLIGHT.equalsIgnoreCase(valueReleaseTask);
     }
 
-    public static boolean isAppStoreBuild(Map<String, String> buildProperties) {
+    static boolean isAppStoreBuild(Map<String, String> buildProperties) {
 
         String valueReleaseTask = buildProperties.get(Utils.RELEASE_TASK);
-        boolean result = Utils.RELEASE_TASK_APP_STORE_UPLOAD.equalsIgnoreCase(valueReleaseTask);
-        return result;
+        return Utils.RELEASE_TASK_APP_STORE_UPLOAD.equalsIgnoreCase(valueReleaseTask);
     }
 
     public static String getAdjustedVersion(MavenProject mavenProject, Map<String, String> properties) {
@@ -286,28 +272,24 @@ public class Utils {
         return result;
     }
 
-    public static String getAppName(MavenProject mavenProject, Map<String, String> properties) {
+    public static String getAppName(Map<String, String> properties) {
 
-        String result = properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString());
-        return result;
+        return properties.get(PLUGIN_PROPERTIES.APP_NAME.toString());
     }
 
-    public static String getConfiguration(MavenProject mavenProject, Map<String, String> properties) {
+    public static String getConfiguration(Map<String, String> properties) {
 
-        String result = properties.get(PLUGIN_PROPERTIES.CONFIGURATION.toString());
-        return result;
+        return properties.get(PLUGIN_PROPERTIES.CONFIGURATION.toString());
     }
 
-    public static String getClassifier(MavenProject mavenProject, Map<String, String> properties) {
+    public static String getClassifier(Map<String, String> properties) {
 
-        String result = properties.get(PLUGIN_PROPERTIES.CLASSIFIER.toString());
-        return result;
+        return properties.get(PLUGIN_PROPERTIES.CLASSIFIER.toString());
     }
 
-    public static String getBuildId(MavenProject mavenProject, Map<String, String> properties) {
+    public static String getBuildId(Map<String, String> properties) {
 
-        String result = properties.get(PLUGIN_PROPERTIES.BUILD_ID.toString());
-        return result;
+        return properties.get(PLUGIN_PROPERTIES.BUILD_ID.toString());
     }
 
     public static String getCurrentXcodeVersion(File workDirectory) {
@@ -317,20 +299,7 @@ public class Utils {
         // Run shell-script from resource-folder.
         try {
             final String scriptName = "get-xcode-version.sh";
-            File tempFile = File.createTempFile(scriptName, "sh");
-
-            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
-            OutputStream outputStream = new FileOutputStream(tempFile);
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            outputStream.close();
-
+            File tempFile = createTempFile(scriptName);
             ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString());
 
             processBuilder.directory(workDirectory);
@@ -339,16 +308,14 @@ public class Utils {
             System.out.println("################################ " + xcodeVersion
                     + " is current xcode version ############################################");
             System.out.println("############################################################################");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (IOSException e) {
+        } catch (IOException | IOSException e) {
             e.printStackTrace();
         }
 
         return xcodeVersion;
     }
 
-    public static String getArchitecturesForSdk(Map<String, String> properties, String sdk) {
+    static String getArchitecturesForSdk(Map<String, String> properties, String sdk) {
 
         String architectures = properties.get(PLUGIN_PROPERTIES.IPHONEOS_ARCHITECTURES.toString());
 
@@ -359,7 +326,7 @@ public class Utils {
         return architectures;
     }
 
-    public static String getExportProductPath(XcodeArchiveProductType productType) {
+    static String getExportProductPath(XcodeArchiveProductType productType) {
 
         String productPath;
 
@@ -378,10 +345,12 @@ public class Utils {
         return productPath;
     }
 
-    public static XcodeArchiveProductType getExportProductType(String productName) {
+    static XcodeArchiveProductType getExportProductType(String productName) {
 
         XcodeArchiveProductType type = XcodeArchiveProductType.XCODE_ARCHIVE_PRODUCT_TYPE_UNKNOWN;
 
+        String EXPORT_PRODUCT_TYPE_EXTENSION_BUNDLE = "bundle";
+        String EXPORT_PRODUCT_TYPE_EXTENSION_FRAMEWORK = "framework";
         if (EXPORT_PRODUCT_TYPE_EXTENSION_FRAMEWORK.equals(FilenameUtils.getExtension(productName))) {
             type = XcodeArchiveProductType.XCODE_ARCHIVE_PRODUCT_TYPE_FRAMEWORK;
         } else if (EXPORT_PRODUCT_TYPE_EXTENSION_BUNDLE.equals(FilenameUtils.getExtension(productName))) {
@@ -391,7 +360,7 @@ public class Utils {
         return type;
     }
 
-    public static boolean shouldUseWorkspaceFile(Map<String, String> properties) {
+    static boolean shouldUseWorkspaceFile(Map<String, String> properties) {
 
         if (properties.containsKey(PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString())) {
             return properties.get(PLUGIN_PROPERTIES.COCOA_PODS_ENABLED.toString()).equals("true");
@@ -400,7 +369,7 @@ public class Utils {
         return false;
     }
 
-    public static String getXcprettyCommand(String logFileName, String jsonOutputFileIdentifier) {
+    static String getXcprettyCommand(String logFileName, String jsonOutputFileIdentifier) {
         String xcprettyOutputFile = jsonOutputFileIdentifier + "-result.json";
         String xcprettyCompilationDatabaseFile = jsonOutputFileIdentifier + "-compile-commands.json";
 
@@ -410,7 +379,7 @@ public class Utils {
         } else {
             xcPrettyStatement += " | tee " + logFileName + " |";
         }
-        
+
         xcPrettyStatement += " xcpretty";
 
         if (jsonOutputFileIdentifier != null && !jsonOutputFileIdentifier.isEmpty()) {
@@ -421,25 +390,33 @@ public class Utils {
         return xcPrettyStatement;
     }
 
-    public static void executeShellScript(String scriptName, String value1, String value2, String value3,
-                                          File workDirectory) throws IOSException {
+    public static File createTempFile(String shellScriptFileName) throws IOException {
+        File tempFile = File.createTempFile(shellScriptFileName, "sh");
+        InputStream iStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + shellScriptFileName);
+        OutputStream oStream = new FileOutputStream(tempFile);
 
-        // Run shell-script from resource-folder.
         try {
-            File tempFile = File.createTempFile(scriptName, "sh");
-
-            InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
-            OutputStream outputStream = new FileOutputStream(tempFile);
-
             byte[] buffer = new byte[1024];
             int bytesRead;
 
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-
-                outputStream.write(buffer, 0, bytesRead);
+            while ((bytesRead = iStream.read(buffer)) != -1) {
+                oStream.write(buffer, 0, bytesRead);
             }
+        } finally {
+            oStream.flush();
+            oStream.close();
 
-            outputStream.close();
+        }
+
+        return tempFile;
+    }
+
+    static void executeShellScript(String scriptName, String value1, String value2,
+                                   File workDirectory) throws IOSException {
+
+        // Run shell-script from resource-folder.
+        try {
+            File tempFile = createTempFile(scriptName);
 
             if (value1 == null) {
                 value1 = "";
@@ -449,12 +426,8 @@ public class Utils {
                 value2 = "";
             }
 
-            if (value3 == null) {
-                value3 = "";
-            }
-
             ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), value1,
-                    value2, value3);
+                    value2);
 
             processBuilder.directory(workDirectory);
             CommandHelper.performCommand(processBuilder);
@@ -464,7 +437,7 @@ public class Utils {
         }
     }
 
-    public static String createJsonOutputFilePath(String relativeFilePath, Map<String, String> properties) {
+    static String createJsonOutputFilePath(String relativeFilePath, Map<String, String> properties) {
 
         String jsonOutputFile = "";
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {

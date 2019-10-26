@@ -6,7 +6,7 @@
  * Time: 19:54:44
  *
  * This code is copyright (c) 2012 let's dev.
- * URL: http://www.letsdev.de
+ * URL: https://www.letsdev.de
  * e-Mail: contact@letsdev.de
  */
 
@@ -21,7 +21,6 @@ import org.apache.maven.project.MavenProjectHelper;
 import java.io.*;
 
 import de.letsdev.maven.plugins.ios.Utils;
-import de.letsdev.maven.plugins.ios.mojo.BaseMojo;
 
 
 /**
@@ -36,22 +35,21 @@ public class IOSPackageMojo extends BaseMojo {
      */
     private MavenProjectHelper projectHelper;
 
-
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         super.execute();
         Artifact currentArtifact = mavenProject.getArtifact();
         final String targetDir = mavenProject.getBuild().getDirectory();
-        String destinationDirectory = null;
-        String artifactName = null;
+        String destinationDirectory;
+        String artifactName;
 
         String projectVersion = mavenProject.getVersion();
 
         String adjustedVersion = Utils.getAdjustedVersion(mavenProject, this.properties);
-        String appNameOfExecution = Utils.getAppName(mavenProject, this.properties);
-        String configurationOfExecution = Utils.getConfiguration(mavenProject, this.properties);
-        String classifierOfExecution = Utils.getClassifier(mavenProject, this.properties);
-        String buildIdOfExecution = Utils.getBuildId(mavenProject, this.properties);
+        String appNameOfExecution = Utils.getAppName(this.properties);
+        String configurationOfExecution = Utils.getConfiguration(this.properties);
+        String classifierOfExecution = Utils.getClassifier(this.properties);
+        String buildIdOfExecution = Utils.getBuildId(this.properties);
         boolean isMacOsFrameworkBuildOfExecution = Utils.isMacOSFramework(this.properties);
         boolean isIosFrameworkBuildOfExecution = Utils.isiOSFramework(mavenProject, this.properties);
 
@@ -87,8 +85,6 @@ public class IOSPackageMojo extends BaseMojo {
             in = new FileInputStream(destinationFile);
             out = new FileOutputStream(artifactFile, true);
             IOUtils.copy(in, out);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

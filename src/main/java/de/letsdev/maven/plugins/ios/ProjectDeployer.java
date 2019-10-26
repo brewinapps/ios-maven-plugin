@@ -6,7 +6,7 @@
  * Time: 19:54:44
  *
  * This code is copyright (c) 2012 let's dev.
- * URL: http://www.letsdev.de
+ * URL: https://www.letsdev.de
  * e-Mail: contact@letsdev.de
  */
 
@@ -92,19 +92,7 @@ public class ProjectDeployer {
         final String iTunesConnectUsername = properties.get(Utils.PLUGIN_PROPERTIES.ITUNES_CONNECT_USERNAME.toString());
         final String iTunesConnectPassword = properties.get(Utils.PLUGIN_PROPERTIES.ITUNES_CONNECT_PASSWORD.toString());
 
-        File tempFile = File.createTempFile(scriptName, "sh");
-
-        InputStream inputStream = ProjectBuilder.class.getResourceAsStream("/META-INF/" + scriptName);
-        OutputStream outputStream = new FileOutputStream(tempFile);
-
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-
-        while ((bytesRead = inputStream.read(buffer)) != -1) {
-            outputStream.write(buffer, 0, bytesRead);
-        }
-
-        outputStream.close();
+        File tempFile = Utils.createTempFile(scriptName);
 
         //get current xcode version
         String projectName = Utils.buildProjectName(properties, mavenProject);
