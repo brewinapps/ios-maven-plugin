@@ -770,7 +770,7 @@ public class ProjectBuilder {
                                              String productName) throws IOSException {
         // Run shell-script from resource-folder.
         try {
-            final String scriptName = "export-product-archive";
+            final String scriptName = "export-product-archive.sh";
 
             targetPath.mkdir();
             final String productTargetPath = targetPath.toString() + "/" + productName;
