@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.letsdev.ios.app.maven</groupId>
+	<artifactId>maven-ios-example-project</artifactId>
+	<packaging>pom</packaging>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>maven-ios-example-project</name>
+	
+	<build>
+        <plugins>
+            <plugin>
+                <groupId>de.letsdev.maven.plugins</groupId>
+	       		<artifactId>ios-maven-plugin</artifactId>
+				<version>1.18.6-SNAPSHOT</version>
+                <extensions>true</extensions>
+                <executions>
+                   <execution>
+                        <id>maven-ios-example-project</id>
+                        <goals>
+							<goal>build</goal>
+							<goal>package</goal>
+							<goal>deploy</goal>
+						</goals>  
+						<configuration>
+							<appName>example-project</appName>
+							<projectName>ios-maven-example-project</projectName>
+							<scheme>ios-maven-example-project</scheme>
+							<infoPlist>ios-maven-example-project/Info.plist</infoPlist>
+							<codeSignIdentity>iPhone Distribution: let&apos;s dev GmbH &amp; Co. KG</codeSignIdentity>
+							<keychainPath>${user.home}/Library/Keychains/ld-enterprise.keychain</keychainPath>
+							<keychainPassword>ld-enterprise</keychainPassword>
+							<xcodeBuildParameters>
+								<parameter>PROVISIONING_PROFILE_APP=14c0aa28-fa72-4e15-a3c5-2ba2be80ce27</parameter>
+								<parameter>BUNDLE_IDENTIFIER_APP=de.letsdev.ios-maven-example-project</parameter>               
+								<parameter>PROVISIONING_PROFILE_EXTENSION=14c0aa28-fa72-4e15-a3c5-2ba2be80ce27</parameter>
+								<parameter>BUNDLE_IDENTIFIER_EXTENSION=de.letsdev.ios-maven-example-project.extension</parameter>                              
+							</xcodeBuildParameters>   
+							<developmentTeam>55N9D27866</developmentTeam>
+							<xcodeExportOptions>
+								<method>enterprise</method>
+								<teamID>55N9D27866</teamID>
+								<provisioningProfiles>
+									<de.letsdev.ios-maven-example-project>14c0aa28-fa72-4e15-a3c5-2ba2be80ce27</de.letsdev.ios-maven-example-project>  
+									<de.letsdev.ios-maven-example-project.extension>14c0aa28-fa72-4e15-a3c5-2ba2be80ce27</de.letsdev.ios-maven-example-project.extension>
+								</provisioningProfiles>
+							</xcodeExportOptions>                          
+						</configuration> 
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>   
+</project>
