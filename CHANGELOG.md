@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.18.5] - 2019-10-18
+## [1.18.6] - 2019-10-27
 ### Added
 - added xcpretty for test execution
 - added support for Carthage dependencies (carthageEnabled)
