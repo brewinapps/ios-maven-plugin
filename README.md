@@ -21,29 +21,64 @@ https://www.letsdev.de - professional mobile solutions
     <artifactId>ios-maven-plugin</artifactId>
     <extensions>true</extensions>
     <executions>
-        ...
-        <execution>
-            <id>my-framework</id>
+       <execution>
+            <id>maven-ios-example-project</id>
             <goals>
                 <goal>build</goal>
                 <goal>package</goal>
                 <goal>deploy</goal>
-            </goals>
+            </goals>  
             <configuration>
-                <appName>LDMyiOSFramework</appName>
-                <projectName>LDMyiOSFramework</projectName>
-                <target>LDMyiOSFramework</target>
-                <infoPlist>Info.plist</infoPlist>
-                <buildId>${env.BUILD_NUMBER}</buildId>
-                <ipaVersion>${project.version}</ipaVersion>
-                <configuration>Release</configuration>
-                <iOSFrameworkBuild>true</iOSFrameworkBuild>
-                <iphoneosArchitectures>arm64 armv7</iphoneosArchitectures>
-                <iphonesimulatorArchitectures>i386 x86_64</iphonesimulatorArchitectures>
-            </configuration>
+                <appName>example-project</appName>
+                <projectName>ios-maven-example-project</projectName>
+                <scheme>ios-maven-example-project</scheme>
+                <infoPlist>ios-maven-example-project/Info.plist</infoPlist>
+                <bundleIdentifier>de.letsdev.ios-maven-example-project</bundleIdentifier>
+                <codeSignIdentity>iPhone Distribution: let&apos;s dev GmbH &amp; Co. KG</codeSignIdentity>
+                <keychainPath>${user.home}/Library/Keychains/ld-enterprise.keychain</keychainPath>
+                <keychainPassword>ld-enterprise</keychainPassword>
+                <provisioningProfileName>ldentwildcarddistribution</provisioningProfileName>
+            </configuration> 
         </execution>
     </executions>
 </plugin>
 
 ...
 ```
+
+### Framework build
+
+```
+...
+
+<plugin>
+    <groupId>de.letsdev.maven.plugins</groupId>
+    <artifactId>ios-maven-plugin</artifactId>
+    <extensions>true</extensions>
+    <executions>
+       <execution>
+            <id>maven-ios-example-project</id>
+            <goals>
+                <goal>build</goal>
+                <goal>package</goal>
+                <goal>deploy</goal>
+            </goals>  
+            <configuration>
+                <appName>example-project</appName>
+                <projectName>ios-framework-maven-example</projectName>
+                <scheme>ios-framework-maven-example</scheme>
+                <infoPlist>ios-framework-maven-example/Info.plist</infoPlist>
+                <iOSFrameworkBuild>true</iOSFrameworkBuild>
+                <iphoneosArchitectures>arm64</iphoneosArchitectures>
+                <iphonesimulatorArchitectures>x86_64</iphonesimulatorArchitectures>
+            </configuration> 
+        </execution>
+    </executions>
+</plugin>
+
+...
+```          
+
+## Examples
+
+see /examples directory
