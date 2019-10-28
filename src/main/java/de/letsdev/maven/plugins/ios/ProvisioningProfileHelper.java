@@ -89,6 +89,7 @@ public class ProvisioningProfileHelper {
     }
 
     private String getUuid(String uuid, NodeList nodeList, int i) {
+
         if (nodeList.item(i).getFirstChild().getNodeValue().equals("UUID")) {
             Node current = nodeList.item(i).getNextSibling();
             //iterate trough notes until node with value for the uuid key is current
@@ -101,6 +102,7 @@ public class ProvisioningProfileHelper {
     }
 
     private String getTeamId(String teamID, NodeList nodeList, int i) {
+
         if (nodeList.item(i).getFirstChild().getNodeValue().equals("TeamIdentifier")) {
             Node current = nodeList.item(i).getNextSibling();
             //iterate trough notes until array node, that has value of team id key as child is current
@@ -128,8 +130,10 @@ public class ProvisioningProfileHelper {
 
             if (checkKey("get-task-allow", nodeList.item(i))) {
                 type = ProvisioningProfileType.TYPE_DEVELOPMENT;
+                break;
             } else if (checkKey("ProvisionsAllDevices", nodeList.item(i))) {
                 type = ProvisioningProfileType.TYPE_ENTERPRISE;
+                break;
             } else if (nodeList.item(i).getFirstChild().getNodeValue().equals("ProvisionedDevices")) {
                 Node current = nodeList.item(i).getNextSibling();
                 while (true) {
