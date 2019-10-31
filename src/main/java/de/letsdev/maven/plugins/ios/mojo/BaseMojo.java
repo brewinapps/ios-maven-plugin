@@ -555,17 +555,20 @@ public class BaseMojo extends AbstractMojo {
                     mavenProject);
             try {
                 ProvisioningProfileData data = helper.getData();
-                if (this.xcodeExportOptions.provisioningProfiles == null) {
-                    this.xcodeExportOptions.provisioningProfiles = new HashMap<>();
-                }
-                this.xcodeExportOptions.provisioningProfiles.put(this.bundleIdentifier, data.getUuid());
-                this.provisioningProfileUUID = data.getUuid();
-                this.provisioningProfileSpecifier = null;
-                this.xcodeExportOptions.teamID = data.getTeamID();
-                this.developmentTeam = data.getTeamID();
-                this.xcodeExportOptions.method = data.getTypeId();
 
-                this.properties = prepareProperties();
+                if (data != null) {
+                    if (this.xcodeExportOptions.provisioningProfiles == null) {
+                        this.xcodeExportOptions.provisioningProfiles = new HashMap<>();
+                    }
+                    this.xcodeExportOptions.provisioningProfiles.put(this.bundleIdentifier, data.getUuid());
+                    this.provisioningProfileUUID = data.getUuid();
+                    this.provisioningProfileSpecifier = data.getName();
+                    this.xcodeExportOptions.teamID = data.getTeamID();
+                    this.developmentTeam = data.getTeamID();
+                    this.xcodeExportOptions.method = data.getTypeId();
+
+                    this.properties = prepareProperties();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

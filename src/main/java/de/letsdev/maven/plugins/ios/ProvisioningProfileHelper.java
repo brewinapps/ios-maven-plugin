@@ -69,17 +69,27 @@ public class ProvisioningProfileHelper {
             doc.getDocumentElement().normalize();
             String uuid = null;
             String teamID = null;
+            String name = null;
 
             NodeList nodeList = doc.getElementsByTagName("key");
             for (int i = 0; i < nodeList.getLength(); i++) {
-                uuid = getUuid(uuid, nodeList, i);
-                teamID = getTeamId(teamID, nodeList, i);
+                if (nodeList.item(i).getFirstChild().getNodeValue().equals("UUID")) {
+                    uuid = getStringValue(nodeList, i);
+                }
+
+                if (nodeList.item(i).getFirstChild().getNodeValue().equals("Name")) {
+                    name = getStringValue(nodeList, i);
+                }
+
+                if (nodeList.item(i).getFirstChild().getNodeValue().equals("TeamIdentifier")) {
+                    teamID = getTeamId(nodeList, i);
+                }
             }
 
             ProvisioningProfileType type = getProvisioningProfileType(nodeList);
 
-            if (teamID != null && uuid != null) {
-                return new ProvisioningProfileData(uuid, teamID, type);
+            if (teamID != null && uuid != null && name != null) {
+                return new ProvisioningProfileData(uuid, name, teamID, type);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -88,32 +98,27 @@ public class ProvisioningProfileHelper {
         return null;
     }
 
-    private String getUuid(String uuid, NodeList nodeList, int i) {
-        if (nodeList.item(i).getFirstChild().getNodeValue().equals("UUID")) {
-            Node current = nodeList.item(i).getNextSibling();
-            //iterate trough notes until node with value for the uuid key is current
-            while (!current.getNodeName().equals("string")) {
-                current = current.getNextSibling();
-            }
-            uuid = current.getFirstChild().getNodeValue();
+    private String getStringValue(NodeList nodeList, int i) {
+        Node current = nodeList.item(i).getNextSibling();
+        //iterate trough notes until node with value for the uuid key is current
+        while (!current.getNodeName().equals("string")) {
+            current = current.getNextSibling();
         }
-        return uuid;
+
+        return  current.getFirstChild().getNodeValue();
     }
 
-    private String getTeamId(String teamID, NodeList nodeList, int i) {
-        if (nodeList.item(i).getFirstChild().getNodeValue().equals("TeamIdentifier")) {
-            Node current = nodeList.item(i).getNextSibling();
-            //iterate trough notes until array node, that has value of team id key as child is current
-            while (!current.getNodeName().equals("array")) {
-                current = current.getNextSibling();
-            }
-            current = current.getFirstChild();
-            while (!current.getNodeName().equals("string")) {
-                current = current.getNextSibling();
-            }
-            teamID = current.getFirstChild().getNodeValue();
+    private String getTeamId(NodeList nodeList, int i) {
+        Node current = nodeList.item(i).getNextSibling();
+        //iterate trough notes until array node, that has value of team id key as child is current
+        while (!current.getNodeName().equals("array")) {
+            current = current.getNextSibling();
         }
-        return teamID;
+        current = current.getFirstChild();
+        while (!current.getNodeName().equals("string")) {
+            current = current.getNextSibling();
+        }
+        return current.getFirstChild().getNodeValue();
     }
 
     private static String getProvisioningProfileFilePath(String provisioningProfileName) {
