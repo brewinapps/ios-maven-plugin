@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.18.7] - 2019-10-31
+### Added
+- reading name from provisioning profile, setting provisioningProfileSpecifier 
+
+### Changed
+- adjusted integration of altool, supporting app store uploads with Xcode 11 
+
 ## [1.18.6] - 2019-10-28
 ### Added
 - added xcpretty for test execution
