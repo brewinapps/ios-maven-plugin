@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.18.9] - 2019-11-04
+### Added
+- added sdk argument for xcodebuild clean
+
+## [1.18.8] - 2019-11-04
+### Changed
+- fixed xcpretty log file argument 
+
 ## [1.18.7] - 2019-10-31
 ### Added
 - reading name from provisioning profile, setting provisioningProfileSpecifier 
