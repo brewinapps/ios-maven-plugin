@@ -29,7 +29,7 @@
 							<codeSignIdentity>iPhone Distribution: let&apos;s dev GmbH &amp; Co. KG</codeSignIdentity>
 							<keychainPath>${user.home}/Library/Keychains/ld-enterprise.keychain</keychainPath>
 							<keychainPassword>ld-enterprise</keychainPassword>
-							<provisioningProfileName>EVZ_Wildcard_Development</provisioningProfileName>
+							<provisioningProfileName>ldentwildcarddistribution</provisioningProfileName>
 						</configuration> 
                     </execution>
                 </executions>
