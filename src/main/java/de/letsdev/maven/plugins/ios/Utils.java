@@ -373,11 +373,9 @@ public class Utils {
         String xcprettyOutputFile = jsonOutputFileIdentifier + "-result.json";
         String xcprettyCompilationDatabaseFile = jsonOutputFileIdentifier + "-compile-commands.json";
 
-        String xcPrettyStatement = "";
+        String xcPrettyStatement = " | tee " + logFileName + " |";
         if (jsonOutputFileIdentifier != null && !jsonOutputFileIdentifier.isEmpty()) {
-            xcPrettyStatement += "| XCPRETTY_JSON_FILE_OUTPUT=" + xcprettyOutputFile;
-        } else {
-            xcPrettyStatement += " | tee " + logFileName + " |";
+            xcPrettyStatement += " XCPRETTY_JSON_FILE_OUTPUT=" + xcprettyOutputFile;
         }
 
         xcPrettyStatement += " xcpretty";
