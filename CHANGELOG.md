@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- added space to some parameters in ProjectTester
+- provisioning profiles get set correctly now
+
+### Added
+- kills simulator application when resetting devices
 
 ## [1.18.9] - 2019-11-04
 ### Added
