@@ -37,9 +37,11 @@ public class ProjectTester {
         String destination = properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_DESTINATION.toString());
         StringBuilder otherArguments = new StringBuilder();
         otherArguments.append(properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_BUILD_ARGUMENTS.toString()));
+        otherArguments.append(" ");
 
         if (Utils.shouldUseWorkspaceFile(properties)) {
             otherArguments.append("-workspace");
+            otherArguments.append(" ");
             otherArguments.append(projectName).append(".xcworkspace");
         }
 

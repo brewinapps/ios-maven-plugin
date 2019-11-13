@@ -102,8 +102,7 @@ public class ProjectDeployer {
         ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
                 ipaLocation,
                 iTunesConnectUsername,
-                iTunesConnectPassword,
-                currentXcodeVersion);
+                iTunesConnectPassword);
 
         processBuilder.directory(targetDirectory);
         CommandHelper.performCommand(processBuilder);

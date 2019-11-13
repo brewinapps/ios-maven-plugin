@@ -69,17 +69,27 @@ public class ProvisioningProfileHelper {
             doc.getDocumentElement().normalize();
             String uuid = null;
             String teamID = null;
+            String name = null;
 
             NodeList nodeList = doc.getElementsByTagName("key");
             for (int i = 0; i < nodeList.getLength(); i++) {
-                uuid = getUuid(uuid, nodeList, i);
-                teamID = getTeamId(teamID, nodeList, i);
+                if (nodeList.item(i).getFirstChild().getNodeValue().equals("UUID")) {
+                    uuid = getStringValue(nodeList, i);
+                }
+
+                if (nodeList.item(i).getFirstChild().getNodeValue().equals("Name")) {
+                    name = getStringValue(nodeList, i);
+                }
+
+                if (nodeList.item(i).getFirstChild().getNodeValue().equals("TeamIdentifier")) {
+                    teamID = getTeamId(nodeList, i);
+                }
             }
 
             ProvisioningProfileType type = getProvisioningProfileType(nodeList);
 
-            if (teamID != null && uuid != null) {
-                return new ProvisioningProfileData(uuid, teamID, type);
+            if (teamID != null && uuid != null && name != null) {
+                return new ProvisioningProfileData(uuid, name, teamID, type);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -98,7 +108,8 @@ public class ProvisioningProfileHelper {
             }
             uuid = current.getFirstChild().getNodeValue();
         }
-        return uuid;
+
+        return  uuid;
     }
 
     private String getTeamId(String teamID, NodeList nodeList, int i) {

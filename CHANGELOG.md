@@ -6,7 +6,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Provisioning Profiles get set correctly now
+- added space to some parameters in ProjectTester
+- provisioning profiles get set correctly now
+
+### Added
+- kills simulator application when resetting devices
+
+## [1.18.9] - 2019-11-04
+### Added
+- added sdk argument for xcodebuild clean
+
+## [1.18.8] - 2019-11-04
+### Changed
+- fixed xcpretty log file argument 
+
+## [1.18.7] - 2019-10-31
+### Added
+- reading name from provisioning profile, setting provisioningProfileSpecifier 
+
+### Changed
+- adjusted integration of altool, supporting app store uploads with Xcode 11 
 
 ## [1.18.6] - 2019-10-28
 ### Added

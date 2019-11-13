@@ -315,6 +315,15 @@ public class Utils {
         return xcodeVersion;
     }
 
+    static String getSdk(Map<String, String> properties, boolean shouldUseIphoneSimulatorSDK) {
+        String sdk = properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString());
+        if (shouldUseIphoneSimulatorSDK) {
+            sdk = Utils.SDK_IPHONE_SIMULATOR;
+        }
+
+        return sdk;
+    }
+
     static String getArchitecturesForSdk(Map<String, String> properties, String sdk) {
 
         String architectures = properties.get(PLUGIN_PROPERTIES.IPHONEOS_ARCHITECTURES.toString());
@@ -373,11 +382,9 @@ public class Utils {
         String xcprettyOutputFile = jsonOutputFileIdentifier + "-result.json";
         String xcprettyCompilationDatabaseFile = jsonOutputFileIdentifier + "-compile-commands.json";
 
-        String xcPrettyStatement = "";
+        String xcPrettyStatement = " | tee " + logFileName + " |";
         if (jsonOutputFileIdentifier != null && !jsonOutputFileIdentifier.isEmpty()) {
-            xcPrettyStatement += "| XCPRETTY_JSON_FILE_OUTPUT=" + xcprettyOutputFile;
-        } else {
-            xcPrettyStatement += " | tee " + logFileName + " |";
+            xcPrettyStatement += " XCPRETTY_JSON_FILE_OUTPUT=" + xcprettyOutputFile;
         }
 
         xcPrettyStatement += " xcpretty";

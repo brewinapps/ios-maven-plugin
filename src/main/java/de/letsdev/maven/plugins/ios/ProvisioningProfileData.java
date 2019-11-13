@@ -8,11 +8,13 @@ public class ProvisioningProfileData {
     private static final String APP_STORE = "app-store";
     private String uuid;
     private String teamID;
+    private String name;
     private ProvisioningProfileType type;
 
-    ProvisioningProfileData(String uuid, String teamID, ProvisioningProfileType type) {
+    ProvisioningProfileData(String uuid, String name, String teamID, ProvisioningProfileType type) {
 
         this.uuid = uuid;
+        this.name = name;
         this.teamID = teamID;
         this.type = type;
     }
@@ -20,6 +22,10 @@ public class ProvisioningProfileData {
     public String getUuid() {
 
         return uuid;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getTeamID() {

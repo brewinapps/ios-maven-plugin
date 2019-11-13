@@ -313,9 +313,12 @@ public class ProjectBuilder {
     private static void cleanXcodeProject(Map<String, String> properties, File workDirectory,
                                           List<String> xcodeBuildParameters) throws IOSException {
 
+        String sdk = Utils.getSdk(properties, false);
+
         StringBuilder xcodebuildCommand = new StringBuilder("xcodebuild -alltargets -configuration " + properties.get(
                 Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + " clean -scheme " + properties.get(
-                Utils.PLUGIN_PROPERTIES.SCHEME.toString()));
+                Utils.PLUGIN_PROPERTIES.SCHEME.toString()) + " -sdk " + sdk
+                );
 
         //add each dynamic parameter from pom
         for (String param : xcodeBuildParameters) {
@@ -569,11 +572,7 @@ public class ProjectBuilder {
             buildParameters.add(projectName + ".xcworkspace");
         }
 
-        String sdk = properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString());
-        if (shouldUseIphoneSimulatorSDK) {
-            sdk = Utils.SDK_IPHONE_SIMULATOR;
-        }
-
+        String sdk = Utils.getSdk(properties, shouldUseIphoneSimulatorSDK);
         buildParameters.add("-sdk");
         buildParameters.add(sdk);
 
