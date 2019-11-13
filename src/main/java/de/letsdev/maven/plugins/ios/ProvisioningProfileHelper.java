@@ -75,7 +75,7 @@ public class ProvisioningProfileHelper {
             for (int i = 0; i < nodeList.getLength(); i++) {
                 if (nodeList.item(i).getFirstChild().getNodeValue().equals("UUID")) {
                     uuid = getStringValue(nodeList, i);
-                }
+            }
 
                 if (nodeList.item(i).getFirstChild().getNodeValue().equals("Name")) {
                     name = getStringValue(nodeList, i);
@@ -98,23 +98,17 @@ public class ProvisioningProfileHelper {
         return null;
     }
 
-    private String getUuid(String uuid, NodeList nodeList, int i) {
-
-        if (nodeList.item(i).getFirstChild().getNodeValue().equals("UUID")) {
+    private String getStringValue(NodeList nodeList, int i) {
             Node current = nodeList.item(i).getNextSibling();
             //iterate trough notes until node with value for the uuid key is current
             while (!current.getNodeName().equals("string")) {
                 current = current.getNextSibling();
             }
-            uuid = current.getFirstChild().getNodeValue();
-        }
 
-        return  uuid;
+        return  current.getFirstChild().getNodeValue();
     }
 
-    private String getTeamId(String teamID, NodeList nodeList, int i) {
-
-        if (nodeList.item(i).getFirstChild().getNodeValue().equals("TeamIdentifier")) {
+    private String getTeamId(NodeList nodeList, int i) {
             Node current = nodeList.item(i).getNextSibling();
             //iterate trough notes until array node, that has value of team id key as child is current
             while (!current.getNodeName().equals("array")) {
@@ -124,9 +118,7 @@ public class ProvisioningProfileHelper {
             while (!current.getNodeName().equals("string")) {
                 current = current.getNextSibling();
             }
-            teamID = current.getFirstChild().getNodeValue();
-        }
-        return teamID;
+        return current.getFirstChild().getNodeValue();
     }
 
     private static String getProvisioningProfileFilePath(String provisioningProfileName) {
