@@ -75,7 +75,7 @@ public class ProvisioningProfileHelper {
             for (int i = 0; i < nodeList.getLength(); i++) {
                 if (nodeList.item(i).getFirstChild().getNodeValue().equals("UUID")) {
                     uuid = getStringValue(nodeList, i);
-                }
+            }
 
                 if (nodeList.item(i).getFirstChild().getNodeValue().equals("Name")) {
                     name = getStringValue(nodeList, i);
@@ -99,25 +99,25 @@ public class ProvisioningProfileHelper {
     }
 
     private String getStringValue(NodeList nodeList, int i) {
-        Node current = nodeList.item(i).getNextSibling();
-        //iterate trough notes until node with value for the uuid key is current
-        while (!current.getNodeName().equals("string")) {
-            current = current.getNextSibling();
-        }
+            Node current = nodeList.item(i).getNextSibling();
+            //iterate trough notes until node with value for the uuid key is current
+            while (!current.getNodeName().equals("string")) {
+                current = current.getNextSibling();
+            }
 
         return  current.getFirstChild().getNodeValue();
     }
 
     private String getTeamId(NodeList nodeList, int i) {
-        Node current = nodeList.item(i).getNextSibling();
-        //iterate trough notes until array node, that has value of team id key as child is current
-        while (!current.getNodeName().equals("array")) {
-            current = current.getNextSibling();
-        }
-        current = current.getFirstChild();
-        while (!current.getNodeName().equals("string")) {
-            current = current.getNextSibling();
-        }
+            Node current = nodeList.item(i).getNextSibling();
+            //iterate trough notes until array node, that has value of team id key as child is current
+            while (!current.getNodeName().equals("array")) {
+                current = current.getNextSibling();
+            }
+            current = current.getFirstChild();
+            while (!current.getNodeName().equals("string")) {
+                current = current.getNextSibling();
+            }
         return current.getFirstChild().getNodeValue();
     }
 
@@ -133,8 +133,10 @@ public class ProvisioningProfileHelper {
 
             if (checkKey("get-task-allow", nodeList.item(i))) {
                 type = ProvisioningProfileType.TYPE_DEVELOPMENT;
+                break;
             } else if (checkKey("ProvisionsAllDevices", nodeList.item(i))) {
                 type = ProvisioningProfileType.TYPE_ENTERPRISE;
+                break;
             } else if (nodeList.item(i).getFirstChild().getNodeValue().equals("ProvisionedDevices")) {
                 Node current = nodeList.item(i).getNextSibling();
                 while (true) {
