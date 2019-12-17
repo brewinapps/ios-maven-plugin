@@ -157,6 +157,14 @@ public class BaseMojo extends AbstractMojo {
     private boolean iOSFrameworkBuild;
 
     /**
+     * flag for iOS xcframework builds
+     *
+     * @parameter property="ios.iOSXcFrameworkBuild"
+     * default-value="true"
+     */
+    private boolean iOSXcFrameworkBuild = true;
+
+    /**
      * flag for macosx framework builds
      *
      * @parameter property="ios.macOSFrameworkBuild"
@@ -462,6 +470,8 @@ public class BaseMojo extends AbstractMojo {
                 this.iphoneosArchitectures);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IOS_FRAMEWORK_BUILD.toString(),
                 Boolean.toString(this.iOSFrameworkBuild));
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.IOS_XC_FRAMEWORK_BUILD.toString(),
+                Boolean.toString(this.iOSXcFrameworkBuild));
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.MACOSX_FRAMEWORK_BUILD.toString(),
                 Boolean.toString(this.macOSFrameworkBuild));
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CODE_SIGNING_ENABLED.toString(),

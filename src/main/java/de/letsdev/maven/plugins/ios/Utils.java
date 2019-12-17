@@ -49,6 +49,7 @@ public class Utils {
         RELEASE_TASK("releaseTask"),
         CLASSIFIER("classifier"),
         IOS_FRAMEWORK_BUILD("iOSFrameworkBuild"),
+        IOS_XC_FRAMEWORK_BUILD("iOSXcFrameworkBuild"),
         MACOSX_FRAMEWORK_BUILD("macOSFrameworkBuild"),
         IPHONEOS_ARCHITECTURES("iphoneosArchitectures"),
         IPHONESIMULATOR_ARCHITECTURES("iphonesimulatorArchitectures"),
@@ -109,6 +110,7 @@ public class Utils {
         IPA("ipa"),
         APP_DSYM("app.dSYM"),
         FRAMEWORK("framework"),
+        XCFRAMEWORK("xcframework"),
         FRAMEWORK_ZIP("zip"),
         PLIST("plist");
 
@@ -152,6 +154,11 @@ public class Utils {
 
         return isiOSFramework(mavenProject,
                 "true".equals(properties.get(PLUGIN_PROPERTIES.IOS_FRAMEWORK_BUILD.toString())));
+    }
+
+    static boolean isiOSXcFramework(Map<String, String> properties) {
+
+        return "true".equals(properties.get(PLUGIN_PROPERTIES.IOS_XC_FRAMEWORK_BUILD.toString()));
     }
 
     public static boolean isiOSFramework(MavenProject mavenProject, boolean isFrameworkBuild) {
@@ -453,5 +460,18 @@ public class Utils {
         jsonOutputFile += "Build/reports/";
         jsonOutputFile += relativeFilePath;
         return jsonOutputFile;
+    }
+
+    static String getFrameworkBuildName(String appName) {
+        return appName + "." + PLUGIN_SUFFIX.FRAMEWORK.toString();
+    }
+
+    static String getFrameworkTargetName(String appName, Map<String, String> properties) {
+        String frameworkTargetName = getFrameworkBuildName(appName);
+        if (isiOSXcFramework(properties)) {
+            frameworkTargetName = appName + "." + PLUGIN_SUFFIX.XCFRAMEWORK.toString();
+        }
+
+        return frameworkTargetName;
     }
 }
