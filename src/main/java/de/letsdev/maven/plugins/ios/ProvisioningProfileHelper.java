@@ -1,5 +1,6 @@
 package de.letsdev.maven.plugins.ios;
 
+import de.letsdev.maven.plugins.ios.mojo.BaseMojo;
 import de.letsdev.maven.plugins.ios.mojo.IOSException;
 import org.apache.maven.project.MavenProject;
 import org.w3c.dom.Document;
@@ -20,11 +21,13 @@ public class ProvisioningProfileHelper {
     private static final String shellScriptFileName = "load-xml-file.sh";
     private final String provisioningProfileName;
     private File workDirectory;
+    private Map<String, String> properties;
 
     public ProvisioningProfileHelper(String provisioningProfileName, Map<String, String> properties,
                                      MavenProject mavenProject) {
 
         this.provisioningProfileName = provisioningProfileName;
+        this.properties = properties;
 
         try {
             String projectName = Utils.buildProjectName(properties, mavenProject);
@@ -70,12 +73,13 @@ public class ProvisioningProfileHelper {
             String uuid = null;
             String teamID = null;
             String name = null;
+            String bundleID = null;
 
             NodeList nodeList = doc.getElementsByTagName("key");
             for (int i = 0; i < nodeList.getLength(); i++) {
                 if (nodeList.item(i).getFirstChild().getNodeValue().equals("UUID")) {
                     uuid = getStringValue(nodeList, i);
-            }
+                }
 
                 if (nodeList.item(i).getFirstChild().getNodeValue().equals("Name")) {
                     name = getStringValue(nodeList, i);
@@ -84,12 +88,22 @@ public class ProvisioningProfileHelper {
                 if (nodeList.item(i).getFirstChild().getNodeValue().equals("TeamIdentifier")) {
                     teamID = getTeamId(nodeList, i);
                 }
+
+                if (nodeList.item(i).getFirstChild().getNodeValue().equals("application-identifier")) {
+                    bundleID = getStringValue(nodeList, i);
+                }
+            }
+
+            if (bundleID == null || bundleID.contains("*")) {
+                bundleID = properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString());
+            }else{
+                properties.put(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString(), bundleID);
             }
 
             ProvisioningProfileType type = getProvisioningProfileType(nodeList);
 
             if (teamID != null && uuid != null && name != null) {
-                return new ProvisioningProfileData(uuid, name, teamID, type);
+                return new ProvisioningProfileData(uuid, name, teamID, bundleID, type);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -99,25 +113,27 @@ public class ProvisioningProfileHelper {
     }
 
     private String getStringValue(NodeList nodeList, int i) {
-            Node current = nodeList.item(i).getNextSibling();
-            //iterate trough notes until node with value for the uuid key is current
-            while (!current.getNodeName().equals("string")) {
-                current = current.getNextSibling();
-            }
 
-        return  current.getFirstChild().getNodeValue();
+        Node current = nodeList.item(i).getNextSibling();
+        //iterate trough notes until node with value for the uuid key is current
+        while (!current.getNodeName().equals("string")) {
+            current = current.getNextSibling();
+        }
+
+        return current.getFirstChild().getNodeValue();
     }
 
     private String getTeamId(NodeList nodeList, int i) {
-            Node current = nodeList.item(i).getNextSibling();
-            //iterate trough notes until array node, that has value of team id key as child is current
-            while (!current.getNodeName().equals("array")) {
-                current = current.getNextSibling();
-            }
-            current = current.getFirstChild();
-            while (!current.getNodeName().equals("string")) {
-                current = current.getNextSibling();
-            }
+
+        Node current = nodeList.item(i).getNextSibling();
+        //iterate trough notes until array node, that has value of team id key as child is current
+        while (!current.getNodeName().equals("array")) {
+            current = current.getNextSibling();
+        }
+        current = current.getFirstChild();
+        while (!current.getNodeName().equals("string")) {
+            current = current.getNextSibling();
+        }
         return current.getFirstChild().getNodeValue();
     }
 
