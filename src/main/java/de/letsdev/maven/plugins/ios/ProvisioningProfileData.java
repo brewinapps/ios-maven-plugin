@@ -10,13 +10,15 @@ public class ProvisioningProfileData {
     private String teamID;
     private String name;
     private ProvisioningProfileType type;
+    private String bundleID;
 
-    ProvisioningProfileData(String uuid, String name, String teamID, ProvisioningProfileType type) {
+    ProvisioningProfileData(String uuid, String name, String teamID, String bundleID, ProvisioningProfileType type) {
 
         this.uuid = uuid;
         this.name = name;
         this.teamID = teamID;
         this.type = type;
+        this.bundleID = bundleID;
     }
 
     public String getUuid() {
@@ -25,6 +27,7 @@ public class ProvisioningProfileData {
     }
 
     public String getName() {
+
         return name;
     }
 
@@ -33,12 +36,18 @@ public class ProvisioningProfileData {
         return teamID;
     }
 
+    public String getBundleID() {
+
+        return bundleID;
+    }
+
     public ProvisioningProfileType getType() {
 
         return type;
     }
 
     public String getTypeId() {
+
         String typeId;
 
         switch (type) {
