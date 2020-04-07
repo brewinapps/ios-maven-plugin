@@ -573,8 +573,8 @@ public class BaseMojo extends AbstractMojo {
                     this.xcodeExportOptions.provisioningProfiles.put(this.bundleIdentifier, data.getUuid());
                     this.provisioningProfileUUID = data.getUuid();
                     this.provisioningProfileSpecifier = data.getName();
-                    this.xcodeExportOptions.teamID = data.getTeamID();
-                    this.developmentTeam = data.getTeamID();
+                    this.xcodeExportOptions.teamID = data.getTeamId();
+                    this.developmentTeam = data.getTeamId();
                     this.xcodeExportOptions.method = data.getTypeId();
 
                     this.properties = prepareProperties();

@@ -15,6 +15,17 @@ import java.util.Map;
 
 public class ProvisioningProfileHelper {
 
+    private static final String NODE_NAME_STRING = "string";
+    private static final String NODE_NAME_ARRAY = "array";
+    private static final String NODE_NAME_KEY = "key";
+    private static final String NODE_NAME_TRUE = "true";
+    private static final String TEAM_ID_KEY = "TeamIdentifier";
+    private static final String UUID_KEY = "UUID";
+    private static final String NAME_KEY = "Name";
+    private static final String APP_ID_KEY = "application-identifier";
+    private static final String GET_TASK_ALLOW_KEY = "get-task-allow";
+    private static final String PROVISION_DEVICES_KEY = "ProvisionsAllDevices";
+    private static final String PROVISIONED_DEVICES_KEY = "ProvisionedDevices";
     private static final String provisioningProfileDirectory =
             System.getProperty("user.home") + "/Library/MobileDevice/Provisioning\\ " + "Profiles";
     private static final String provisioningProfileFileExtension = ".mobileprovision";
@@ -71,39 +82,39 @@ public class ProvisioningProfileHelper {
             doc = dBuilder.parse(inputFile);
             doc.getDocumentElement().normalize();
             String uuid = null;
-            String teamID = null;
+            String teamId = null;
             String name = null;
-            String bundleID = null;
+            String bundleId = null;
 
-            NodeList nodeList = doc.getElementsByTagName("key");
+            NodeList nodeList = doc.getElementsByTagName(NODE_NAME_KEY);
             for (int i = 0; i < nodeList.getLength(); i++) {
-                if (nodeList.item(i).getFirstChild().getNodeValue().equals("UUID")) {
+                if (nodeList.item(i).getFirstChild().getNodeValue().equals(UUID_KEY)) {
                     uuid = getStringValue(nodeList, i);
                 }
 
-                if (nodeList.item(i).getFirstChild().getNodeValue().equals("Name")) {
+                if (nodeList.item(i).getFirstChild().getNodeValue().equals(NAME_KEY)) {
                     name = getStringValue(nodeList, i);
                 }
 
-                if (nodeList.item(i).getFirstChild().getNodeValue().equals("TeamIdentifier")) {
-                    teamID = getTeamId(nodeList, i);
+                if (nodeList.item(i).getFirstChild().getNodeValue().equals(TEAM_ID_KEY)) {
+                    teamId = getTeamId(nodeList, i);
                 }
 
-                if (nodeList.item(i).getFirstChild().getNodeValue().equals("application-identifier")) {
-                    bundleID = getStringValue(nodeList, i);
+                if (nodeList.item(i).getFirstChild().getNodeValue().equals(APP_ID_KEY)) {
+                    bundleId = getStringValue(nodeList, i);
                 }
             }
 
-            if (bundleID == null || bundleID.contains("*")) {
-                bundleID = properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString());
-            }else{
-                properties.put(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString(), bundleID);
+            if (bundleId == null || bundleId.contains("*")) {
+                bundleId = properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString());
+            } else {
+                properties.put(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString(), bundleId);
             }
 
             ProvisioningProfileType type = getProvisioningProfileType(nodeList);
 
-            if (teamID != null && uuid != null && name != null) {
-                return new ProvisioningProfileData(uuid, name, teamID, bundleID, type);
+            if (teamId != null && uuid != null && name != null) {
+                return new ProvisioningProfileData(uuid, name, teamId, bundleId, type);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -116,7 +127,7 @@ public class ProvisioningProfileHelper {
 
         Node current = nodeList.item(i).getNextSibling();
         //iterate trough notes until node with value for the uuid key is current
-        while (!current.getNodeName().equals("string")) {
+        while (!current.getNodeName().equals(NODE_NAME_STRING)) {
             current = current.getNextSibling();
         }
 
@@ -127,11 +138,11 @@ public class ProvisioningProfileHelper {
 
         Node current = nodeList.item(i).getNextSibling();
         //iterate trough notes until array node, that has value of team id key as child is current
-        while (!current.getNodeName().equals("array")) {
+        while (!current.getNodeName().equals(NODE_NAME_ARRAY)) {
             current = current.getNextSibling();
         }
         current = current.getFirstChild();
-        while (!current.getNodeName().equals("string")) {
+        while (!current.getNodeName().equals(NODE_NAME_STRING)) {
             current = current.getNextSibling();
         }
         return current.getFirstChild().getNodeValue();
@@ -147,17 +158,17 @@ public class ProvisioningProfileHelper {
         ProvisioningProfileType type = null;
         for (int i = 0; i < nodeList.getLength(); i++) {
 
-            if (checkKey("get-task-allow", nodeList.item(i))) {
+            if (checkKey(GET_TASK_ALLOW_KEY, nodeList.item(i))) {
                 type = ProvisioningProfileType.TYPE_DEVELOPMENT;
                 break;
-            } else if (checkKey("ProvisionsAllDevices", nodeList.item(i))) {
+            } else if (checkKey(PROVISION_DEVICES_KEY, nodeList.item(i))) {
                 type = ProvisioningProfileType.TYPE_ENTERPRISE;
                 break;
-            } else if (nodeList.item(i).getFirstChild().getNodeValue().equals("ProvisionedDevices")) {
+            } else if (nodeList.item(i).getFirstChild().getNodeValue().equals(PROVISIONED_DEVICES_KEY)) {
                 Node current = nodeList.item(i).getNextSibling();
                 while (true) {
                     current = current.getNextSibling();
-                    if (current.getNodeName().equals("array")) {
+                    if (current.getNodeName().equals(NODE_NAME_ARRAY)) {
                         if (current.hasChildNodes()) {
                             type = ProvisioningProfileType.TYPE_AD_HOC;
                         }
@@ -165,7 +176,7 @@ public class ProvisioningProfileHelper {
                         break;
                     }
 
-                    if (current.getNodeName().equals("key")) {
+                    if (current.getNodeName().equals(NODE_NAME_KEY)) {
                         break;
                     }
                 }
@@ -184,10 +195,10 @@ public class ProvisioningProfileHelper {
             Node current = node.getNextSibling();
             while (true) {
                 current = current.getNextSibling();
-                if (current.getNodeName().equals("true")) {
+                if (current.getNodeName().equals(NODE_NAME_TRUE)) {
                     return true;
                 }
-                if (current.getNodeName().equals("key")) {
+                if (current.getNodeName().equals(NODE_NAME_KEY)) {
                     return false;
                 }
             }
