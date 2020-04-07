@@ -7,18 +7,18 @@ public class ProvisioningProfileData {
     private static final String AD_HOC = "ad-hoc";
     private static final String APP_STORE = "app-store";
     private String uuid;
-    private String teamID;
+    private String teamId;
     private String name;
     private ProvisioningProfileType type;
-    private String bundleID;
+    private String bundleId;
 
-    ProvisioningProfileData(String uuid, String name, String teamID, String bundleID, ProvisioningProfileType type) {
+    ProvisioningProfileData(String uuid, String name, String teamId, String bundleId, ProvisioningProfileType type) {
 
         this.uuid = uuid;
         this.name = name;
-        this.teamID = teamID;
+        this.teamId = teamId;
         this.type = type;
-        this.bundleID = bundleID;
+        this.bundleId = bundleId;
     }
 
     public String getUuid() {
@@ -31,14 +31,14 @@ public class ProvisioningProfileData {
         return name;
     }
 
-    public String getTeamID() {
+    public String getTeamId() {
 
-        return teamID;
+        return teamId;
     }
 
-    public String getBundleID() {
+    public String getBundleId() {
 
-        return bundleID;
+        return bundleId;
     }
 
     public ProvisioningProfileType getType() {
