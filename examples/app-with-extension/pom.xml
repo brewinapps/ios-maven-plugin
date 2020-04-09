@@ -29,9 +29,9 @@
 							<keychainPath>${user.home}/Library/Keychains/ld-enterprise.keychain</keychainPath>
 							<keychainPassword>ld-enterprise</keychainPassword>
 							<xcodeBuildParameters>
-								<parameter>PROVISIONING_PROFILE_APP=14c0aa28-fa72-4e15-a3c5-2ba2be80ce27</parameter>
+								<parameter>PROVISIONING_PROFILE_APP=${codeSignIdentity.enterprise.uuid}</parameter>
 								<parameter>BUNDLE_IDENTIFIER_APP=de.letsdev.ios-maven-example-project</parameter>               
-								<parameter>PROVISIONING_PROFILE_EXTENSION=14c0aa28-fa72-4e15-a3c5-2ba2be80ce27</parameter>
+								<parameter>PROVISIONING_PROFILE_EXTENSION=${codeSignIdentity.enterprise.uuid}</parameter>
 								<parameter>BUNDLE_IDENTIFIER_EXTENSION=de.letsdev.ios-maven-example-project.extension</parameter>                              
 							</xcodeBuildParameters>   
 							<developmentTeam>55N9D27866</developmentTeam>
@@ -39,8 +39,8 @@
 								<method>enterprise</method>
 								<teamID>55N9D27866</teamID>
 								<provisioningProfiles>
-									<de.letsdev.ios-maven-example-project>14c0aa28-fa72-4e15-a3c5-2ba2be80ce27</de.letsdev.ios-maven-example-project>  
-									<de.letsdev.ios-maven-example-project.extension>14c0aa28-fa72-4e15-a3c5-2ba2be80ce27</de.letsdev.ios-maven-example-project.extension>
+									<de.letsdev.ios-maven-example-project>${codeSignIdentity.enterprise.uuid}</de.letsdev.ios-maven-example-project>  
+									<de.letsdev.ios-maven-example-project.extension>${codeSignIdentity.enterprise.uuid}</de.letsdev.ios-maven-example-project.extension>
 								</provisioningProfiles>
 							</xcodeExportOptions>                          
 						</configuration> 

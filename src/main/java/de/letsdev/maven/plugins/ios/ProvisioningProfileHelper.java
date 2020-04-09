@@ -117,6 +117,8 @@ public class ProvisioningProfileHelper {
             ProvisioningProfileType type = getProvisioningProfileType(nodeList);
 
             if (teamId != null && uuid != null && name != null) {
+                bundleId = removeTeamFromBundleId(bundleId, teamId);
+
                 return new ProvisioningProfileData(uuid, name, teamId, bundleId, type);
             }
         } catch (Exception e) {
@@ -124,6 +126,14 @@ public class ProvisioningProfileHelper {
         }
 
         return null;
+    }
+
+    private String removeTeamFromBundleId(String bundleId, String teamId) {
+        if (bundleId != null && !bundleId.isEmpty()) {
+            bundleId = bundleId.replaceAll(teamId + ".", "");
+        }
+
+        return bundleId;
     }
 
     private String getStringValue(NodeList nodeList, int i) {
