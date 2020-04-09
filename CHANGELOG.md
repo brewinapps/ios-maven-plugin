@@ -5,8 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [UNRELEASED]
-### ADDED
+
+## [1.19.0] - 2020-04-09
+### Added
 - bundle identifier determination from .mobileprovision file
+
+### Fixed
+- removing of simulator architectures for maven test goal
+- erasing simulator contents
 
 ## [1.18.11] - 2019-12-17
 ### Added
