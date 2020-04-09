@@ -2,9 +2,9 @@
 
 APP_PATH="$1"
 cd "$APP_PATH"
-if [[ -d dependecies-copy ]]; then
+if [[ -d dependencies-copy ]]; then
     echo "Original Frameworks will be copied back for testing to dependencies"
     rm -rf ios-dependencies
-    cp -a dependecies-copy ios-dependencies
-    rm -rf dependecies-copy
+    cp -a dependencies-copy ios-dependencies
+    rm -rf dependencies-copy
 fi

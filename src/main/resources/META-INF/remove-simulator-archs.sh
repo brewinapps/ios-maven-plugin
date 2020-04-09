@@ -1,11 +1,11 @@
 #!/bin/sh
 
 APP_PATH="$1"
-mkdir dependecies-copy
+mkdir dependencies-copy
 find "$APP_PATH" -name '*.framework' -type d | while read -r FRAMEWORK
 do
     echo "Trying to remove simulator architectures from framework: ""$FRAMEWORK"
-    cp -a "$FRAMEWORK" dependecies-copy
+    cp -a "$FRAMEWORK" dependencies-copy
     for subFile in "$FRAMEWORK"/*; do
     if [[ -f "$subFile" ]]; then
     if [[ -x "$subFile" ]]; then
