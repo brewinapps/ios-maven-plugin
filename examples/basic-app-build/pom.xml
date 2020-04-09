@@ -11,7 +11,6 @@
             <plugin>
                 <groupId>de.letsdev.maven.plugins</groupId>
 	       		<artifactId>ios-maven-plugin</artifactId>
-	       		<version>1.18.12-SNAPSHOT</version>
                 <extensions>true</extensions>
                 <executions>
                    <execution>

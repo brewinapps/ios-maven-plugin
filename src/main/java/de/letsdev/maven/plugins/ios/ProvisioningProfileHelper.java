@@ -43,13 +43,11 @@ public class ProvisioningProfileHelper {
     private static final String shellScriptFileName = "load-xml-file.sh";
     private final String provisioningProfileName;
     private File workDirectory;
-    private Map<String, String> properties;
 
     public ProvisioningProfileHelper(String provisioningProfileName, Map<String, String> properties,
                                      MavenProject mavenProject) {
 
         this.provisioningProfileName = provisioningProfileName;
-        this.properties = properties;
 
         try {
             String projectName = Utils.buildProjectName(properties, mavenProject);
@@ -114,12 +112,6 @@ public class ProvisioningProfileHelper {
                 if (nodeList.item(i).getFirstChild().getNodeValue().equals(APP_ID_KEY)) {
                     bundleId = getStringValue(nodeList, i);
                 }
-            }
-
-            if (bundleId == null || bundleId.contains("*")) {
-                bundleId = properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString());
-            } else {
-                properties.put(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString(), bundleId);
             }
 
             ProvisioningProfileType type = getProvisioningProfileType(nodeList);
