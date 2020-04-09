@@ -2,9 +2,9 @@
 
 APP_PATH="$1"
 cd "$APP_PATH"
-if [[ -d ../tmp-target ]]; then
-    echo "Dependencies will be copied back to target from tmp-target"
+if [[ -d dependecies-copy ]]; then
+    echo "Original Frameworks will be copied back for testing to dependencies"
     rm -rf ios-dependencies
-    cp -a ../tmp-target ios-dependencies
-    rm -rf ../tmp-target
+    cp -a dependecies-copy ios-dependencies
+    rm -rf dependecies-copy
 fi

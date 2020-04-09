@@ -49,10 +49,11 @@ public class ProjectTester {
         }
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCTEST_DERIVED_DATA_PATH.toString())) {
-            otherArguments.append(" " + "-derivedDataPath ").append(properties.get(
-                    Utils.PLUGIN_PROPERTIES.XCTEST_DERIVED_DATA_PATH.toString()));
+            otherArguments.append(" " + "-derivedDataPath ")
+                    .append(properties.get(Utils.PLUGIN_PROPERTIES.XCTEST_DERIVED_DATA_PATH.toString()));
         } else if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
-            otherArguments.append(" " + "-derivedDataPath ").append(properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()));
+            otherArguments.append(" " + "-derivedDataPath ")
+                    .append(properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()));
         }
 
         String jsonOutputFile = Utils.createJsonOutputFilePath("test", properties);
