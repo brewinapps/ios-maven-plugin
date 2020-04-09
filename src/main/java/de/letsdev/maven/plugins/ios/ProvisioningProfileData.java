@@ -1,3 +1,14 @@
+/**
+ * ios-maven-plugin
+ * <p/>
+ * User: mauer
+ * Date: 2019-07-09
+ * <p/>
+ * This code is copyright (c) 2019 let's dev.
+ * URL: https://www.letsdev.de
+ * e-Mail: contact@letsdev.de
+ */
+
 package de.letsdev.maven.plugins.ios;
 
 public class ProvisioningProfileData {
@@ -7,16 +18,18 @@ public class ProvisioningProfileData {
     private static final String AD_HOC = "ad-hoc";
     private static final String APP_STORE = "app-store";
     private String uuid;
-    private String teamID;
+    private String teamId;
     private String name;
     private ProvisioningProfileType type;
+    private String bundleId;
 
-    ProvisioningProfileData(String uuid, String name, String teamID, ProvisioningProfileType type) {
+    ProvisioningProfileData(String uuid, String name, String teamId, String bundleId, ProvisioningProfileType type) {
 
         this.uuid = uuid;
         this.name = name;
-        this.teamID = teamID;
+        this.teamId = teamId;
         this.type = type;
+        this.bundleId = bundleId;
     }
 
     public String getUuid() {
@@ -25,12 +38,18 @@ public class ProvisioningProfileData {
     }
 
     public String getName() {
+
         return name;
     }
 
-    public String getTeamID() {
+    public String getTeamId() {
 
-        return teamID;
+        return teamId;
+    }
+
+    public String getBundleId() {
+
+        return bundleId;
     }
 
     public ProvisioningProfileType getType() {
@@ -39,6 +58,7 @@ public class ProvisioningProfileData {
     }
 
     public String getTypeId() {
+
         String typeId;
 
         switch (type) {
