@@ -28,6 +28,7 @@ public class ProjectTester {
         File targetDirectory = Utils.getTargetDirectory(mavenProject);
 
         copyArchitecturesToDirectory(targetDirectory);
+        copyArchitecturesToDirectory(workDirectory);
 
         if (Utils.shouldResetIphoneSimulators(properties)) {
             resetSimulators(workDirectory);
