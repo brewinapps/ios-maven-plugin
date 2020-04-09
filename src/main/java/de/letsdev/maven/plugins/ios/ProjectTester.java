@@ -25,6 +25,11 @@ public class ProjectTester {
 
         String projectName = Utils.buildProjectName(properties, mavenProject);
         File workDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
+        File targetDirectory = Utils.getTargetDirectory(mavenProject);
+
+        //if (xcodeExportOptions.method != null && xcodeExportOptions.method.equals("app-store")) {
+            copyArchitecturesToDirectory(targetDirectory);
+        //}
 
         if (Utils.shouldResetIphoneSimulators(properties)) {
             resetSimulators(workDirectory);
@@ -75,5 +80,21 @@ public class ProjectTester {
         ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", tempFile.getAbsoluteFile().toString());
         processBuilder.directory(workDirectory);
         CommandHelper.performCommand(processBuilder);
+    }
+
+    private static void copyArchitecturesToDirectory(File rootDirectory) {
+        // Run shell-script from resource-folder.
+        try {
+            final String scriptName = "copy-dependencies-back-to-target.sh";
+            File tempFile = Utils.createTempFile(scriptName);
+            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
+                    rootDirectory.getAbsolutePath());
+
+            processBuilder.directory(rootDirectory);
+            CommandHelper.performCommand(processBuilder);
+        } catch (IOException | IOSException e) {
+            e.printStackTrace();
+            //throw new IOSException(e);
+        }
     }
 }
