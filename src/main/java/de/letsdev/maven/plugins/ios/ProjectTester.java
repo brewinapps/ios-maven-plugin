@@ -27,9 +27,7 @@ public class ProjectTester {
         File workDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
         File targetDirectory = Utils.getTargetDirectory(mavenProject);
 
-        //if (xcodeExportOptions.method != null && xcodeExportOptions.method.equals("app-store")) {
-            copyArchitecturesToDirectory(targetDirectory);
-        //}
+        copyArchitecturesToDirectory(targetDirectory);
 
         if (Utils.shouldResetIphoneSimulators(properties)) {
             resetSimulators(workDirectory);
