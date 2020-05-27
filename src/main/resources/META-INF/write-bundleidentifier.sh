@@ -8,4 +8,5 @@ echo "OLD BUNDLE IDENTIFIER=$(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifi
 echo "NEW BUNDLE IDENTIFIER= $NEW_BUNDLE_IDENTIFIER"
 
 echo "Write NEW BUNDLE IDENTIFIER into PLIST now"
-/usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $NEW_BUNDLE_IDENTIFIER" $PLIST_LOCATION
+/usr/libexec/PlistBuddy -c "Delete :CFBundleIdentifier" $PLIST_LOCATION
+/usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string $NEW_BUNDLE_IDENTIFIER" $PLIST_LOCATION
