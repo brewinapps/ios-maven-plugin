@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - fixed issue with crash after setting some parameters in "Info.plist" file
 
+### Added
+- You can now add your own Info.plist parameters in pom
+
 ## [1.19.0] - 2020-04-09
 ### Added
 - bundle identifier determination from .mobileprovision file

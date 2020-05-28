@@ -15,6 +15,7 @@ import de.letsdev.maven.plugins.ios.CommandHelper;
 import de.letsdev.maven.plugins.ios.ProvisioningProfileData;
 import de.letsdev.maven.plugins.ios.ProvisioningProfileHelper;
 
+import de.letsdev.maven.plugins.ios.mojo.container.InfoPlistValue;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -388,6 +389,13 @@ public class BaseMojo extends AbstractMojo {
      * @parameter property="ios.fileReplacements"
      */
     List<FileReplacement> fileReplacements;
+
+    /**
+     * defining all files and directories to replace
+     *
+     * @parameter property="ios.infoPlistValues"
+     */
+    List<InfoPlistValue> infoPlistValues;
 
     /**
      * defining all files and directories to replace
