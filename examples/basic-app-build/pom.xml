@@ -30,6 +30,12 @@
 							<keychainPath>${user.home}/Library/Keychains/ld-enterprise.keychain</keychainPath>
 							<keychainPassword>ld-enterprise</keychainPassword>
 							<provisioningProfileName>ldentwildcarddistribution</provisioningProfileName>
+							<infoPlistValues>
+                            	<infoPlistValue>
+                            		<key>Somekey</key>
+                            		<value>Somevalue</value>
+                            	</infoPlistValue>
+                            </infoPlistValues>
 						</configuration> 
                     </execution>
                 </executions>

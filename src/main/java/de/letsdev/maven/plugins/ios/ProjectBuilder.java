@@ -14,6 +14,7 @@ package de.letsdev.maven.plugins.ios;
 
 import com.google.gson.Gson;
 
+import de.letsdev.maven.plugins.ios.mojo.container.InfoPlistValue;
 import org.apache.maven.project.MavenProject;
 
 import java.io.*;
@@ -43,8 +44,8 @@ public class ProjectBuilder {
      * @throws IOSException
      */
     public static void build(final Map<String, String> properties, MavenProject mavenProject,
-                             final List<FileReplacement> fileReplacements, final List<String> xcodeBuildParameters,
-                             final XcodeExportOptions xcodeExportOptions,
+                             final List<FileReplacement> fileReplacements, final List<InfoPlistValue> infoPlistValues,
+                             final List<String> xcodeBuildParameters, final XcodeExportOptions xcodeExportOptions,
                              final StringReplacementConfig stringReplacements,
                              List<String> targetDependencies) throws IOSException, IOException {
         // Make sure the source directory exists
@@ -67,6 +68,10 @@ public class ProjectBuilder {
             File targetDirectory = Utils.getTargetDirectory(mavenProject);
             String projectVersion = updateXcodeProjectInfoPlist(properties, mavenProject, projectName,
                     projectDirectory);
+
+            if (infoPlistValues != null && infoPlistValues.size() > 0) {
+                addInfoPlistEntries(properties, infoPlistValues, projectDirectory, projectName);
+            }
 
             //update entitlements file
             prepareEntitlementsFile(properties, projectDirectory);
@@ -330,28 +335,30 @@ public class ProjectBuilder {
 
         // Run PlistBuddy to stamp build if a build id is specified
         if (properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()) != null) {
-            executePlistScript("write-buildnumber.sh", properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()),
-                    workDirectory, projectName, properties);
+            executePlistScript("write-buildnumber.sh", null,
+                    properties.get(Utils.PLUGIN_PROPERTIES.BUILD_ID.toString()), workDirectory, projectName,
+                    properties);
         }
 
         // Run PlistBuddy to app icon name if a build id is specified
         if (properties.get(Utils.PLUGIN_PROPERTIES.APP_ICON_NAME.toString()) != null) {
-            executePlistScript("write-app-icon-name.sh",
+            executePlistScript("write-app-icon-name.sh", null,
                     properties.get(Utils.PLUGIN_PROPERTIES.APP_ICON_NAME.toString()), workDirectory, projectName,
                     properties);
         }
 
         // Run PlistBuddy to overwrite the bundle identifier in info plist
         if (properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()) != null) {
-            executePlistScript("write-bundleidentifier.sh",
+            executePlistScript("write-bundleidentifier.sh", null,
                     properties.get(Utils.PLUGIN_PROPERTIES.BUNDLE_IDENTIFIER.toString()), workDirectory, projectName,
                     properties);
         }
 
         // Run PlistBuddy to overwrite the display name in info plist
         if (properties.get(Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString()) != null) {
-            executePlistScript("write-displayname.sh", properties.get(Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString()),
-                    workDirectory, projectName, properties);
+            executePlistScript("write-displayname.sh", null,
+                    properties.get(Utils.PLUGIN_PROPERTIES.DISPLAY_NAME.toString()), workDirectory, projectName,
+                    properties);
         }
         return projectVersion;
     }
@@ -437,6 +444,20 @@ public class ProjectBuilder {
             processBuilder.directory(projectDirectory);
             CommandHelper.performCommand(processBuilder);
         }
+    }
+
+    private static void addInfoPlistEntries(Map<String, String> properties, final List<InfoPlistValue> plistValues,
+                                            File projectDirectory, String projectName) throws IOSException {
+
+        for (InfoPlistValue plistEntry : plistValues) {
+            addInfoPlistEntry(properties, projectDirectory, projectName, plistEntry.key, plistEntry.value);
+        }
+    }
+
+    private static void addInfoPlistEntry(Map<String, String> properties, File projectDirectory, String projectName,
+                                          String key, String value) throws IOSException {
+
+        executePlistScript("write-key.sh", key, value, projectDirectory, projectName, properties);
     }
 
     private static void revertReplacedStrings(final StringReplacementConfig stringReplacements,
@@ -874,7 +895,8 @@ public class ProjectBuilder {
         }
     }
 
-    private static void executePlistScript(String scriptName, String value, File workDirectory, String projectName,
+    private static void executePlistScript(String scriptName, String key, String value, File workDirectory,
+                                           String projectName,
                                            final Map<String, String> properties) throws IOSException {
 
         String infoPlistFile =
@@ -902,8 +924,14 @@ public class ProjectBuilder {
 
             outputStream.close();
 
-            ProcessBuilder processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(),
-                    infoPlistFile, value);
+            ProcessBuilder processBuilder;
+
+            if (key == null) {
+                processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), infoPlistFile, value);
+            } else {
+                processBuilder = new ProcessBuilder("sh", tempFile.getAbsoluteFile().toString(), infoPlistFile, key,
+                        value);
+            }
 
             processBuilder.directory(workDirectory);
             CommandHelper.performCommand(processBuilder);
