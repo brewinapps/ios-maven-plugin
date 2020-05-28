@@ -8,4 +8,5 @@ echo "OLD DISPLAY NAME=$(/usr/libexec/PlistBuddy -c "Print CFBundleDisplayName" 
 echo "NEW DISPLAY NAME= $NEW_DISPLAY_NAME"
 
 echo "Write NEW DISPLAY NAME into PLIST now"
-/usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName $NEW_DISPLAY_NAME" $PLIST_LOCATION
+/usr/libexec/PlistBuddy -c "Delete :CFBundleDisplayName" $PLIST_LOCATION
+/usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string $NEW_DISPLAY_NAME" $PLIST_LOCATION

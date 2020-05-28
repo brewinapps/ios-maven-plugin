@@ -8,4 +8,5 @@ echo "OLD BUILD NUMBER=$(/usr/libexec/PlistBuddy -c "Print CFBuildNumber" $PLIST
 echo "NEW BUILD NUMBER= $NEW_BUILD_NUMBER"
 
 echo "Write NEW Build Number into PLIST now"
-/usr/libexec/PlistBuddy -c "Set :CFBuildNumber $NEW_BUILD_NUMBER" $PLIST_LOCATION
+/usr/libexec/PlistBuddy -c "Delete :CFBuildNumber" $PLIST_LOCATION
+/usr/libexec/PlistBuddy -c "Add :CFBuildNumber string $NEW_BUILD_NUMBER" $PLIST_LOCATION
