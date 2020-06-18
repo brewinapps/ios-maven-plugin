@@ -22,6 +22,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class ProvisioningProfileHelper {
@@ -117,7 +120,7 @@ public class ProvisioningProfileHelper {
             ProvisioningProfileType type = getProvisioningProfileType(nodeList);
 
             if (teamId != null && uuid != null && name != null) {
-                bundleId = removeTeamFromBundleId(bundleId, teamId);
+                bundleId = removeTeamFromBundleId(bundleId);
 
                 return new ProvisioningProfileData(uuid, name, teamId, bundleId, type);
             }
@@ -128,9 +131,12 @@ public class ProvisioningProfileHelper {
         return null;
     }
 
-    private String removeTeamFromBundleId(String bundleId, String teamId) {
+    private String removeTeamFromBundleId(String bundleId) {
         if (bundleId != null && !bundleId.isEmpty()) {
-            bundleId = bundleId.replaceAll(teamId + ".", "");
+            ArrayList<String> bundleIdElements = new ArrayList<>(Arrays.asList(bundleId.split("\\.")));
+            bundleIdElements.remove(0);
+
+            bundleId = String.join(".", bundleIdElements);
         }
 
         return bundleId;
