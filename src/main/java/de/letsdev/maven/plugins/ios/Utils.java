@@ -89,7 +89,9 @@ public class Utils {
         RESET_SIMULATORS("resetSimulators"),
         DERIVED_DATA_PATH("derivedDataPath"),
         XCTEST_DERIVED_DATA_PATH("xcTestsDerivedDataPath"),
-        PROVISIONING_PROFILE_NAME("provisioningProfileName");
+        PROVISIONING_PROFILE_NAME("provisioningProfileName"),
+        XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE("xcodeBuildCommandWrapperExecutable"),
+        XCODE_BUILD_COMMAND_WRAPPER_OUTPUT_BASE_DIRECTORY("xcodeBuildCommandWrapperOutputBaseDirectory");
 
         PLUGIN_PROPERTIES(String name) {
 
@@ -473,5 +475,27 @@ public class Utils {
         }
 
         return frameworkTargetName;
+    }
+
+    static String buildCommandWrapperParameter(final Map<String, String> properties, File projectDirectory,
+                                               String outputDirectoryExtension) throws IOSException {
+
+        String parameter = "";
+
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
+            parameter += properties.get(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString());
+
+            if (properties.containsKey(
+                    Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_OUTPUT_BASE_DIRECTORY.toString())) {
+                String directoryPath = properties.get(
+                        Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_OUTPUT_BASE_DIRECTORY.toString()) + "/"
+                        + outputDirectoryExtension;
+                parameter += " --out-dir "  + projectDirectory.toString() + "/" + directoryPath;
+
+                Utils.executeShellScript("create-directory.sh", directoryPath, null, projectDirectory);
+            }
+        }
+
+        return parameter;
     }
 }
