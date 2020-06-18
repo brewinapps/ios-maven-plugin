@@ -33,7 +33,6 @@ import de.letsdev.maven.plugins.ios.mojo.container.StringReplacement;
 import de.letsdev.maven.plugins.ios.mojo.container.StringReplacementConfig;
 import de.letsdev.maven.plugins.ios.mojo.container.XcodeArchiveProductType;
 import de.letsdev.maven.plugins.ios.mojo.container.XcodeExportOptions;
-import sun.nio.ch.Util;
 
 /**
  * @author let's dev
