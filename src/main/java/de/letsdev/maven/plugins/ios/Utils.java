@@ -477,7 +477,7 @@ public class Utils {
         return frameworkTargetName;
     }
 
-    static String buildCommandWrapperParameter(final Map<String, String> properties, File workDirectory,
+    static String buildCommandWrapperParameter(final Map<String, String> properties, File workDirectory, File projectDirectory,
                                                String outputDirectoryExtension) throws IOSException {
 
         String parameter = "";
@@ -490,7 +490,7 @@ public class Utils {
                 String directoryPath = properties.get(
                         Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_OUTPUT_BASE_DIRECTORY.toString()) + "/"
                         + outputDirectoryExtension;
-                parameter += " --out-dir " + directoryPath;
+                parameter += " --out-dir "  + projectDirectory.toString() + "/" + directoryPath;
 
                 Utils.executeShellScript("create-directory.sh", directoryPath, null, workDirectory);
             }

@@ -167,8 +167,7 @@ public class ProjectBuilder {
                             projectDirectory);
                 }
 
-                zipFrameworkArchive(properties, targetDependencies, frameworkTargetName, targetWorkDirectory,
-                        projectDirectory);
+                zipFrameworkArchive(properties, targetDependencies, frameworkTargetName, targetWorkDirectory);
             } else {
                 //unlock keychain
                 unlockKeychain(properties, mavenProject,
@@ -269,8 +268,7 @@ public class ProjectBuilder {
     }
 
     private static void zipFrameworkArchive(Map<String, String> properties, List<String> targetDependencies,
-                                            String frameworkName, File targetWorkDirectory,
-                                            File projectDirectory) throws IOSException {
+                                            String frameworkName, File targetWorkDirectory) throws IOSException {
         // Zip Frameworks
         String targetZipPath = "../" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "."
                 + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString();
@@ -278,7 +276,7 @@ public class ProjectBuilder {
         zipCommandParams.add("zip");
         zipCommandParams.add("-r");
         zipCommandParams.add(targetZipPath);
-        zipCommandParams.add(projectDirectory.toString() + "/" + frameworkName);
+        zipCommandParams.add(frameworkName);
         zipCommandParams.addAll(targetDependencies);
 
         ProcessBuilder processBuilder = new ProcessBuilder(zipCommandParams);
@@ -293,7 +291,9 @@ public class ProjectBuilder {
         StringBuilder buildCommand = new StringBuilder();
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
-            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, "xcframework") + " ";
+            String parameter =
+                    Utils.buildCommandWrapperParameter(properties, targetWorkDirectory, workDirectory, "xcframework")
+                            + " ";
             buildCommand.append(parameter);
         }
 
@@ -307,7 +307,7 @@ public class ProjectBuilder {
         buildCommand.append(" -output ");
         buildCommand.append(frameworkTargetName);
 
-        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, workDirectory);
+        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, targetWorkDirectory);
     }
 
     private static void removeSimulatorArchitectures(File rootDirectory) {
@@ -380,7 +380,8 @@ public class ProjectBuilder {
 
         String buildCommandWrapperParameter = "";
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
-            buildCommandWrapperParameter += Utils.buildCommandWrapperParameter(properties, workDirectory, "clean");
+            buildCommandWrapperParameter += Utils.buildCommandWrapperParameter(properties, workDirectory, workDirectory,
+                    "clean");
         }
 
         StringBuilder xcodebuildCommand = new StringBuilder(
@@ -564,7 +565,7 @@ public class ProjectBuilder {
         StringBuilder buildCommand = new StringBuilder();
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
-            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, "codesign");
+            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, workDirectory, "codesign");
             buildCommand.append(parameter + " ");
         }
 
@@ -606,7 +607,7 @@ public class ProjectBuilder {
         StringBuilder buildCommand = new StringBuilder();
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
-            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, "codesign");
+            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, workDirectory, "codesign");
             buildCommand.append(parameter + " ");
         }
 
@@ -659,7 +660,7 @@ public class ProjectBuilder {
 
         List<String> buildParameters = new ArrayList<>();
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
-            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, "build");
+            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, workDirectory, "build");
             buildParameters.add(parameter);
         }
 
