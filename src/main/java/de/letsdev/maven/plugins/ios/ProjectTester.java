@@ -59,8 +59,7 @@ public class ProjectTester {
 
         String jsonOutputFile = Utils.createJsonOutputFilePath("test", properties);
         String xcPrettyCommand = Utils.getXcprettyCommand("testResults.txt", jsonOutputFile);
-        String buildCommandWrapperParameter = Utils.buildCommandWrapperParameter(properties, workDirectory,
-                workDirectory, "test");
+        String buildCommandWrapperParameter = Utils.buildCommandWrapperParameter(properties, workDirectory, "test");
 
         final String scriptName = "run-xctests.sh";
 

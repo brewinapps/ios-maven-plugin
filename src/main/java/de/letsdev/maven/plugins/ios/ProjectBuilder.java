@@ -292,7 +292,7 @@ public class ProjectBuilder {
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
             String parameter =
-                    Utils.buildCommandWrapperParameter(properties, targetWorkDirectory, workDirectory, "xcframework")
+                    Utils.buildCommandWrapperParameter(properties, workDirectory, "xcframework")
                             + " ";
             buildCommand.append(parameter);
         }
@@ -380,7 +380,7 @@ public class ProjectBuilder {
 
         String buildCommandWrapperParameter = "";
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
-            buildCommandWrapperParameter += Utils.buildCommandWrapperParameter(properties, workDirectory, workDirectory,
+            buildCommandWrapperParameter += Utils.buildCommandWrapperParameter(properties, workDirectory,
                     "clean");
         }
 
@@ -565,7 +565,7 @@ public class ProjectBuilder {
         StringBuilder buildCommand = new StringBuilder();
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
-            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, workDirectory, "codesign");
+            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, "codesign");
             buildCommand.append(parameter + " ");
         }
 
@@ -607,7 +607,7 @@ public class ProjectBuilder {
         StringBuilder buildCommand = new StringBuilder();
 
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
-            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, workDirectory, "codesign");
+            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, "codesign");
             buildCommand.append(parameter + " ");
         }
 
@@ -660,7 +660,7 @@ public class ProjectBuilder {
 
         List<String> buildParameters = new ArrayList<>();
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
-            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, workDirectory, "build");
+            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, "build");
             buildParameters.add(parameter);
         }
 
