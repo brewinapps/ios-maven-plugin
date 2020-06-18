@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 
+## [1.19.2] - 2020-06-18
+### Added
+- possibility to wrap xcodebuild commands with own executable
+
+### Fixed
+- bundle identifier detection from provisioning profile
+
 ## [1.19.1] - 2020-06-09
 ### Changed
 - fixed issue with crash after setting some parameters in "Info.plist" file
