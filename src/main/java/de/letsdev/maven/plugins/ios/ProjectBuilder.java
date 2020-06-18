@@ -168,7 +168,8 @@ public class ProjectBuilder {
                             projectDirectory);
                 }
 
-                zipFrameworkArchive(properties, targetDependencies, frameworkTargetName, targetWorkDirectory);
+                zipFrameworkArchive(properties, targetDependencies, frameworkTargetName, targetWorkDirectory,
+                        projectDirectory);
             } else {
                 //unlock keychain
                 unlockKeychain(properties, mavenProject,
@@ -269,7 +270,8 @@ public class ProjectBuilder {
     }
 
     private static void zipFrameworkArchive(Map<String, String> properties, List<String> targetDependencies,
-                                            String frameworkName, File targetWorkDirectory) throws IOSException {
+                                            String frameworkName, File targetWorkDirectory,
+                                            File projectDirectory) throws IOSException {
         // Zip Frameworks
         String targetZipPath = "../" + properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()) + "."
                 + Utils.PLUGIN_SUFFIX.FRAMEWORK_ZIP.toString();
@@ -277,7 +279,7 @@ public class ProjectBuilder {
         zipCommandParams.add("zip");
         zipCommandParams.add("-r");
         zipCommandParams.add(targetZipPath);
-        zipCommandParams.add(frameworkName);
+        zipCommandParams.add(projectDirectory.toString() + "/" + frameworkName);
         zipCommandParams.addAll(targetDependencies);
 
         ProcessBuilder processBuilder = new ProcessBuilder(zipCommandParams);
