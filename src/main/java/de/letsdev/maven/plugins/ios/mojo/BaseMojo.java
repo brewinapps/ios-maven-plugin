@@ -456,6 +456,19 @@ public class BaseMojo extends AbstractMojo {
      */
     private String iTunesConnectPassword;
 
+    /**
+     * Executable File for Xcode Build Command Wrapper
+     *
+     * @parameter xcodeBuildCommandWrapperExecutable
+     */
+    private String xcodeBuildCommandWrapperExecutable;
+
+    /**
+     * Base output Directory for Xcode Build Command Wrapper
+     *
+     * @parameter xcodeBuildCommandWrapperOutputBaseDirectory
+     */
+    private String xcodeBuildCommandWrapperOutputBaseDirectory;
 
     protected Map<String, String> properties = null;
 
@@ -534,6 +547,11 @@ public class BaseMojo extends AbstractMojo {
                 this.iTunesConnectPassword);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.ITUNES_CONNECT_USERNAME.toString(),
                 this.iTunesConnectUsername);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString(),
+                this.xcodeBuildCommandWrapperExecutable);
+        this.addProperty(properties,
+                Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_OUTPUT_BASE_DIRECTORY.toString(),
+                this.xcodeBuildCommandWrapperOutputBaseDirectory);
 
         return properties;
     }

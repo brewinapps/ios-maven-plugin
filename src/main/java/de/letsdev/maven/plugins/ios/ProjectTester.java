@@ -59,13 +59,15 @@ public class ProjectTester {
 
         String jsonOutputFile = Utils.createJsonOutputFilePath("test", properties);
         String xcPrettyCommand = Utils.getXcprettyCommand("testResults.txt", jsonOutputFile);
+        String buildCommandWrapperParameter = Utils.buildCommandWrapperParameter(properties, workDirectory, "test");
 
         final String scriptName = "run-xctests.sh";
 
         File tempFile = Utils.createTempFile(scriptName);
 
         ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", tempFile.getAbsoluteFile().toString(), scheme,
-                configuration, sdk, sdkArchs, destination, otherArguments.toString(), xcPrettyCommand);
+                configuration, sdk, sdkArchs, destination, otherArguments.toString(), xcPrettyCommand,
+                buildCommandWrapperParameter);
 
         processBuilder.directory(workDirectory);
         CommandHelper.performCommand(processBuilder);

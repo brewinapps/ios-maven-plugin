@@ -33,6 +33,7 @@ import de.letsdev.maven.plugins.ios.mojo.container.StringReplacement;
 import de.letsdev.maven.plugins.ios.mojo.container.StringReplacementConfig;
 import de.letsdev.maven.plugins.ios.mojo.container.XcodeArchiveProductType;
 import de.letsdev.maven.plugins.ios.mojo.container.XcodeExportOptions;
+import sun.nio.ch.Util;
 
 /**
  * @author let's dev
@@ -163,7 +164,8 @@ public class ProjectBuilder {
                 }
 
                 if (Utils.isiOSXcFramework(properties)) {
-                    generateXcFramework(frameworkPaths, frameworkTargetName, targetWorkDirectory);
+                    generateXcFramework(properties, frameworkPaths, frameworkTargetName, targetWorkDirectory,
+                            projectDirectory);
                 }
 
                 zipFrameworkArchive(properties, targetDependencies, frameworkTargetName, targetWorkDirectory);
@@ -283,10 +285,17 @@ public class ProjectBuilder {
         CommandHelper.performCommand(processBuilder);
     }
 
-    private static void generateXcFramework(List<String> frameworkPaths, String frameworkTargetName,
-                                            File targetWorkDirectory) throws IOSException {
+    private static void generateXcFramework(Map<String, String> properties, List<String> frameworkPaths,
+                                            String frameworkTargetName, File targetWorkDirectory,
+                                            File workDirectory) throws IOSException {
 
         StringBuilder buildCommand = new StringBuilder();
+
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
+            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, "xcframework") + " ";
+            buildCommand.append(parameter);
+        }
+
         buildCommand.append("xcodebuild");
         buildCommand.append(" -create-xcframework");
 
@@ -297,7 +306,7 @@ public class ProjectBuilder {
         buildCommand.append(" -output ");
         buildCommand.append(frameworkTargetName);
 
-        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, targetWorkDirectory);
+        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, workDirectory);
     }
 
     private static void removeSimulatorArchitectures(File rootDirectory) {
@@ -368,9 +377,15 @@ public class ProjectBuilder {
 
         String sdk = Utils.getSdk(properties, false);
 
-        StringBuilder xcodebuildCommand = new StringBuilder("xcodebuild -alltargets -configuration " + properties.get(
-                Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + " clean -scheme " + properties.get(
-                Utils.PLUGIN_PROPERTIES.SCHEME.toString()) + " -sdk " + sdk);
+        String buildCommandWrapperParameter = "";
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
+            buildCommandWrapperParameter += Utils.buildCommandWrapperParameter(properties, workDirectory, "clean");
+        }
+
+        StringBuilder xcodebuildCommand = new StringBuilder(
+                buildCommandWrapperParameter + " " + "xcodebuild -alltargets -configuration " + properties.get(
+                        Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + " clean -scheme " + properties.get(
+                        Utils.PLUGIN_PROPERTIES.SCHEME.toString()) + " -sdk " + sdk);
 
         //add each dynamic parameter from pom
         for (String param : xcodeBuildParameters) {
@@ -546,6 +561,12 @@ public class ProjectBuilder {
         }
 
         StringBuilder buildCommand = new StringBuilder();
+
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
+            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, "codesign");
+            buildCommand.append(parameter + " ");
+        }
+
         buildCommand.append("xcodebuild");
         buildCommand.append(" -exportArchive");
         buildCommand.append(" -exportFormat ");
@@ -582,6 +603,12 @@ public class ProjectBuilder {
         File plistFilePath = generateExportOptionsPlist(xcodeExportOptions, workDirectory);
 
         StringBuilder buildCommand = new StringBuilder();
+
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
+            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, "codesign");
+            buildCommand.append(parameter + " ");
+        }
+
         buildCommand.append("xcodebuild");
         buildCommand.append(" -exportArchive");
         buildCommand.append(" -archivePath ");
@@ -630,6 +657,11 @@ public class ProjectBuilder {
                                           List<String> xcodeBuildParameters) throws IOSException {
 
         List<String> buildParameters = new ArrayList<>();
+        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
+            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, "build");
+            buildParameters.add(parameter);
+        }
+
         buildParameters.add("xcodebuild");
 
         //if cocoa pods is enabled, we have to build the .xcworkspace file instead of .xcodeproj
