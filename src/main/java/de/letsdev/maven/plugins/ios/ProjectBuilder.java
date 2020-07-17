@@ -260,10 +260,6 @@ public class ProjectBuilder {
         if (Utils.shouldBuildXCArchiveWithExportOptionsPlist(xcodeExportOptions)) {
             codeSignAfterXcode8_3(properties, mavenProject, projectDirectory, Utils.getIpaName(schemeName), ipaBasePath,
                     ipaTargetPath, ipaTmpDir, xcodeExportOptions);
-        } else if (Utils.shouldBuildXCArchive(properties)) {
-            codeSignAfterXcode6(properties, mavenProject, projectDirectory, ipaTargetPath);
-        } else {
-            codeSignBeforeXcode6(properties, projectDirectory, newAppTargetPath, ipaTargetPath, ipaTmpDir);
         }
     }
 
@@ -387,7 +383,11 @@ public class ProjectBuilder {
         StringBuilder xcodebuildCommand = new StringBuilder(
                 buildCommandWrapperParameter + " " + "xcodebuild -alltargets -configuration " + properties.get(
                         Utils.PLUGIN_PROPERTIES.CONFIGURATION.toString()) + " clean -scheme " + properties.get(
-                        Utils.PLUGIN_PROPERTIES.SCHEME.toString()) + " -sdk " + sdk);
+                        Utils.PLUGIN_PROPERTIES.SCHEME.toString()));
+
+        if (sdk != null) {
+            xcodebuildCommand.append(" -sdk ").append(sdk);
+        }
 
         //add each dynamic parameter from pom
         for (String param : xcodeBuildParameters) {
@@ -534,60 +534,6 @@ public class ProjectBuilder {
         }
     }
 
-    private static void codeSignBeforeXcode6(Map<String, String> properties, File workDirectory, File newAppTargetPath,
-                                             File ipaTargetPath, File ipaTmpDir) throws IOSException {
-
-        ProcessBuilder processBuilderCodeSign = new ProcessBuilder("xcrun", "--no-cache",  //disbale caching
-                "-sdk", properties.get(Utils.PLUGIN_PROPERTIES.SDK.toString()), "PackageApplication", "-v",
-                newAppTargetPath.toString(), "-o", ipaTargetPath.toString(), "--sign",
-                properties.get(Utils.PLUGIN_PROPERTIES.CODE_SIGN_IDENTITY.toString()));
-
-        processBuilderCodeSign.directory(workDirectory);
-        processBuilderCodeSign.environment()
-                .put("TMPDIR", ipaTmpDir.getAbsolutePath());  //this is really important to avoid collisions, if not set
-        // /var/folders will be used here
-        CommandHelper.performCommand(processBuilderCodeSign);
-    }
-
-    private static void codeSignAfterXcode6(Map<String, String> properties, MavenProject mavenProject,
-                                            File workDirectory, File ipaTargetPath) throws IOSException {
-        /*
-            xcodebuild -exportArchive -exportFormat format -archivePath xcarchivepath -exportPath destinationpath
-                [-exportProvisioningProfile profilename] [-exportSigningIdentity identityname]
-                [-exportInstallerIdentity identityname]
-         */
-
-        if (!ipaTargetPath.getParentFile().exists() && !ipaTargetPath.getParentFile().mkdirs()) {
-            throw new RuntimeException(
-                    "Could not create directories for ipa target path=" + ipaTargetPath.getAbsolutePath());
-        }
-
-        StringBuilder buildCommand = new StringBuilder();
-
-        if (properties.containsKey(Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE.toString())) {
-            String parameter = Utils.buildCommandWrapperParameter(properties, workDirectory, "codesign");
-            buildCommand.append(parameter + " ");
-        }
-
-        buildCommand.append("xcodebuild");
-        buildCommand.append(" -exportArchive");
-        buildCommand.append(" -exportFormat ");
-        buildCommand.append(Utils.PLUGIN_SUFFIX.IPA.toString());
-        buildCommand.append(" -archivePath ");
-        buildCommand.append(Utils.getArchiveName(Utils.buildProjectName(properties, mavenProject), mavenProject));
-        buildCommand.append(" -exportPath ");
-        buildCommand.append(ipaTargetPath.toString());
-        buildCommand.append(" -exportWithOriginalSigningIdentity");
-
-        //append xcpretty arguments
-        String jsonOutputFile = Utils.createJsonOutputFilePath("codesign", properties);
-        for (String xcprettyArg : Utils.getXcprettyCommand("xcodebuild-codesign.log", jsonOutputFile).split(" ")) {
-            buildCommand.append(" ").append(xcprettyArg);
-        }
-
-        Utils.executeShellScript("execute-xcodebuild.sh", buildCommand.toString(), null, workDirectory);
-    }
-
     private static void codeSignAfterXcode8_3(Map<String, String> properties, MavenProject mavenProject,
                                               File workDirectory, String ipaName, File ipaBasePath, File ipaTargetPath,
                                               File ipaTmpDir,
@@ -673,8 +619,10 @@ public class ProjectBuilder {
         }
 
         String sdk = Utils.getSdk(properties, shouldUseIphoneSimulatorSDK);
-        buildParameters.add("-sdk");
-        buildParameters.add(sdk);
+        if (sdk != null) {
+            buildParameters.add("-sdk");
+            buildParameters.add(sdk);
+        }
 
         String archs = Utils.getArchitecturesForSdk(properties, sdk);
         if (archs != null && !archs.isEmpty()) {

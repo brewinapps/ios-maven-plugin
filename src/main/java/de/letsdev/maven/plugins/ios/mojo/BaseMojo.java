@@ -121,9 +121,8 @@ public class BaseMojo extends AbstractMojo {
      * iOS SDK
      *
      * @parameter property="ios.sdk"
-     * default-value="iphoneos"
      */
-    protected String sdk;
+    protected String sdk = null;
 
     /**
      * iphoneos SDK build architectures
