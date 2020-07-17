@@ -57,6 +57,12 @@ public class ProjectTester {
                     .append(properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()));
         }
 
+        if (sdk != null) {
+            otherArguments.append(" -sdk ").append(sdk);
+            otherArguments.append(" ARCHS=").append(sdkArchs);
+            otherArguments.append(" VALID_ARCHS=").append(sdkArchs);
+        }
+
         String jsonOutputFile = Utils.createJsonOutputFilePath("test", properties);
         String xcPrettyCommand = Utils.getXcprettyCommand("testResults.txt", jsonOutputFile);
         String buildCommandWrapperParameter = Utils.buildCommandWrapperParameter(properties, workDirectory, "test");
@@ -66,7 +72,7 @@ public class ProjectTester {
         File tempFile = Utils.createTempFile(scriptName);
 
         ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", tempFile.getAbsoluteFile().toString(), scheme,
-                configuration, sdk, sdkArchs, destination, otherArguments.toString(), xcPrettyCommand,
+                configuration, destination, otherArguments.toString(), xcPrettyCommand,
                 buildCommandWrapperParameter);
 
         processBuilder.directory(workDirectory);

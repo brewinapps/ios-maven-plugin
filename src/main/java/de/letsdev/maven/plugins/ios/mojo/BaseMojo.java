@@ -349,9 +349,8 @@ public class BaseMojo extends AbstractMojo {
      * defining the sdk for xctests execution
      *
      * @parameter property="ios.xcTestsSdk"
-     * default-value="iphonesimulator"
      */
-    private String xcTestsSdk;
+    private String xcTestsSdk = null;
 
     /**
      * defining further arguments for xctests execution
