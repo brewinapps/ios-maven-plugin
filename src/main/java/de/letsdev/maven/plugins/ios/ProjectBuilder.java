@@ -141,7 +141,7 @@ public class ProjectBuilder {
                     //if we'd build the framework with xcodebuild archive command, we have to export the framework
                     // from archive
                     if (Utils.shouldBuildXCArchive(properties)) {
-                        File archiveFile = new File(Utils.getArchiveName(projectName, mavenProject));
+                        File archiveFile = new File(Utils.getArchiveName(appName, mavenProject));
                         exportProductArchive(archiveFile, targetWorkDirectoryIphone, frameworkBuildName);
 
                         exportTargetDependencies(targetDependencies, archiveFile, targetWorkDirectoryIphone);
@@ -560,7 +560,7 @@ public class ProjectBuilder {
         buildCommand.append("xcodebuild");
         buildCommand.append(" -exportArchive");
         buildCommand.append(" -archivePath ");
-        buildCommand.append(Utils.getArchiveName(Utils.buildProjectName(properties, mavenProject), mavenProject));
+        buildCommand.append(Utils.getArchiveName(Utils.getAppName(properties), mavenProject));
         buildCommand.append(" -exportPath ");
         buildCommand.append(ipaBasePath.toString());
         buildCommand.append(" -exportOptionsPlist ");
@@ -636,7 +636,7 @@ public class ProjectBuilder {
         if (Utils.shouldBuildXCArchive(properties) && !shouldUseIphoneSimulatorSDK) {
             buildParameters.add("archive");
             buildParameters.add("-archivePath");
-            buildParameters.add(Utils.getArchiveName(projectName, mavenProject));
+            buildParameters.add(Utils.getArchiveName(Utils.getAppName(properties), mavenProject));
         } else {
             buildParameters.add("SYMROOT=" + targetDirectory.getAbsolutePath());   //only possible without xcarchive
         }

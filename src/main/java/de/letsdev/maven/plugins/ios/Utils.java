@@ -188,9 +188,9 @@ public class Utils {
         return xcodeExportOptions.method != null;
     }
 
-    static String getArchiveName(final String projectName, MavenProject mavenProject) {
+    static String getArchiveName(final String appName, MavenProject mavenProject) {
 
-        return getTargetDirectory(mavenProject).getAbsolutePath() + File.separator + projectName + "."
+        return getTargetDirectory(mavenProject).getAbsolutePath() + File.separator + appName + "."
                 + PLUGIN_SUFFIX.XCARCHIVE;
     }
 
