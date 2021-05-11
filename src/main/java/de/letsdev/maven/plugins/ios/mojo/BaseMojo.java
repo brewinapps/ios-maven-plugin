@@ -343,7 +343,7 @@ public class BaseMojo extends AbstractMojo {
      *
      * @parameter property="ios.xcTestsDestination"
      */
-    private String xcTestsDestination = "platform=iOS Simulator,name=iPhone X,OS=latest";
+    private String xcTestsDestination = "platform=iOS Simulator,name=iPhone 11,OS=latest";
 
     /**
      * defining the sdk for xctests execution
@@ -351,6 +351,13 @@ public class BaseMojo extends AbstractMojo {
      * @parameter property="ios.xcTestsSdk"
      */
     private String xcTestsSdk = null;
+
+    /**
+     * defines if test execution should be skipped
+     *
+     * @parameter property="ios.skipTests"
+     */
+    private boolean skipTests = false;
 
     /**
      * defining further arguments for xctests execution
@@ -532,6 +539,7 @@ public class BaseMojo extends AbstractMojo {
                 this.xcTestsConfiguration);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_DESTINATION.toString(), this.xcTestsDestination);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_SDK.toString(), this.xcTestsSdk);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SKIP_TESTS.toString(), Boolean.toString(this.skipTests));
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_BUILD_ARGUMENTS.toString(),
                 this.xcTestsBuildArguments);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RESET_SIMULATORS.toString(),

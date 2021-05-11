@@ -85,6 +85,7 @@ public class Utils {
         XCTEST_CONFIGURATION("xcTestsConfiguration"),
         XCTEST_DESTINATION("xcTestsDestination"),
         XCTEST_SDK("xcTestsSdk"),
+        SKIP_TESTS("skipTests"),
         XCTEST_BUILD_ARGUMENTS("xcTestsBuildArguments"),
         RESET_SIMULATORS("resetSimulators"),
         DERIVED_DATA_PATH("derivedDataPath"),
@@ -497,5 +498,10 @@ public class Utils {
         }
 
         return parameter;
+    }
+
+    static boolean shouldSkipTests(Map<String, String> buildProperties) {
+
+        return "true".equals(buildProperties.get(PLUGIN_PROPERTIES.SKIP_TESTS.toString()));
     }
 }

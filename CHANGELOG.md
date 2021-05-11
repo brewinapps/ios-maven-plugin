@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [UNRELEASED]
+## [1.19.9] - 2021-05-11
+### Added
+- skipTests argument
+
 ## [1.19.8] - 2020-11-02
 ### Fixed
 - using appName as name for xcarchive in order to prevent overriding xcarchive files

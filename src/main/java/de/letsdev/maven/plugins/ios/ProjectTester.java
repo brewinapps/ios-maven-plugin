@@ -23,6 +23,10 @@ public class ProjectTester {
     public static void test(final Map<String, String> properties,
                             MavenProject mavenProject) throws IOSException, IOException {
 
+        if (Utils.shouldSkipTests(properties)) {
+            return;
+        }
+
         String projectName = Utils.buildProjectName(properties, mavenProject);
         File workDirectory = Utils.getWorkDirectory(properties, mavenProject, projectName);
         File targetDirectory = Utils.getTargetDirectory(mavenProject);
