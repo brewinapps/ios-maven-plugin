@@ -51,7 +51,7 @@
 	<properties>
 		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<httpcomponents.version>4.1</httpcomponents.version>
+		<httpcomponents.version>4.5.13</httpcomponents.version>
 		<maven.version>2.0</maven.version>
 	</properties>
 
