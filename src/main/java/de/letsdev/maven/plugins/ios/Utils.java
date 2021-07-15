@@ -78,6 +78,7 @@ public class Utils {
         BUILD_TO_XCARCHIVE_ENABLED("build-xcarchive"),
         COCOA_PODS_ENABLED("cocoa-pods-enabled"),
         CARTHAGE_ENABLED("carthage-enabled"),
+        CARTHAGE_COMMAND_ARGUMENTS("carthage-command-arguments"),
         ITUNES_CONNECT_USERNAME("iTunesConnectUsername"),
         ITUNES_CONNECT_PASSWORD("iTunesConnectPassword"),
         XCODE_VERSION("xcodeVersion"),

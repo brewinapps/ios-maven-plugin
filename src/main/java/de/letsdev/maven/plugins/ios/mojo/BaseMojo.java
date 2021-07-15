@@ -303,6 +303,14 @@ public class BaseMojo extends AbstractMojo {
     private boolean carthageEnabled = false;
 
     /**
+     * defines arguments passed to carthage update command
+     * e.g. "--platform ios" results in "carthage update --platform ios"
+     *
+     * @parameter property="ios.carthageCommandArguments"
+     */
+    private String carthageCommandArguments = "";
+
+    /**
      * defining release task
      * available options are Release, Testflight & AppStoreUpload
      * <p>
@@ -532,6 +540,8 @@ public class BaseMojo extends AbstractMojo {
                 Boolean.toString(this.cocoaPodsEnabled));
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CARTHAGE_ENABLED.toString(),
                 Boolean.toString(this.carthageEnabled));
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.CARTHAGE_COMMAND_ARGUMENTS.toString(),
+                this.carthageCommandArguments);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.RELEASE_TASK.toString(), this.releaseTask);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCODE_VERSION.toString(), this.xcodeVersion);
         this.addProperty(properties, Utils.PLUGIN_PROPERTIES.XCTEST_SCHEME.toString(), this.xcTestsScheme);

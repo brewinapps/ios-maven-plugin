@@ -89,7 +89,7 @@ public class ProjectBuilder {
             }
 
             if (Utils.carthageEnebled(properties)) {
-                installCarthageDependencies(projectDirectory);
+                installCarthageDependencies(projectDirectory, properties.get(Utils.PLUGIN_PROPERTIES.CARTHAGE_COMMAND_ARGUMENTS.toString()));
             }
 
             // Build the application
@@ -985,12 +985,10 @@ public class ProjectBuilder {
         }
     }
 
-    private static void installCarthageDependencies(File projectDirectory) throws IOSException {
+    private static void installCarthageDependencies(File projectDirectory, String carthageArguments) throws IOSException {
 
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder("carthage", "update");
-            processBuilder.directory(projectDirectory);
-            CommandHelper.performCommand(processBuilder);
+            Utils.executeShellScript("execute-carthage.sh", "carthage update " + carthageArguments, null, projectDirectory);
         } catch (Exception e) {
             e.printStackTrace();
             throw new IOSException(e);
