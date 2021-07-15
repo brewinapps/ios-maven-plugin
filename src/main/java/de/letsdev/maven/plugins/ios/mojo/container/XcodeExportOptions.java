@@ -129,7 +129,7 @@ public class XcodeExportOptions {
 
     /**
      * defining thinning parameter for export options plist
-     * For non-App Store exports, should Xcode thin the package for one or more device variants? Available options: <none> (Xcode produces a non-thinned universal app), <thin-for-all-variants> (Xcode produces a universal app and all available thinned variants), or a model identifier for a specific device (e.g. "iPhone7,1").
+     * For non-App Store exports, should Xcode thin the package for one or more device variants? Available options: &lt;none&gt; (Xcode produces a non-thinned universal app), &lt;thin-for-all-variants&gt; (Xcode produces a universal app and all available thinned variants), or a model identifier for a specific device (e.g. "iPhone7,1").
      * Defaults to <none>.
      *
      * @parameter property="ios.xcodeExportOptions.thinning"
