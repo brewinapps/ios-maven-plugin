@@ -76,13 +76,6 @@ public class ProjectBuilder {
             //update entitlements file
             prepareEntitlementsFile(properties, projectDirectory);
 
-            //BEG clean the application
-            cleanXcodeProject(properties, projectDirectory, xcodeBuildParameters);
-            //END clean the application
-
-            //unlock keychain
-            unlockKeychain(properties, mavenProject, projectDirectory);
-
             //if project contains cocoaPods dependencies, we install them first
             if (Utils.cocoaPodsEnabled(properties)) {
                 installCocoaPodsDependencies(projectDirectory);
@@ -91,6 +84,13 @@ public class ProjectBuilder {
             if (Utils.carthageEnebled(properties)) {
                 installCarthageDependencies(projectDirectory, properties.get(Utils.PLUGIN_PROPERTIES.CARTHAGE_COMMAND_ARGUMENTS.toString()));
             }
+
+            //BEG clean the application
+            cleanXcodeProject(properties, projectDirectory, xcodeBuildParameters);
+            //END clean the application
+
+            //unlock keychain
+            unlockKeychain(properties, mavenProject, projectDirectory);
 
             // Build the application
 
@@ -733,6 +733,10 @@ public class ProjectBuilder {
         if (properties.containsKey(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString())) {
             buildParameters.add(
                     "-derivedDataPath " + properties.get(Utils.PLUGIN_PROPERTIES.DERIVED_DATA_PATH.toString()));
+        }
+
+        if (Utils.disableAutomaticPackageResolutionEnabled(properties)) {
+            buildParameters.add("-disableAutomaticPackageResolution");
         }
 
         //add each dynamic parameter from pom

@@ -483,6 +483,14 @@ public class BaseMojo extends AbstractMojo {
      */
     private String xcodeBuildCommandWrapperOutputBaseDirectory;
 
+    /**
+     * determines if disableAutomaticPackageResolution xcodebuild flag should be passed during build
+     * it will disable swiftpm package resolution during build (Package.resolved file must be within git)
+     *
+     * @parameter swiftPmDisableAutomaticPackageResolution
+     */
+    private boolean swiftPmDisableAutomaticPackageResolution = true;
+
     protected Map<String, String> properties = null;
 
     private Map<String, String> prepareProperties() {
@@ -568,6 +576,8 @@ public class BaseMojo extends AbstractMojo {
         this.addProperty(properties,
                 Utils.PLUGIN_PROPERTIES.XCODE_BUILD_COMMAND_WRAPPER_OUTPUT_BASE_DIRECTORY.toString(),
                 this.xcodeBuildCommandWrapperOutputBaseDirectory);
+        this.addProperty(properties, Utils.PLUGIN_PROPERTIES.SWIFT_PM_DISABLE_AUTOMATIC_PACKAGE_RESOLUTION.toString(),
+                Boolean.toString(this.swiftPmDisableAutomaticPackageResolution));
 
         return properties;
     }

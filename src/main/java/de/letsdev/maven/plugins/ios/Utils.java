@@ -93,7 +93,8 @@ public class Utils {
         XCTEST_DERIVED_DATA_PATH("xcTestsDerivedDataPath"),
         PROVISIONING_PROFILE_NAME("provisioningProfileName"),
         XCODE_BUILD_COMMAND_WRAPPER_EXECUTABLE("xcodeBuildCommandWrapperExecutable"),
-        XCODE_BUILD_COMMAND_WRAPPER_OUTPUT_BASE_DIRECTORY("xcodeBuildCommandWrapperOutputBaseDirectory");
+        XCODE_BUILD_COMMAND_WRAPPER_OUTPUT_BASE_DIRECTORY("xcodeBuildCommandWrapperOutputBaseDirectory"),
+        SWIFT_PM_DISABLE_AUTOMATIC_PACKAGE_RESOLUTION("swiftPmDisableAutomaticPackageResolution");
 
         PLUGIN_PROPERTIES(String name) {
 
@@ -233,6 +234,11 @@ public class Utils {
     static boolean shouldResetIphoneSimulators(Map<String, String> buildProperties) {
 
         return "true".equals(buildProperties.get(PLUGIN_PROPERTIES.RESET_SIMULATORS.toString()));
+    }
+
+    static boolean disableAutomaticPackageResolutionEnabled(Map<String, String> buildProperties) {
+
+        return "true".equals(buildProperties.get(PLUGIN_PROPERTIES.SWIFT_PM_DISABLE_AUTOMATIC_PACKAGE_RESOLUTION.toString()));
     }
 
     public static File getWorkDirectory(Map<String, String> buildProperties, MavenProject mavenProject,

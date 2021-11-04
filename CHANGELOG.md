@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [UNRELEASED]
+### Added
+- SwiftPM support (added flag "swiftPmDisableAutomaticPackageResolution" to disable automatic package resolution; using Package.resolved file instead)
+
+### Fixed
+- installing cocoapods and carthage dependencies before xcodebuild clean command
+
 ## [1.20.0] - 2021-07-15
 ### Added
 - carthage update command arguments
