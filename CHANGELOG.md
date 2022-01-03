@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [UNRELEASED]
+## [1.22.0] - 2022-01-03
+### Added
+- support for altool with Xcode 13 (fixed api usage for automatic app store uploads)
+
+## [1.21.0] - 2021-11-04
 ### Added
 - SwiftPM support (added flag "swiftPmDisableAutomaticPackageResolution" to disable automatic package resolution; using Package.resolved file instead)
 
