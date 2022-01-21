@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [UNRELEASED]
+## [1.23.0] - 2022-01-21
+### Added
+- dSYMS are zipped and placed in target folder to make it easier for CI to archive them. 
+
 ## [1.22.0] - 2022-01-03
 ### Added
 - support for altool with Xcode 13 (fixed api usage for automatic app store uploads)
