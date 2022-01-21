@@ -180,6 +180,7 @@ public class ProjectBuilder {
                 generateIpaArchive(properties, mavenProject, xcodeExportOptions, schemeName, projectDirectory,
                         targetDirectory, projectVersion);
             }
+            zipDSYMs(properties.get(Utils.PLUGIN_PROPERTIES.APP_NAME.toString()), targetDirectory);
 
             //lock keychain
             lockKeychain(properties);
@@ -202,6 +203,54 @@ public class ProjectBuilder {
 
             throw new IOSException(e.getMessage());
         }
+    }
+
+    private static void zipDSYMs(String appName, File targetWorkDirectory) throws IOSException {
+        // Zip Frameworks
+        copyDSYMs(appName, targetWorkDirectory);
+
+        String sourceZipPath = Utils.PLUGIN_SUFFIX.DSYMS.toString();
+        List<String> zipCommandParams = new ArrayList<>();
+        zipCommandParams.add("zip");
+        zipCommandParams.add("-r");
+        // app name + DSYMS is the name of the zip
+        zipCommandParams.add(appName + "-" + Utils.PLUGIN_SUFFIX.DSYMS);
+        zipCommandParams.add(sourceZipPath);
+
+        ProcessBuilder processBuilder = new ProcessBuilder(zipCommandParams);
+        processBuilder.directory(targetWorkDirectory);
+        CommandHelper.performCommand(processBuilder);
+
+        // we need to delete them again, folder is named "dSYMs" this would be trouble with multiple targets
+        deletedCopiedDSYMs(targetWorkDirectory);
+    }
+
+    private static void copyDSYMs(String appName, File targetWorkDirectory) throws IOSException {
+
+        String sourcePath = appName + "." + Utils.PLUGIN_SUFFIX.XCARCHIVE + "/" + Utils.PLUGIN_SUFFIX.DSYMS;
+        String targetPath = Utils.PLUGIN_SUFFIX.DSYMS.toString();
+        List<String> copyCommandParams = new ArrayList<>();
+        copyCommandParams.add("cp");
+        copyCommandParams.add("-R");
+        copyCommandParams.add(sourcePath);
+        copyCommandParams.add(targetPath);
+
+        ProcessBuilder processBuilder = new ProcessBuilder(copyCommandParams);
+        processBuilder.directory(targetWorkDirectory);
+        CommandHelper.performCommand(processBuilder);
+    }
+
+    private static void deletedCopiedDSYMs(File targetWorkDirectory) throws IOSException {
+
+        String targetPath = Utils.PLUGIN_SUFFIX.DSYMS.toString();
+        List<String> removeCommandParams = new ArrayList<>();
+        removeCommandParams.add("rm");
+        removeCommandParams.add("-rf");
+        removeCommandParams.add(targetPath);
+
+        ProcessBuilder processBuilder = new ProcessBuilder(removeCommandParams);
+        processBuilder.directory(targetWorkDirectory);
+        CommandHelper.performCommand(processBuilder);
     }
 
     private static void generateIpaArchive(Map<String, String> properties, MavenProject mavenProject,

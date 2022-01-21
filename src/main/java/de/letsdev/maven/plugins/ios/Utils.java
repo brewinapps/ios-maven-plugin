@@ -114,6 +114,7 @@ public class Utils {
         XCARCHIVE("xcarchive"),
         IPA("ipa"),
         APP_DSYM("app.dSYM"),
+        DSYMS("dSYMs"),
         FRAMEWORK("framework"),
         XCFRAMEWORK("xcframework"),
         FRAMEWORK_ZIP("zip"),
